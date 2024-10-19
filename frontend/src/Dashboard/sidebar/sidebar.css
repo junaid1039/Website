@@ -1,0 +1,35 @@
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    padding-top: 30px;
+    gap: 20px;
+    width: 100%;
+    max-width: 250px;
+    border-top: 0.5px solid rgb(235, 235, 235);
+  }
+  
+  a {
+    color: inherit; /* Inherit the color from the parent element */
+    text-decoration: none; /* Remove the underline */
+  }
+  
+  .sidebar_item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0px 20px;
+    border-radius: 6px;
+    background: #eeeeee; 
+    padding: 10px; /* Added padding for better spacing */
+  }
+  
+  .sidebar_item svg {
+    font-size: 20px;
+    color: black;
+  }
+  
+  .sidebar_item p {
+    color: black; /* Or any color you prefer */
+    margin-left: 10px; /* Adds spacing between icon and text */
+  }
+  

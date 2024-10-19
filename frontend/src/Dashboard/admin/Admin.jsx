@@ -1,0 +1,36 @@
+import React from 'react';
+import './admin.css';
+import Sidebar from '../sidebar/Sidebar.jsx';
+import { Route, Routes } from 'react-router-dom';
+import Addproduct from '../addproduct/Addproduct.jsx';
+import Productlist from '../productlist/Productlist.jsx';
+import Editproduct from '../editproduct/Editproduct.jsx';
+import AdminNavbar from  '../adminnavbar/AdminNavbar.jsx';
+import AdminOrders from '../allorders/AdminOrders.jsx';
+import AdminUsers from '../adminusers/Adminusers.jsx';
+
+
+
+const Admin = () => {
+  return (
+    <>
+    <div className="d-m">
+      <div className="d-n">
+      <AdminNavbar/>
+      </div>
+      <div className="sm">
+      <Sidebar />
+      <Routes>
+        <Route path="addproduct" element={<Addproduct />} />
+        <Route path="productlist" element={<Productlist />} />
+        <Route path="edit-product/:id" element={<Editproduct />} />
+        <Route path='orders' element={<AdminOrders/>}/>
+        <Route path='users' element={<AdminUsers/>} />
+      </Routes>
+      </div>
+      </div>
+    </>
+  );
+};
+
+export default Admin;

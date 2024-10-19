@@ -1,0 +1,139 @@
+.loginsignup {
+    width: 100%;
+    height: 100%;
+    background: #f1f6ebba;
+    padding: 40px 0 100px 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.box {
+    width: 30%;
+    height: auto;
+    background: #ffffff;
+    margin: auto;
+    padding: 20px 30px;
+    
+}
+
+.box h1 {
+    margin: 20px 0;
+}
+
+.loginsignup-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.loginsignup-fields input {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: whitesmoke;
+    height: 50px;
+    width: 100%;
+    padding-left: 15px;
+    border: none;
+    outline: none;
+    color: #5c5c5c;
+    border-radius: 20px;
+    font-size: 15px;
+}
+
+.box button {
+    width: 100%;
+    height: 50px;
+    color: white;
+    background: #444;
+    margin-top: 20px;
+    border: none;
+    font-size: 20px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.login-signup {
+    display: flex;
+    margin-top: 20px;
+    color: #5c5c5c;
+    font-size: 12px;
+    font-weight: 500;
+    gap: 10px;
+    
+}
+
+.login-signup span {
+    color: black;
+    font-weight: 600;
+    cursor: pointer;
+
+}
+
+.loginsignup-agree {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    gap: 10px;
+    color: #5c5c5c;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/*logout css start from there*/
+.myacc{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.4em;
+    font-weight: 700;
+    padding: 1em 0;
+}
+.main{
+    width: 94%;
+    margin: 0 3%;
+    display: flex;
+    flex-direction: column;
+    
+}
+.u-left{
+    display: flex;
+    justify-content: space-around;
+    align-items: start;
+    
+}
+.u-left h4{
+ margin: 0.8em 0;
+ cursor: pointer;
+}
+.u-left .cl.active h4 {
+    text-decoration: underline; /* Underline when active */
+    font-size: 1.1em;
+}
+
+@media (max-width: 500px) {
+    .loginsignup {
+        padding: 50px 0 50px 0;
+    }
+
+    .box {
+        width: 78%;
+        padding: 20px 30px;
+    }
+
+    .loginsignup-agree {
+        margin-top: 10px;
+        gap: 10px;
+        color: #5c5c5c;
+        font-size: 10px;
+    }
+    .box h1{
+        font-size: 20px;
+    }
+    .loginsignup-fields input {
+
+        background-color: whitesmoke;
+        border: none;
+    }
+}
