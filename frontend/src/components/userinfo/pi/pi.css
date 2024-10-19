@@ -1,0 +1,38 @@
+.pi{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    width: inherit;
+    padding: 3em 10%;
+    display: grid;
+    grid-template-columns: 20% 80%;
+    
+}
+.pi-left, .pi-right{
+    border: 1px solid  #ccc;
+
+}
+
+.pi-left h3{
+    
+    margin: 0;
+    padding: 0.5em;
+    font-size: 1.1em;
+    font-weight: 500;
+    
+}
+
+.pi-right h3{
+    
+    margin: 0;
+    padding: 0.5em;
+    font-size: 1.1em;
+    font-weight: 500;
+    
+}
+
+@media  (max-width: 768px) {
+    .pi{
+        padding: 1em 0;
+        grid-template-columns: 30% 70%;
+
+    }
+}

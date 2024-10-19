@@ -1,0 +1,43 @@
+.admin-navbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.admin-navbar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 95%;
+}
+
+.admin-navbar-left {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+.admin-navbar-left h1 {
+    font-size: 1.5em;
+    display: flex;
+    gap: 0.4em;
+}
+
+.admin-navbar-right {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+}
+
+.admin-logout-button {
+    height: 2.5em;
+    width: 6em;
+    background-color: #444;
+    border-radius: 0.5em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    gap: 0.5em;
+}

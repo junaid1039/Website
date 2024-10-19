@@ -1,0 +1,51 @@
+.orders {
+    padding: 20px;
+    background-color: #f9f9f9; /* Light background for contrast */
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  }
+  
+  .o-head {
+    display: flex;
+    justify-content: space-between;
+    background-color: #444; /* Primary color for header */
+    color: white;
+    border-radius: 5px 5px 0 0; /* Rounded corners on the top */
+  }
+  
+  .o-head h3 {
+    flex: 1; /* Equal space for each heading */
+    text-align: center;
+    font-size: 1em; /* Center align text */
+  }
+  
+  .allorders {
+    margin-top: 10px;
+  }
+  
+  .order {
+    display: flex;
+    justify-content: space-between; /* Align items in a row */
+    align-items: center;
+    padding: 10px;
+    background-color: white; /* White background for order items */
+    margin-bottom: 10px; /* Spacing between orders */
+    border-radius: 5px; /* Slightly rounded corners */
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for order items */
+  }
+  
+  .order div {
+    flex: 1; /* Equal space for each order item */
+    text-align: center; /* Center align text */
+  }
+  
+  button {
+    background-color: #28a745; /* Green button */
+    color: white; /* White text */
+    border: none; /* Remove default border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 5px 10px; /* Padding for button */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition */
+  }
+  
