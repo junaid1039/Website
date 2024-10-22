@@ -8,6 +8,8 @@ import Editproduct from '../editproduct/Editproduct.jsx';
 import AdminNavbar from  '../adminnavbar/AdminNavbar.jsx';
 import AdminOrders from '../allorders/AdminOrders.jsx';
 import AdminUsers from '../adminusers/Adminusers.jsx';
+import AdminDashboard from '../adminDashboard/AdminDashboard.jsx';
+
 
 
 
@@ -21,10 +23,11 @@ const Admin = () => {
       <div className="sm">
       <Sidebar />
       <Routes>
-        <Route path="addproduct" element={<Addproduct />} />
-        <Route path="productlist" element={<Productlist />} />
-        <Route path="edit-product/:id" element={<Editproduct />} />
-        <Route path='orders' element={<AdminOrders/>}/>
+        <Route path="/" element={<AdminDashboard/>} />
+        <Route path="addproduct" element={<Addproduct/>} />
+        <Route path="productlist" element={<Productlist/>} />
+        <Route path="productlist/editproduct/:id" element={<Editproduct/>} />
+        <Route path='orders' element={<AdminOrders/>} />
         <Route path='users' element={<AdminUsers/>} />
       </Routes>
       </div>

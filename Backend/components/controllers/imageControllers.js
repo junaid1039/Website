@@ -1,18 +1,35 @@
-const uploadImage = (req, res) => {
-    // Log the files and body to debug
-    console.log(req.files, "files");
-    console.log(req.body, "body");
+const fs = require('fs');
+const cloudinary = require('../utils/cloudinary');
 
+const uploadImages = async (req, res) => {
     if (!req.files || req.files.length === 0) {
-        return res.status(400).json({ success: false, message: 'No files uploaded' });
+        return res.status(400).json({ success: false, message: "No files uploaded" });
     }
 
-    const imageUrls = req.files.map(file => `http://localhost:5000/images/${file.filename}`);
+    try {
+        const uploadPromises = req.files.map((file) => {
+            return cloudinary.uploader.upload(file.path)
+                .then((result) => {
+                    // Remove the local file after upload
+                    fs.unlinkSync(file.path);
+                    return result;
+                });
+        });
 
-    res.json({
-        success: true,
-        image_urls: imageUrls // Return an array of image URLs
-    });
+        // Wait for all the uploads to complete
+        const uploadResults = await Promise.all(uploadPromises);
+
+        
+        return res.status(200).json({ success: true, message: "Images uploaded successfully!",
+             data: uploadResults
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Error uploading images"
+        });
+    }
 };
 
-module.exports = { uploadImage };
+module.exports = uploadImages;

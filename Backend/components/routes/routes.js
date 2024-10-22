@@ -5,26 +5,25 @@ const productController = require('../controllers/productControllers');
 const userController = require('../controllers/userControllers');
 const cartController = require('../controllers/cartControllers');
 const orderController = require('../controllers/orderControllers');
-const imageController = require('../controllers/imageControllers'); // Image controller for upload
+const uploadImages = require('../controllers/imageControllers') // Image controller for upload
 const { auth, userauth } = require('../middleware/auth'); // Middleware for authenticating users
-const upload = require('../utils/multerstorage'); // Multer configuration for image upload
+const upload = require('../middleware/multer')
 
-// Image Upload Route
-router.post('/uploadimage', upload.array('images', 5), imageController.uploadImage); // Handles multiple images
+
+router.post('/uploadimage', upload.array('images', 5), uploadImages); // Handles multiple images
+ // Handles multiple images
 
 // Get single product
 router.get('/productdata/:id', productController.getProductById);
 
 // Product routes
-router.put('/product/:id', auth, productController.editProduct); 
-router.post('/addproduct', productController.addProduct); // Adds a new product
-router.post('/removeproduct', productController.removeProduct); // Removes a product
+router.put('/product/:id', auth,  productController.editProduct); 
+router.post('/addproduct',auth, productController.addProduct); // Adds a new product
+router.post('/removeproduct', auth, productController.removeProduct); // Removes a product
 router.get('/allproducts', productController.getAllProducts); // Fetches all products
-
 
 //verify Token
 router.get('/verification', auth);
-
 
 // User routes (Signup and Login)
 router.post('/signup', userController.signup); // User registration

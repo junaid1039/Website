@@ -1,32 +1,26 @@
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./components/config/db'); // MongoDB connection
-const path = require('path');
 const Routes = require('./components/routes/routes'); // Importing routes
 require('dotenv').config(); // Load environment variables
-const cloudinary = require('cloudinary');
-const bodyparser = require('body-parser');
-const fileupload = require('express-fileupload');
-
 
 const app = express();
 const port = process.env.PORT || 5008;
 
+// Connect to MongoDB
 connectDB();
-app.use(express.json());
-app.use(cors());
-app.use(bodyparser.urlencoded({extended: true}));
-app.use(fileupload());
 
-//cloudinary.config({
-//    cloud_name : process.env.CLOUD_NAME,
-//    api_key : process.env.API_KEY,
-//    api_secret: process.evn.API_SECRET,
-//});
+// Middleware
+app.use(cors()); // Enable CORS
+app.use(express.json()); // Parse JSON bodies
 
-
-app.use('/', Routes);   // Using routes
-
+// Multer for file uploads
+//const multer = require('multer');
+//const storage = multer.memoryStorage();
+//const upload = multer({ storage });
+//app.use(upload.any()); // This allows for file uploads; it might be a better option than express-fileupload if you are using multer
+// Using routes
+app.use('/', Routes);
 
 app.listen(port, (err) => {
     if (!err) {
