@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './productlist.css';
 import { RiDeleteBin5Line, RiEdit2Fill } from "react-icons/ri";
-
-import { useNavigate } from 'react-router-dom';  // Import useNavigate for navigation
+import { useNavigate } from 'react-router-dom';
 
 const Productlist = () => {
   const [allproducts, setallproducts] = useState([]);
@@ -11,7 +10,7 @@ const Productlist = () => {
   const [showModal, setShowModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   
-  const navigate = useNavigate();  // Initialize navigation
+  const navigate = useNavigate();
 
   // Fetch all products
   const fetchInfo = async () => {
@@ -21,8 +20,9 @@ const Productlist = () => {
         throw new Error("Failed to fetch products");
       }
       const data = await response.json();
-      setallproducts(data);
+      setallproducts(data.products); // Assuming the response contains products in a 'products' field
       setLoading(false);
+      
     } catch (error) {
       setError(error.message);
       setLoading(false);
@@ -47,6 +47,7 @@ const Productlist = () => {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
+          'auth-token': `${sessionStorage.getItem('auth-token')}`,
         },
         body: JSON.stringify({ id: productToDelete })
       });
@@ -57,11 +58,10 @@ const Productlist = () => {
       setShowModal(false);
     }
   };
-  
 
   // Navigate to Edit Product page
   const handleEditClick = (id) => {
-    navigate(`/edit-product/${id}`);  // Navigate to Edit Product page with product ID
+    navigate(`editproduct/${id}`);
   };
 
   if (loading) {
@@ -91,15 +91,15 @@ const Productlist = () => {
           allproducts.map((product) => (
             <React.Fragment key={product.id}>
               <div className="listproduct-format-main listproduct-format">
-              <img src={product.images[0]} alt="Images" className="listproduct-product-img" />
-
+                {/* Render the first image from the images array */}
+                <img src={product.images[0]} alt={product.name} className="listproduct-product-img" />
                 <p>{product.name}</p>
                 <p>${product.oldprice}</p>
                 <p>${product.newprice}</p>
                 <p>{product.category}</p>
                 <p>
-                <RiEdit2Fill onClick={() => handleEditClick(product.id)} className="edit-icon" />
-                <RiDeleteBin5Line onClick={() => handleDeleteClick(product.id)} className="delete-icon" />
+                  <RiEdit2Fill onClick={() => handleEditClick(product.id)} className="edit-icon" />
+                  <RiDeleteBin5Line onClick={() => handleDeleteClick(product.id)} className="delete-icon" />
                 </p>
               </div>
               <hr />
@@ -113,7 +113,7 @@ const Productlist = () => {
         <div className="modal-overlay">
           <div className="modal">
             <p>Are you sure you want to delete this product?</p>
-            <div className="modal-buttons">
+            <div className="confirm-buttons">
               <button onClick={confirmDelete} className="confirm-btn">Yes</button>
               <button onClick={() => setShowModal(false)} className="cancel-btn">No</button>
             </div>
