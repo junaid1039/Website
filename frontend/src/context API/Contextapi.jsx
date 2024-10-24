@@ -78,7 +78,7 @@ const ContextProvider = (props) => {
         }
     };
 
-    const userinfo = () => {
+    const userinfo = async () => {
         const userId = sessionStorage.getItem('userId');
         if (sessionStorage.getItem('auth-token') && userId) {
             return fetch(`http://localhost:5000/userdetails/${userId}`, {
@@ -104,7 +104,7 @@ const ContextProvider = (props) => {
         }
     };
 
-    const myorders = () => {
+    const myorders = async () => {
         const userId = sessionStorage.getItem('userId');
 
         return fetch(`http://localhost:5000/myorders/${userId}`, {
@@ -114,25 +114,25 @@ const ContextProvider = (props) => {
                 'Content-Type': 'application/json',
             },
         })
-        .then((response) => {
-            if (!response.ok) {
-                if (response.status === 404) {
-                    return []; 
+            .then((response) => {
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        return [];
+                    }
+                    throw new Error(`Error fetching orders: ${response.status} ${response.statusText}`);
                 }
-                throw new Error(`Error fetching orders: ${response.status} ${response.statusText}`);
-            }
-            return response.json();
-        })
-        .then((data) => {
-            if (data.success && Array.isArray(data.orders)) {
-                return data.orders; // Return the orders if the response is successful
-            } else {
-                throw new Error('Expected data to contain an orders array');
-            }
-        })
-        .catch(() => {
-            return []; // Return an empty array in case of error
-        });
+                return response.json();
+            })
+            .then((data) => {
+                if (data.success && Array.isArray(data.orders)) {
+                    return data.orders; // Return the orders if the response is successful
+                } else {
+                    throw new Error('Expected data to contain an orders array');
+                }
+            })
+            .catch(() => {
+                return []; // Return an empty array in case of error
+            });
     };
 
     const login = async (formData, navigate) => { // Accept formData as a parameter
@@ -145,14 +145,14 @@ const ContextProvider = (props) => {
                 },
                 body: JSON.stringify(formData), // Use the passed formData
             });
-            
+
             const responsedata = await response.json();
-            
+
             if (responsedata.success) {
-                setisLoggedIn(true); 
+                setisLoggedIn(true);
                 sessionStorage.setItem('auth-token', responsedata.token);
                 sessionStorage.setItem('userId', responsedata.userId);
-    
+
                 navigate('/');  // Redirect to the home page after login
             } else {
                 alert(responsedata.message);
@@ -161,10 +161,10 @@ const ContextProvider = (props) => {
             console.error("Error during login:", error);
         }
     };
-    
+
 
     //signup
-    const signup = async (formData , navigate) => {
+    const signup = async (formData, navigate) => {
         try {
             const response = await fetch('http://localhost:5000/signup', {
                 method: 'POST',
@@ -174,9 +174,9 @@ const ContextProvider = (props) => {
                 },
                 body: JSON.stringify(formData),
             });
-            
+
             const responsedata = await response.json();
-            
+
             if (responsedata.success) {
                 setisLoggedIn(true);
                 sessionStorage.setItem('auth-token', responsedata.token);
@@ -199,14 +199,14 @@ const ContextProvider = (props) => {
     //shiping info
     const handleShippingSubmit = (info) => {
         setShippingInfo(info); // Save shipping info in context
-       // navigate('/payment'); // Navigate to payment page after shipping info is submitted
+        // navigate('/payment'); // Navigate to payment page after shipping info is submitted
     };
 
     //handle paymentsubmit
     const handlePaymentSubmit = (navigate, setError, paymentMethod) => {
-    // setpm(paymentMethod); // Assuming setpm is a state updater for the payment method
+        // setpm(paymentMethod); // Assuming setpm is a state updater for the payment method
         console.log(shippingInfo);
-    
+
         // Check if payment method and shipping info are provided
         if (!paymentMethod) {
             setError('Please select a payment method to proceed.');
@@ -216,9 +216,9 @@ const ContextProvider = (props) => {
             setError('Shipping info is required.');
             return;
         }
-    
+
         setError(''); // Clear previous errors
-    
+
         // Create order data
         const orderData = {
             user: sessionStorage.getItem('userId'), // Assuming you have the user's ID
@@ -238,14 +238,14 @@ const ContextProvider = (props) => {
                 method: paymentMethod, // Use the correct variable for payment method
                 id: '123', // Assuming you'll set this when payment is confirmed
                 status: 'COD', // Initial status can be set as pending
-                paidAt: Date.now() 
+                paidAt: Date.now()
             },
             orderStatus: 'Processing', // Default status of the order
             totalPrice: getTotalCartAmount(), // Calculate the total price
             shippingPrice: 0, // Set shipping price if applicable
             dateOrdered: Date.now() // Automatically set the order creation date
         };
-    
+
         // Send order data to the server
         fetch('http://localhost:5000/confirmorder', {
             method: 'POST',
@@ -255,26 +255,127 @@ const ContextProvider = (props) => {
             },
             body: JSON.stringify(orderData),
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Order confirmed successfully!');
-                navigate('/ordersuccess');
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Order confirmed successfully!');
+                    navigate('/ordersuccess');
+                } else {
+                    console.log("Failed to confirm order", data.message || data); // Log the error message from server
+                }
+            })
+            .catch(error => {
+                console.error("Error while confirming the order:", error); // Log the error for debugging
+                alert('Error while confirming the order.');
+            });
+    };
+    // Fetch all products
+  const fetchInfo = async (setError,setLoading,setallproducts) => {
+    try {
+      const response = await fetch('http://localhost:5000/allproducts');
+      if (!response.ok) {
+        throw new Error("Failed to fetch products");
+      }
+      const data = await response.json();
+      setallproducts(data.products); // Assuming the response contains products in a 'products' field
+      setLoading(false);
+      
+    } catch (error) {
+      setError(error.message);
+      setLoading(false);
+    }
+  };
+
+    // Confirm product removal
+    const confirmDelete = async (productToDelete, setShowModal,setError,setLoading,setallproducts) => {
+        try {
+            await fetch(`http://localhost:5000/removeproduct`, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'auth-token': `${sessionStorage.getItem('auth-token')}`,
+                },
+                body: JSON.stringify({ id: productToDelete })
+            });
+            fetchInfo(setError,setLoading,setallproducts); // Refresh the product list
+            setShowModal(false); // Close the modal
+        } catch (error) {
+            console.error('Failed to remove product:', error);
+            setShowModal(false);
+        }
+    };
+
+    //fetch orders
+
+    const fetchOrders = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/allorders', {
+                method: 'GET',
+                headers: {
+                    'auth-token': `${sessionStorage.getItem('auth-token')}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    return data.orders; // Return the fetched orders
+                } else {
+                    throw new Error('Failed to fetch orders');
+                }
             } else {
-                console.log("Failed to confirm order", data.message || data); // Log the error message from server
+                throw new Error('Failed to fetch orders');
             }
-        })
-        .catch(error => {
-            console.error("Error while confirming the order:", error); // Log the error for debugging
-            alert('Error while confirming the order.');
-        });
+        } catch (error) {
+            throw new Error('Error fetching orders: ' + error.message);
+        }
+    };
+
+    ///fetch users
+    const fetchUsers = async () => {
+        try {
+            const res = await fetch('http://localhost:5000/users', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'auth-token': `${sessionStorage.getItem('auth-token')}`
+                }
+            });
+            const data = await res.json();
+            if (data.success) {
+                return data.users; // Return user data here
+            } else {
+                console.error('Error fetching users:', data.message);
+                return []; // Return an empty array on error
+            }
+        } catch (error) {
+            console.error('Error fetching users:', error);
+            return []; // Return an empty array on error
+        }
     };
     
 
 
     // context values to export .
-    const contextvalues = { allproducts,isLoggedIn,handlePaymentSubmit, handleShippingSubmit , cartItems,login,signup, handleLogout, userinfo, myorders, addToCart, removeFromCart, getTotalCartAmount, gettotalcartitems, getdefaultcart };
-    
+    const contextvalues = {
+        allproducts,
+        isLoggedIn,
+        fetchUsers,
+        fetchOrders,
+        confirmDelete,
+        handlePaymentSubmit,
+        handleShippingSubmit,
+        fetchInfo,
+        cartItems,
+        login, signup,
+        handleLogout,
+        userinfo, myorders,
+        addToCart, removeFromCart,
+        getTotalCartAmount, gettotalcartitems,
+        getdefaultcart
+    };
+
     return (
         <Context.Provider value={contextvalues}>
             {props.children}

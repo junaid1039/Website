@@ -6,9 +6,11 @@ import UserLayout from './components/userLayout/UserLayout';
 import Admin from './Dashboard/admin/Admin';
 import PrivateRoute from './context API/PrivateRoute'; // Import your PrivateRoute
 import Unauthorized from './components/unauthorized/Unauthorized.jsx';
+import ContextProvider from './context API/Contextapi.jsx';
 
 export const App = () => {
   return (
+    <ContextProvider>
     <BrowserRouter>
       <Routes>
         {/* User layout for all user-related routes */}
@@ -24,6 +26,7 @@ export const App = () => {
         <Route path="/unauthorized" element={<Unauthorized />} />
       </Routes>
     </BrowserRouter>
+    </ContextProvider>
   );
 };
 

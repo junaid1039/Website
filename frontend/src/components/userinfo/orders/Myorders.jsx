@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import './orders.css';
 import { Context } from '../../../context API/Contextapi';
+import Clientorderdetails from '../../clientorderdetails/Clientorderdetails';
 
 const Myorders = () => {
   const { myorders } = useContext(Context);
@@ -8,6 +9,8 @@ const Myorders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -19,7 +22,6 @@ const Myorders = () => {
         }
         setOrders(data);
       } catch (error) {
-        // Set the error state without logging to console
         setError(error.message);
       } finally {
         setLoading(false);
@@ -28,6 +30,16 @@ const Myorders = () => {
 
     fetchOrders();
   }, [myorders]);
+
+  const handleViewOrder = (orderId) => {
+    setSelectedOrderId(orderId);
+    setShowDetails(true);
+  };
+
+  const handleCloseDetails = () => {
+    setShowDetails(false);
+    setSelectedOrderId(null);
+  };
 
   if (loading) {
     return <div>Loading orders...</div>;
@@ -54,17 +66,26 @@ const Myorders = () => {
         {orders.map((order) =>
           order.orderItems.map((item) => (
             <div key={item._id} className="order">
-              <div>{item.name}</div> {/* Display product name */}
-              <div>{order.orderStatus}</div> {/* Order Status */}
-              <div>{item.quantity}</div> {/* Quantity */}
-              <div>${(item.price * item.quantity).toFixed(0)}/{order.paymentStatus}</div> {/* Price */}
+              <div>{item.name}</div>
+              <div>{order.orderStatus}</div>
+              <div>{item.quantity}</div>
+             <div>${(item.price * item.quantity).toFixed(0)}/{order.paymentInfo?.status}</div>
               <div>
-                <button>View</button>
+                <button onClick={() => handleViewOrder(order._id)}>View</button>
               </div>
             </div>
           ))
         )}
       </div>
+
+      {showDetails && (
+        <div className="order-details-container">
+        <Clientorderdetails 
+          onClose={handleCloseDetails} 
+          orderId={selectedOrderId} 
+        />
+        </div>
+      )}
     </div>
   );
 };

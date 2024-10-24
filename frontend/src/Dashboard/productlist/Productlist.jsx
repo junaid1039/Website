@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import './productlist.css';
 import { RiDeleteBin5Line, RiEdit2Fill } from "react-icons/ri";
 import { useNavigate } from 'react-router-dom';
+import { Context } from '../../context API/Contextapi';
 
 const Productlist = () => {
+  const { confirmDelete, fetchInfo } = useContext(Context);
   const [allproducts, setallproducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,51 +14,20 @@ const Productlist = () => {
   
   const navigate = useNavigate();
 
-  // Fetch all products
-  const fetchInfo = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/allproducts');
-      if (!response.ok) {
-        throw new Error("Failed to fetch products");
-      }
-      const data = await response.json();
-      setallproducts(data.products); // Assuming the response contains products in a 'products' field
-      setLoading(false);
-      
-    } catch (error) {
-      setError(error.message);
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchInfo();
-  }, []);
+    fetchInfo(setError, setLoading, setallproducts);
+  }, [fetchInfo]);
 
   // Show confirmation modal
   const handleDeleteClick = (id) => {
     setProductToDelete(id);
+    console.log("this is product for delete", productToDelete);
     setShowModal(true);
   };
 
   // Confirm product removal
-  const confirmDelete = async () => {
-    try {
-      await fetch(`http://localhost:5000/removeproduct`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          'auth-token': `${sessionStorage.getItem('auth-token')}`,
-        },
-        body: JSON.stringify({ id: productToDelete })
-      });
-      fetchInfo(); // Refresh the product list
-      setShowModal(false); // Close the modal
-    } catch (error) {
-      console.error('Failed to remove product:', error);
-      setShowModal(false);
-    }
+  const handleConfirmDelete = () => {
+    confirmDelete(productToDelete, setShowModal,setError,setLoading,setallproducts);
   };
 
   // Navigate to Edit Product page
@@ -114,7 +85,7 @@ const Productlist = () => {
           <div className="modal">
             <p>Are you sure you want to delete this product?</p>
             <div className="confirm-buttons">
-              <button onClick={confirmDelete} className="confirm-btn">Yes</button>
+              <button onClick={handleConfirmDelete} className="confirm-btn">Yes</button>
               <button onClick={() => setShowModal(false)} className="cancel-btn">No</button>
             </div>
           </div>

@@ -17,6 +17,7 @@
     flex: 1; /* Equal space for each heading */
     text-align: center;
     font-size: 1em; /* Center align text */
+    color: white;
   }
   
   .allorders {

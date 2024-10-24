@@ -3,13 +3,18 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+    background-color: white; /* Dark background for contrast */
+    padding: 1em 0; /* Padding for better spacing */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    margin-bottom: 1em;
 }
 
 .admin-navbar-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 95%;
+    width: 97%;
+    
 }
 
 .admin-navbar-left {
@@ -19,9 +24,15 @@
 }
 
 .admin-navbar-left h1 {
-    font-size: 1.5em;
+    font-size: 1.8em; /* Increased font size */
     display: flex;
-    gap: 0.4em;
+    align-items: center;
+    color: #444; /* Light text color */
+    margin: 0; /* Remove default margin */
+}
+
+.navbar-icon {
+    font-size: 1.5em; /* Adjust icon size */
 }
 
 .admin-navbar-right {
@@ -32,12 +43,18 @@
 
 .admin-logout-button {
     height: 2.5em;
-    width: 6em;
-    background-color: #444;
+    width: 8em; /* Increased button width */
+    background-color: #444; /* Red color for logout button */
     border-radius: 0.5em;
     display: flex;
     justify-content: center;
     align-items: center;
     color: white;
     gap: 0.5em;
+    cursor: pointer; /* Cursor pointer to indicate it's clickable */
+    transition: background-color 0.3s ease; /* Transition effect */
+}
+
+.admin-logout-button:hover {
+    background-color: #C0392B; /* Darker red on hover */
 }
