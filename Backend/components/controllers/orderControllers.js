@@ -76,19 +76,19 @@ const getMyOrders = async (req, res) => {
         }
         
         // Create a filtered array with only the required fields: product name, price, quantity, status
-        const filteredOrders = orders.map(order => ({
-            orderId: order._id, // Include Order ID
-            orderStatus: order.orderStatus,
-            paymentStatus: order.paymentInfo.status, // Include payment status
-            orderItems: order.orderItems.map(item => ({
-                name: item.name,
-                price: item.price,
-                quantity: item.quantity
-            }))
-        }));        
+       // const filteredOrders = orders.map(order => ({
+       //     orderId: order._id, // Include Order ID
+       //     orderStatus: order.orderStatus,
+       //     paymentStatus: order.paymentInfo.status, // Include payment status
+       //     orderItems: order.orderItems.map(item => ({
+       //         name: item.name,
+       //         price: item.price,
+       //         quantity: item.quantity
+       //     }))
+       // }));        
         
         // Respond with the filtered order details
-        res.status(200).json({ success: true, orders: filteredOrders });
+        res.status(200).json({ success: true, orders});
     } catch (error) {
         // Handle any errors that occur during the database operation
         res.status(500).json({ success: false, message: "Failed to get order details", error: error.message });
@@ -131,7 +131,7 @@ const deleteOrder = async (req, res) => {
             return res.status(404).json({ message: 'Order not found' });
         }
         
-        res.status(200).json({ message: 'Order deleted successfully' });
+        res.status(200).json({ success: true, message: 'Order deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }

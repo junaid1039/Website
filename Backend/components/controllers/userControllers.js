@@ -1,6 +1,8 @@
 const Users = require('../models/usermodel');
 const jwt = require('jsonwebtoken');
 
+
+
 // Sign up a new user
 const signup = async (req, res) => {
     try {
@@ -25,11 +27,11 @@ const signup = async (req, res) => {
             cartData: cart,
         });
 
-        // Generate JWT based on user ID
+        // Generate JWT without expiration
         const userId = user._id;
-        const token = jwt.sign({ id: userId }, process.env.SECRET_KEY, { expiresIn: process.env.JWT_EXPIRE,});
+        const token = jwt.sign({ id: userId }, process.env.SECRET_KEY); // Removed expiresIn
 
-        res.json({ success: [true, "User added"], token });
+        res.json({ success: true, message: "User added", token });
 
     } catch (err) {
         res.status(500).json({ success: false, message: 'Server Error', err });
@@ -56,10 +58,10 @@ const login = async (req, res) => {
         }
 
         const userId = user._id;
-        const token = jwt.sign({ id: userId, role: user.role }, process.env.SECRET_KEY, { expiresIn: process.env.JWT_EXPIRE });
+        const token = jwt.sign({ id: userId, role: user.role }, process.env.SECRET_KEY); // Removed expiresIn
 
-        res.json({ success: true, token, userId});
-        
+        res.json({ success: true, token, userId });
+
     } catch (err) {
         res.status(500).json({ success: false, message: 'Server error', err });
     }
