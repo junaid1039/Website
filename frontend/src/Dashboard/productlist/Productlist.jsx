@@ -3,40 +3,48 @@ import './productlist.css';
 import { RiDeleteBin5Line, RiEdit2Fill } from "react-icons/ri";
 import { useNavigate } from 'react-router-dom';
 import { Context } from '../../context API/Contextapi';
+import Adminloader from '../adminloader/Adminloader';
 
 const Productlist = () => {
-  const { confirmDelete, fetchInfo } = useContext(Context);
-  const [allproducts, setallproducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { confirmDelete, allproducts } = useContext(Context);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchInfo(setError, setLoading, setallproducts);
-  }, [fetchInfo]);
+  // Optional: Uncomment if you need to fetch product data on mount
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     setLoading(true);
+  //     const data = await fetchInfo(); // Assuming fetchInfo() is available
+  //     if (data.success) {
+  //       setLoading(false);
+  //     } else {
+  //       setError(data.error); // Set the error if fetch failed
+  //       setLoading(false);
+  //     }
+  //   };
+  //
+  //   getData();
+  // }, []);
 
-  // Show confirmation modal
   const handleDeleteClick = (id) => {
     setProductToDelete(id);
-    console.log("this is product for delete", productToDelete);
     setShowModal(true);
   };
 
-  // Confirm product removal
   const handleConfirmDelete = () => {
-    confirmDelete(productToDelete, setShowModal,setError,setLoading,setallproducts);
+    confirmDelete(productToDelete, setShowModal);
   };
 
-  // Navigate to Edit Product page
   const handleEditClick = (id) => {
     navigate(`editproduct/${id}`);
   };
 
   if (loading) {
-    return <div>Loading products...</div>;
+    return <Adminloader />;
   }
 
   if (error) {
@@ -62,7 +70,6 @@ const Productlist = () => {
           allproducts.map((product) => (
             <React.Fragment key={product.id}>
               <div className="listproduct-format-main listproduct-format">
-                {/* Render the first image from the images array */}
                 <img src={product.images[0]} alt={product.name} className="listproduct-product-img" />
                 <p>{product.name}</p>
                 <p>${product.oldprice}</p>

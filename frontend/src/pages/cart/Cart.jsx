@@ -42,12 +42,14 @@ export const Cart = () => {
                                 </div>
                             ) : (
                                 allproducts.map((product) => {
+                                    const mainImage = product.images &&  product.images[0];
+                                 
                                     // Safely check if the product is in the cart and its quantity is greater than 0
                                     if (cartItems[product.id] && cartItems[product.id] > 0) {
                                         return (
                                             <div className="main-format" key={product.id}>
                                                 <div className="cartitem-format">
-                                                    <img className='mi' src={product.image} alt='Image' />
+                                                    <img className='mi' src={mainImage} alt='Image' />
                                                     <div className="dside">
                                                         <div className='name'>
                                                             <span>{product.name}</span>

@@ -1,6 +1,8 @@
 import React, { createContext, useState, useEffect } from 'react';
-import allproducts from '../assets/allproducts/allproducts';
+//import allproducts from '../assets/allproducts/allproducts';
 export const Context = createContext(null);
+
+
 
 const getdefaultcart = () => {
     let cart = {};
@@ -11,9 +13,16 @@ const getdefaultcart = () => {
 };
 
 const ContextProvider = (props) => {
+
+   const baseurl = meta.env.REACT_APP_BASE_URL;
+    
+    //const port = process.env.PORT;
+
+
     const [cartItems, setcartItems] = useState(getdefaultcart());
     const [isLoggedIn, setisLoggedIn] = useState(false);
     const [shippingInfo, setShippingInfo] = useState(null);
+    const [allproducts, setAllProducts] = useState([]);
     //const [pm, setpm] = useState(null);
 
     const gettotalcartitems = () => {
@@ -36,7 +45,7 @@ const ContextProvider = (props) => {
 
     useEffect(() => {
         if (sessionStorage.getItem('auth-token')) {
-            fetch('http://localhost:5000/getcart', {
+            fetch(`${baseurl}/getcart`, {
                 method: 'POST',
                 headers: {
                     'auth-token': `${sessionStorage.getItem('auth-token')}`,
@@ -51,7 +60,7 @@ const ContextProvider = (props) => {
     const addToCart = (itemid) => {
         setcartItems((prev) => ({ ...prev, [itemid]: prev[itemid] + 1 }));
         if (localStorage.getItem('auth-token')) {
-            fetch('http://localhost:5000/addtocart', {
+            fetch(`${baseurl}/addtocart`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/form-data',
@@ -66,7 +75,7 @@ const ContextProvider = (props) => {
     const removeFromCart = (itemId) => {
         setcartItems((prev) => ({ ...prev, [itemId]: Math.max(prev[itemId] - 1, 0) })); // Ensure quantity doesn't go below 0
         if (localStorage.getItem('auth-token')) {
-            fetch('http://localhost:5000/removefromcart', {
+            fetch(`${baseurl}/removefromcart`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/form-data',
@@ -81,7 +90,7 @@ const ContextProvider = (props) => {
     const userinfo = async () => {
         const userId = sessionStorage.getItem('userId');
         if (sessionStorage.getItem('auth-token') && userId) {
-            return fetch(`http://localhost:5000/userdetails/${userId}`, {
+            return fetch(`${baseurl}/userdetails/${userId}`, {
                 method: 'GET',
                 headers: {
                     'auth-token': `${sessionStorage.getItem('auth-token')}`,
@@ -93,7 +102,7 @@ const ContextProvider = (props) => {
                     if (data.success) {
                         return data.user; // Return user data if the response is successful
                     } else {
-                        return null; // Return null if user data is not retrieved
+                        return null; 
                     }
                 })
                 .catch(() => {
@@ -107,7 +116,7 @@ const ContextProvider = (props) => {
     const myorders = async () => {
         const userId = sessionStorage.getItem('userId');
 
-        return fetch(`http://localhost:5000/myorders/${userId}`, {
+        return fetch(`${baseurl}/myorders/${userId}`, {
             method: 'GET',
             headers: {
                 'auth-token': sessionStorage.getItem('auth-token'),
@@ -137,7 +146,7 @@ const ContextProvider = (props) => {
 
     const login = async (formData, navigate) => { // Accept formData as a parameter
         try {
-            const response = await fetch('http://localhost:5000/login', {
+            const response = await fetch(`${baseurl}/login`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -166,7 +175,7 @@ const ContextProvider = (props) => {
     //signup
     const signup = async (formData, navigate) => {
         try {
-            const response = await fetch('http://localhost:5000/signup', {
+            const response = await fetch(`${baseurl}/signup`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -201,7 +210,6 @@ const ContextProvider = (props) => {
         setShippingInfo(info); // Save shipping info in context
         // navigate('/payment'); // Navigate to payment page after shipping info is submitted
     };
-
     //handle paymentsubmit
     const handlePaymentSubmit = (navigate, setError, paymentMethod) => {
         // setpm(paymentMethod); // Assuming setpm is a state updater for the payment method
@@ -216,7 +224,6 @@ const ContextProvider = (props) => {
             setError('Shipping info is required.');
             return;
         }
-
         setError(''); // Clear previous errors
 
         // Create order data
@@ -247,7 +254,7 @@ const ContextProvider = (props) => {
         };
 
         // Send order data to the server
-        fetch('http://localhost:5000/confirmorder', {
+        fetch(`${baseurl}/confirmorder`, {
             method: 'POST',
             headers: {
                 'auth-token': sessionStorage.getItem('auth-token'),
@@ -269,27 +276,32 @@ const ContextProvider = (props) => {
                 alert('Error while confirming the order.');
             });
     };
+
+    useEffect(() => {
+        fetchInfo();
+    }, []);
     // Fetch all products
-  const fetchInfo = async (setError,setLoading,setallproducts) => {
-    try {
-      const response = await fetch('http://localhost:5000/allproducts');
-      if (!response.ok) {
-        throw new Error("Failed to fetch products");
-      }
-      const data = await response.json();
-      setallproducts(data.products); // Assuming the response contains products in a 'products' field
-      setLoading(false);
-      
-    } catch (error) {
-      setError(error.message);
-      setLoading(false);
-    }
-  };
+    const fetchInfo = async () => {
+        try {
+          const response = await fetch(`${baseurl}/allproducts`);
+          if (!response.ok) {
+            throw new Error("Failed to fetch products");
+          }
+          const data = await response.json();
+          setAllProducts(data.products); // Set products state
+          return { success: true, data }; // Explicitly return success
+        } catch (error) {
+          setAllProducts([]); // Clear products if fetch fails
+          return { success: false, error: error.message }; // Return success false with error
+        }
+      };      
+
+
 
     // Confirm product removal
-    const confirmDelete = async (productToDelete, setShowModal,setError,setLoading,setallproducts) => {
+    const confirmDelete = async (productToDelete, setShowModal) => {
         try {
-            await fetch(`http://localhost:5000/removeproduct`, {
+            await fetch(`${baseurl}/removeproduct`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -298,7 +310,7 @@ const ContextProvider = (props) => {
                 },
                 body: JSON.stringify({ id: productToDelete })
             });
-            fetchInfo(setError,setLoading,setallproducts); // Refresh the product list
+            fetchInfo(); // Refresh the product list
             setShowModal(false); // Close the modal
         } catch (error) {
             console.error('Failed to remove product:', error);
@@ -310,7 +322,7 @@ const ContextProvider = (props) => {
 
     const fetchOrders = async () => {
         try {
-            const response = await fetch('http://localhost:5000/allorders', {
+            const response = await fetch(`${baseurl}/allorders`, {
                 method: 'GET',
                 headers: {
                     'auth-token': `${sessionStorage.getItem('auth-token')}`,
@@ -335,7 +347,7 @@ const ContextProvider = (props) => {
     ///fetch users
     const fetchUsers = async () => {
         try {
-            const res = await fetch('http://localhost:5000/users', {
+            const res = await fetch(`${baseurl}/users`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -354,7 +366,7 @@ const ContextProvider = (props) => {
             return []; // Return an empty array on error
         }
     };
-    
+
 
 
     // context values to export .
