@@ -19,7 +19,7 @@ import Adminloader from '../adminloader/Adminloader';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const AdminDashboard = () => {
-    const { fetchOrders, fetchInfo, fetchUsers,allproducts } = useContext(Context);
+    const { fetchOrders, fetchInfo, fetchUsers,allproducts} = useContext(Context);
     const navigate = useNavigate();
     const [stats, setStats] = useState({
         totalProducts: 0,
@@ -36,6 +36,7 @@ const AdminDashboard = () => {
         const fetchDashboardData = async () => {
             setLoading(true);
             try {
+               
                 await fetchDashboardStats();
                 await fetchOrdersChart();
             } catch (err) {
@@ -49,15 +50,15 @@ const AdminDashboard = () => {
 
     const fetchDashboardStats = async () => {
         try {
-            const users = await fetchUsers();
-            const products = allproducts;
-            const orders = await fetchOrders();
             
+            const users = await fetchUsers();
+            const products = await fetchInfo();
+            const orders = await fetchOrders();
 
             const totalSales = orders.reduce((acc, order) => acc + order.totalPrice, 0);
 
             setStats({
-                totalProducts: products.length,
+                totalProducts: products.data.products.length,
                 totalUsers: users.length,
                 totalOrders: orders.length,
                 totalSales: totalSales,
