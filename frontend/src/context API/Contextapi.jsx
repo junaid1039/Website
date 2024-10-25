@@ -14,7 +14,7 @@ const getdefaultcart = () => {
 
 const ContextProvider = (props) => {
 
-   const baseurl = meta.env.REACT_APP_BASE_URL;
+   const baseurl = process.env.REACT_APP_BASE_URL;
     
     //const port = process.env.PORT;
 
