@@ -16,9 +16,6 @@ const ContextProvider = (props) => {
 
    //const baseurl = process.env.REACT_APP_BASE_URL;
    const baseurl = "http://localhost:5000";
-    
-    //const port = process.env.PORT;
-
 
     const [cartItems, setcartItems] = useState(getdefaultcart());
     const [isLoggedIn, setisLoggedIn] = useState(false);
@@ -214,7 +211,6 @@ const ContextProvider = (props) => {
     //handle paymentsubmit
     const handlePaymentSubmit = (navigate, setError, paymentMethod) => {
         // setpm(paymentMethod); // Assuming setpm is a state updater for the payment method
-        console.log(shippingInfo);
 
         // Check if payment method and shipping info are provided
         if (!paymentMethod) {
@@ -230,18 +226,21 @@ const ContextProvider = (props) => {
         // Create order data
         const orderData = {
             user: sessionStorage.getItem('userId'), // Assuming you have the user's ID
+
             orderItems: Object.keys(cartItems).map(itemId => {
                 const quantity = cartItems[itemId];
                 const productInfo = allproducts.find(product => product.id === Number(itemId));
                 return {
-                    product: productInfo ? productInfo._id : null, // Assuming `_id` is the product ID in the database
-                    name: productInfo ? productInfo.name : '', // Ensure product details are included
+                    product: productInfo ? productInfo._id : null, 
+                    name: productInfo ? productInfo.name : '', 
                     quantity,
                     price: productInfo ? productInfo.newprice : 0,
-                    image: productInfo ? productInfo.image : ''
+                    image: productInfo ? productInfo.images[0] : ''
                 };
-            }).filter(item => item.product !== null && item.quantity > 0), // Exclude products that are not found or have zero quantity
-            shippingInfo: shippingInfo, // Ensure you have the shipping information ready
+            }).filter(item => item.product !== null && item.quantity > 0), 
+
+            shippingInfo: shippingInfo, 
+           
             paymentInfo: {
                 method: paymentMethod, // Use the correct variable for payment method
                 id: '123', // Assuming you'll set this when payment is confirmed
@@ -266,7 +265,7 @@ const ContextProvider = (props) => {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Order confirmed successfully!');
+                   // alert('Order confirmed successfully!');
                     navigate('/ordersuccess');
                 } else {
                     console.log("Failed to confirm order", data.message || data); // Log the error message from server

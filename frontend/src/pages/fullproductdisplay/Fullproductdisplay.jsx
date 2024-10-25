@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import './fullproductdisplay.css';
 import Productdisplay from '../product-display/Productdisplay';
-//import Description from '../../components/description/Description';
 import Relatedproducts from '../../components/relatedproducts/Relatedproducts';
 import { Context } from '../../context API/Contextapi';
 import { useParams } from 'react-router-dom';

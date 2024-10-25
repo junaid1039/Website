@@ -33,10 +33,14 @@ const removeFromCart = async (req, res) => {
 const getCart = async (req, res) => {
     try {
         const userdata = await Users.findOne({ _id: req.user.id });
+        if (!userdata) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
         res.json(userdata.cartData);
     } catch (error) {
         res.status(500).json({ success: false, message: 'Failed to fetch cart', error });
     }
 };
+
 
 module.exports = { addToCart, removeFromCart, getCart };
