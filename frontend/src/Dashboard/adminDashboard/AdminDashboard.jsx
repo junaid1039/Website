@@ -14,14 +14,13 @@ import {
     Tooltip,
     Legend
 } from 'chart.js';
+import Adminloader from '../adminloader/Adminloader';
 
-// Register the components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const AdminDashboard = () => {
-    const { fetchOrders, fetchInfo, fetchUsers } = useContext(Context);
+    const { fetchOrders, fetchInfo, fetchUsers,allproducts } = useContext(Context);
     const navigate = useNavigate();
-
     const [stats, setStats] = useState({
         totalProducts: 0,
         totalUsers: 0,
@@ -35,49 +34,38 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         const fetchDashboardData = async () => {
+            setLoading(true);
             try {
                 await fetchDashboardStats();
                 await fetchOrdersChart();
             } catch (err) {
-                setError(err.message);
+                setError(err.message || 'An error occurred');
             } finally {
                 setLoading(false);
             }
         };
-
         fetchDashboardData();
-    }, [fetchInfo, fetchOrders, fetchUsers]);
+    }, []);
 
     const fetchDashboardStats = async () => {
-        let allProducts = [];
-        const users = await fetchUsers();
+        try {
+            const users = await fetchUsers();
+            const products = allproducts;
+            const orders = await fetchOrders();
+            
 
-        await new Promise((resolve, reject) => {
-            fetchInfo(
-                (err) => {
-                    console.error('Error fetching products', err);
-                    reject(err);
-                },
-                (loading) => console.log('Loading products', loading),
-                (products) => {
-                    allProducts = products;
-                    resolve(products);
-                }
-            );
-        });
+            const totalSales = orders.reduce((acc, order) => acc + order.totalPrice, 0);
 
-        const orders = await fetchOrders();
-        const totalOrders = orders.length;
-        const totalSales = orders.reduce((acc, order) => acc + order.totalPrice, 0);
-
-        setLatestOrders(orders.slice(0, 5)); 
-
-        setStats({
-            totalProducts: allProducts.length,
-            totalUsers: users.length,
-            totalOrders: totalOrders,
-            totalSales: totalSales,
-        });
+            setStats({
+                totalProducts: products.length,
+                totalUsers: users.length,
+                totalOrders: orders.length,
+                totalSales: totalSales,
+            });
+            setLatestOrders(orders.slice(0, 5));
+        } catch (err) {
+            throw new Error('Failed to load dashboard stats');
+        }
     };
 
     const fetchOrdersChart = async () => {
@@ -88,15 +76,14 @@ const AdminDashboard = () => {
 
     const formatOrderChartData = (orders) => {
         if (!Array.isArray(orders) || orders.length === 0) {
-            console.error("No orders found or invalid data format.");
-            return { labels: [], datasets: [] }; 
+            return { labels: [], datasets: [] };
         }
 
         const orderCounts = Array(30).fill(0);
         const labels = Array.from({ length: 30 }, (_, i) => {
             const date = new Date();
             date.setDate(date.getDate() - i);
-            return date.toISOString().split('T')[0]; 
+            return date.toISOString().split('T')[0];
         }).reverse();
 
         orders.forEach(order => {
@@ -119,13 +106,10 @@ const AdminDashboard = () => {
         };
     };
 
-    const handleNavigateToProducts = () => navigate('/admin/productlist'); 
-    const handleNavigateToUsers = () => navigate('/admin/users'); 
-    const handleNavigateToOrders = () => navigate('/admin/orders');
-    const handleNavigateToSales = () => navigate('/admin/sales'); // Uncomment this
+    const handleNavigate = (path) => () => navigate(path);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div><Adminloader /></div>;
     }
 
     if (error) {
@@ -138,21 +122,21 @@ const AdminDashboard = () => {
                 <h2>Admin Dashboard</h2>
             </div>
             <div className="dashboard-stats">
-                <div className="stats-box" onClick={handleNavigateToProducts}>
+                <div className="stats-box" onClick={handleNavigate('/admin/productlist')}>
                     <FaBox className="stat-icon" />
                     <div>
                         <p>Total Products</p>
                         <h3>{stats.totalProducts}</h3>
                     </div>
                 </div>
-                <div className="stats-box" onClick={handleNavigateToUsers}>
+                <div className="stats-box" onClick={handleNavigate('/admin/users')}>
                     <FaUsers className="stat-icon" />
                     <div>
                         <p>Total Users</p>
                         <h3>{stats.totalUsers}</h3>
                     </div>
                 </div>
-                <div className="stats-box" onClick={handleNavigateToOrders}>
+                <div className="stats-box" onClick={handleNavigate('/admin/orders')}>
                     <FaShoppingCart className="stat-icon" />
                     <div>
                         <p>Total Orders</p>

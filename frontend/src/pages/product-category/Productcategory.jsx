@@ -1,22 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './productcategory.css';
-//import { RiArrowDropDownLine } from "react-icons/ri";
 import Pitem from '../../components/p-items/Pitem';
-//import bags from '../../assets/bags/bags';
-import { useContext } from 'react';
-import { Context } from '../../context API/Contextapi';
-
-
+import {Context} from '../../context API/Contextapi'
 
 const Productcategory = (props) => {
-
     const { allproducts } = useContext(Context);
+
+   //useEffect(() => {
+   //    // Fetch products only once when the component mounts
+   //    fetchproducts();
+   //}, []); // Dependency array to prevent re-fetching on every render
 
     const [sortOrder, setSortOrder] = useState(''); // State for sorting (empty by default)
 
     // Filter bags based on selected category
     const filteredBags = allproducts.filter(item => item.category === props.category);
-
     // Get the count of filtered items
     const quantity = filteredBags.length;
 
@@ -51,15 +49,22 @@ const Productcategory = (props) => {
                 </div>
             </div>
             <div className="shopcatagory-products">
-                {sortedBags.map((item, i) => (
-                    <Pitem key={i} id={item.id} image={item.image} name={item.name} newprice={item.newprice} oldprice={item.oldprice} />
+                {sortedBags.map((item) => (
+                    <Pitem 
+                        key={item.id} // Use item.id instead of index for better performance
+                        id={item.id} 
+                        image={item.images} 
+                        name={item.name} 
+                        newprice={item.newprice} 
+                        oldprice={item.oldprice} 
+                    />
                 ))}
             </div>
             <div className="loadmore">
                 Explore More
             </div>
         </div>
-    )
+    );
 };
 
 export default Productcategory;
