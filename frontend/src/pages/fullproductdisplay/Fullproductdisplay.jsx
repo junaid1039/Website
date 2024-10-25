@@ -27,7 +27,6 @@ const Fullproductdisplay = () => {
     return (
         <>
             <Productdisplay product={product} />
-            <Description />
             <Relatedproducts />
         </>
     );

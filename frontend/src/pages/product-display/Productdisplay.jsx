@@ -4,6 +4,7 @@ import './productdisplay.css';
 import { FaStar, FaStarHalfAlt } from 'react-icons/fa';
 import { Context } from '../../context API/Contextapi';
 import { useNavigate } from 'react-router-dom';
+import Description from '../../components/description/Description';
 
 const Productdisplay = ({ product }) => {
     const [mainImage, setMainImage] = useState(product.image);
@@ -24,6 +25,7 @@ const Productdisplay = ({ product }) => {
     };
 
     return (
+        <>
         <div className="product-display">
             <div className="productdisplay-left">
                 <div className="p-main-img">
@@ -81,6 +83,8 @@ const Productdisplay = ({ product }) => {
                 <p className="pd-right-category"><span>Tags :</span> Latest</p>
             </div>
         </div>
+        <Description description={product.description} />
+        </>
     );
 };
 
