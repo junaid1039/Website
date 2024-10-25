@@ -14,6 +14,9 @@ const getdefaultcart = () => {
 
 const ContextProvider = (props) => {
 
+   const baseurl = process.env.REACT_APP_BASE_URL;
+    
+    //const port = process.env.PORT;
 
 
     const [cartItems, setcartItems] = useState(getdefaultcart());
@@ -42,7 +45,7 @@ const ContextProvider = (props) => {
 
     useEffect(() => {
         if (sessionStorage.getItem('auth-token')) {
-            fetch(`${window.location.origin}/getcart`, {
+            fetch(`${baseurl}/getcart`, {
                 method: 'POST',
                 headers: {
                     'auth-token': `${sessionStorage.getItem('auth-token')}`,
@@ -57,7 +60,7 @@ const ContextProvider = (props) => {
     const addToCart = (itemid) => {
         setcartItems((prev) => ({ ...prev, [itemid]: prev[itemid] + 1 }));
         if (localStorage.getItem('auth-token')) {
-            fetch(`${window.location.origin}/addtocart`, {
+            fetch(`${baseurl}/addtocart`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/form-data',
@@ -72,7 +75,7 @@ const ContextProvider = (props) => {
     const removeFromCart = (itemId) => {
         setcartItems((prev) => ({ ...prev, [itemId]: Math.max(prev[itemId] - 1, 0) })); // Ensure quantity doesn't go below 0
         if (localStorage.getItem('auth-token')) {
-            fetch(`${window.location.origin}/removefromcart`, {
+            fetch(`${baseurl}/removefromcart`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/form-data',
@@ -87,7 +90,7 @@ const ContextProvider = (props) => {
     const userinfo = async () => {
         const userId = sessionStorage.getItem('userId');
         if (sessionStorage.getItem('auth-token') && userId) {
-            return fetch(`${window.location.origin}/userdetails/${userId}`, {
+            return fetch(`${baseurl}/userdetails/${userId}`, {
                 method: 'GET',
                 headers: {
                     'auth-token': `${sessionStorage.getItem('auth-token')}`,
@@ -113,7 +116,7 @@ const ContextProvider = (props) => {
     const myorders = async () => {
         const userId = sessionStorage.getItem('userId');
 
-        return fetch(`${window.location.origin}/myorders/${userId}`, {
+        return fetch(`${baseurl}/myorders/${userId}`, {
             method: 'GET',
             headers: {
                 'auth-token': sessionStorage.getItem('auth-token'),
@@ -143,7 +146,7 @@ const ContextProvider = (props) => {
 
     const login = async (formData, navigate) => { // Accept formData as a parameter
         try {
-            const response = await fetch(`${window.location.origin}/login`, {
+            const response = await fetch(`${baseurl}/login`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -172,7 +175,7 @@ const ContextProvider = (props) => {
     //signup
     const signup = async (formData, navigate) => {
         try {
-            const response = await fetch(`${window.location.origin}/signup`, {
+            const response = await fetch(`${baseurl}/signup`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -251,7 +254,7 @@ const ContextProvider = (props) => {
         };
 
         // Send order data to the server
-        fetch(`${window.location.origin}/confirmorder`, {
+        fetch(`${baseurl}/confirmorder`, {
             method: 'POST',
             headers: {
                 'auth-token': sessionStorage.getItem('auth-token'),
@@ -280,7 +283,7 @@ const ContextProvider = (props) => {
     // Fetch all products
     const fetchInfo = async () => {
         try {
-          const response = await fetch(`${window.location.origin}/allproducts`);
+          const response = await fetch(`${baseurl}/allproducts`);
           if (!response.ok) {
             throw new Error("Failed to fetch products");
           }
@@ -298,7 +301,7 @@ const ContextProvider = (props) => {
     // Confirm product removal
     const confirmDelete = async (productToDelete, setShowModal) => {
         try {
-            await fetch(`${window.location.origin}/removeproduct`, {
+            await fetch(`${baseurl}/removeproduct`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -319,7 +322,7 @@ const ContextProvider = (props) => {
 
     const fetchOrders = async () => {
         try {
-            const response = await fetch(`${window.location.origin}/allorders`, {
+            const response = await fetch(`${baseurl}/allorders`, {
                 method: 'GET',
                 headers: {
                     'auth-token': `${sessionStorage.getItem('auth-token')}`,
@@ -344,7 +347,7 @@ const ContextProvider = (props) => {
     ///fetch users
     const fetchUsers = async () => {
         try {
-            const res = await fetch(`${window.location.origin}/users`, {
+            const res = await fetch(`${baseurl}/users`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
