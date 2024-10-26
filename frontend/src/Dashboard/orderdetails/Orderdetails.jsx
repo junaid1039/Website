@@ -3,6 +3,9 @@ import './orderdetails.css';
 import { RxCross2 } from "react-icons/rx";
 
 const Orderdetails = ({ onClose, orderId, onStatusUpdate }) => {
+
+  const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
+  
   const [orderDetails, setOrderDetails] = useState(null); // State to hold order details
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
@@ -11,7 +14,7 @@ const Orderdetails = ({ onClose, orderId, onStatusUpdate }) => {
   // Function to update order status
   const updateOrderStatus = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/updateOrderStatus/${orderId}`, {
+      const response = await fetch(`${baseurl}/updateOrderStatus/${orderId}`, {
         method: 'PUT',
         headers: {
           'auth-token': `${sessionStorage.getItem('auth-token')}`,
@@ -37,7 +40,7 @@ const Orderdetails = ({ onClose, orderId, onStatusUpdate }) => {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/orderdetails/${orderId}`, {
+        const response = await fetch(`${baseurl}/orderdetails/${orderId}`, {
           method: 'GET',
           headers: {
             'auth-token': `${sessionStorage.getItem('auth-token')}`,

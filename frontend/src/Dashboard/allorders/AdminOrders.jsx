@@ -6,6 +6,8 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { Context } from '../../context API/Contextapi';
 
 const AdminOrders = () => {
+
+    const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
     const { fetchOrders } = useContext(Context);
     const [orders, setOrders] = useState([]);
     const [selectedOrderId, setSelectedOrderId] = useState(null);
@@ -49,7 +51,7 @@ const AdminOrders = () => {
         if (!orderToDelete) return;
         setDeleting(true);
         try {
-            const response = await fetch(`http://localhost:5000/delorder/${orderToDelete}`, {
+            const response = await fetch(`${baseurl}/delorder/${orderToDelete}`, {
                 method: 'DELETE',
                 headers: {
                     'auth-token': `${sessionStorage.getItem('auth-token')}`,

@@ -15,7 +15,8 @@ const getdefaultcart = () => {
 const ContextProvider = (props) => {
 
    //const baseurl = process.env.REACT_APP_BASE_URL;
-   const baseurl = "http://localhost:5000";
+   const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
+   
 
     const [cartItems, setcartItems] = useState(getdefaultcart());
     const [isLoggedIn, setisLoggedIn] = useState(false);

@@ -7,6 +7,9 @@ import { BiX } from "react-icons/bi";
 import { Context } from '../../context API/Contextapi';
 
 const AdminUsers = () => {
+
+    const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
+
     const { fetchUsers } = useContext(Context);
     const [users, setUsers] = useState([]);
     const [editingUserId, setEditingUserId] = useState(null);
@@ -38,7 +41,7 @@ const AdminUsers = () => {
     // Delete API
     const confirmDelete = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/deleteuser/${confirmDeleteId}`, {
+            const res = await fetch(`${baseurl}/deleteuser/${confirmDeleteId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -69,7 +72,7 @@ const AdminUsers = () => {
     // User info change API
     const handleSaveClick = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/updateuserdetails/${editingUserId}`, {
+            const res = await fetch(`${baseurl}/updateuserdetails/${editingUserId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
