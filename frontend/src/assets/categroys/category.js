@@ -1,5 +1,5 @@
 import bag from './bag.JPG';
-import Wshoes from './Wshoes.webp'
+import Wshoes from './Wshoes.jpg';
 import belts from './belts.jpg';
 import perfume from './perfume.webp';
 import Mshoes from './Mshoes.webp';
