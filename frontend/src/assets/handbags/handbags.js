@@ -1,8 +1,8 @@
 
-import b1 from './b1.jpg';
-import b2 from './b2.jpg'
-import b3 from './b3.jpg'
-import b4 from './b4.jpg'
+import b1 from './b1.JPG';
+import b2 from './b2.JPG';
+import b3 from './b3.JPG';
+import b4 from './b4.JPG';
 
 let handbags = [
     {
