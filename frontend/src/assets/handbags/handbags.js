@@ -1,5 +1,5 @@
 
-import b1 from './b1.JPG';
+import b1 from './b1.jpg';
 import b2 from './b2.JPG';
 import b3 from './b3.JPG';
 import b4 from './b4.JPG';
