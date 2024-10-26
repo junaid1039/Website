@@ -2,10 +2,10 @@ import bag from './bag.JPG';
 import Wshoes from './Wshoes.webp'
 import belts from './belts.jpg';
 import perfume from './perfume.webp';
-import wallet from './wallet.JPG';
 import Mshoes from './Mshoes.webp';
 import accessories from './accessories.avif';
 import Hsaddle from './Hsaddle.webp';
+import wallet from './wallet.JPG';
 
 let CtgryProducts = [
     {
