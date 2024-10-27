@@ -1,9 +1,9 @@
 import React from 'react'
 import Categorydetails from '../handsbags/Categorydetails';
-import hbagsBanner from '../../assets/hbagsBanner.png';
+import hbagsBanner from '../../assets/hbagsBanner.jpg';
 import handbags from '../../assets/handbags/handbags';
 import perfume from '../../assets/perfume/perfume';
-import perfumeBanner from '../../assets/perfumeBanner.png';
+import perfumeBanner from '../../assets/perfumeBanner.jpg';
 import './subcategory.css';
 
 
