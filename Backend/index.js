@@ -16,8 +16,8 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Adjust methods as needed
     credentials: true // Allow credentials (cookies, etc.), if needed
 }));
-app.use(express.json()); // Parse JSON bodies
 
+app.use(express.json()); // Parse JSON bodies
 // Using routes
 app.use('/', Routes);
 
