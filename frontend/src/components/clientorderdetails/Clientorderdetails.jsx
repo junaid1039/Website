@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import './clientorderdetails.css';
-import { RxCross2 } from "react-icons/rx";
-import { Context } from '../../context API/Contextapi'
+import { RxCross2 } from 'react-icons/rx';
+import { Context } from '../../context API/Contextapi';
 
 const Clientorderdetails = ({ onClose, orderId }) => {
     const { myorders } = useContext(Context);
@@ -9,12 +9,15 @@ const Clientorderdetails = ({ onClose, orderId }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // Memoize fetch logic to avoid repeated renders
     useEffect(() => {
-        // Fetch the specific order details by orderId
         const fetchOrderDetails = async () => {
+            setLoading(true);
+            setError(null);
+
             try {
-                const data = await myorders(); // Fetch all orders from context
-                const order = data.find((order) => order._id === orderId); // Find the specific order by ID
+                const data = await myorders();
+                const order = data.find((order) => order._id === orderId);
 
                 if (order) {
                     setOrderDetails(order);
@@ -22,7 +25,7 @@ const Clientorderdetails = ({ onClose, orderId }) => {
                     setError('Order not found');
                 }
             } catch (err) {
-                setError('Error fetching order details: ' + err.message);
+                setError(`Error fetching order details: ${err.message}`);
             } finally {
                 setLoading(false);
             }
@@ -31,44 +34,47 @@ const Clientorderdetails = ({ onClose, orderId }) => {
         fetchOrderDetails();
     }, [myorders, orderId]);
 
-    if (loading) {
-        return <p>Loading order details...</p>;
-    }
+    // Memoized date formatting to avoid unnecessary re-renders
+    const formattedDate = useMemo(() => {
+        return orderDetails ? new Date(orderDetails.dateOrdered).toLocaleString() : '';
+    }, [orderDetails]);
 
-    if (error) {
-        return <p className="client-error-message">{error}</p>;
-    }
+    // Render functions for loading, error, and main UI
+    const renderLoading = () => <p>Loading order details...</p>;
+    const renderError = () => <p className="client-error-message">{error}</p>;
 
-    if (!orderDetails) {
-        return <p>No order details available.</p>;
-    }
+    if (loading) return renderLoading();
+    if (error) return renderError();
+    if (!orderDetails) return <p>No order details available.</p>;
 
     const {
         _id,
-        dateOrdered,
         totalPrice,
         orderItems,
         shippingInfo,
         paymentInfo,
+        user,
+        orderStatus
     } = orderDetails;
 
     return (
         <div className="client-container">
             <RxCross2 className="client-close-btn" onClick={onClose} />
             <h2>Order Details</h2>
+            
             <div className="client-order-info">
                 <p><strong>Order ID:</strong> {_id}</p>
-                <p><strong>Order Date:</strong> {new Date(dateOrdered).toLocaleString()}</p>
+                <p><strong>Order Date:</strong> {formattedDate}</p>
                 <p><strong>Order Price:</strong> ${totalPrice?.toFixed(2)}</p>
-                <p><strong>Payment Method:</strong> {paymentInfo?.method}</p>
-                <p><strong>Payment Status:</strong> {paymentInfo?.status}</p>
-                <p><strong>Order Status:</strong> <span className="client-status">{orderDetails.orderStatus}</span></p>
+                <p><strong>Payment Method:</strong> {paymentInfo?.method || 'N/A'}</p>
+                <p><strong>Payment Status:</strong> {paymentInfo?.status || 'N/A'}</p>
+                <p><strong>Order Status:</strong> <span className="client-status">{orderStatus}</span></p>
             </div>
 
             <div className="client-order-details">
                 <h3>Order Items</h3>
-                {orderItems.map((item, index) => (
-                    <div key={index} className="client-o-details">
+                {orderItems?.map((item) => (
+                    <div key={item._id} className="client-o-details">
                         <p><strong>Title:</strong> {item.name}</p>
                         <p><strong>Quantity:</strong> {item.quantity}</p>
                         <p><strong>Price:</strong> ${item.price.toFixed(2)}</p>
@@ -80,7 +86,7 @@ const Clientorderdetails = ({ onClose, orderId }) => {
                 <h3>Shipping Info</h3>
                 {shippingInfo ? (
                     <>
-                        <p><strong>Name:</strong> {orderDetails.user?.name}</p>
+                        <p><strong>Name:</strong> {user?.name || 'N/A'}</p>
                         <p><strong>Address:</strong> {shippingInfo.address}</p>
                         <p><strong>City, State, Country:</strong> {`${shippingInfo.city}, ${shippingInfo.state}, ${shippingInfo.country}`}</p>
                         <p><strong>Postal Code:</strong> {shippingInfo.postcode}</p>

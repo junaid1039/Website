@@ -15,7 +15,7 @@ const ContextProvider = (props) => {
    const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
    
 
-    const [cartItems, setcartItems] = useState(getdefaultcart());
+    const [cartItems, setCartItems] = useState(getdefaultcart());
     const [isLoggedIn, setisLoggedIn] = useState(false);
     const [shippingInfo, setShippingInfo] = useState(null);
     const [allproducts, setAllProducts] = useState([]);
@@ -40,74 +40,130 @@ const ContextProvider = (props) => {
 
 
     useEffect(() => {
-        if (sessionStorage.getItem('auth-token')) {
-            fetch(`${baseurl}/getcart`, {
-                method: 'POST',
-                headers: {
-                    'auth-token': `${sessionStorage.getItem('auth-token')}`,
-                    'Content-Type': 'application/json'
+        const fetchCartItems = async () => {
+            const token = sessionStorage.getItem('auth-token');
+            if (token) {
+                try {
+                    const response = await fetch(`${baseurl}/getcart`, {
+                        method: 'POST',
+                        headers: {
+                            'auth-token': token,
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch cart items');
+                    }
+                    const data = await response.json();
+                    setCartItems(data);
+                } catch (error) {
+                    console.error("Error fetching cart items:", error);
+                    // Optionally set an error state here to inform the user
                 }
-            })
-                .then((response) => response.json())
-                .then((data) => setcartItems(data));
-        }
-    }, []);
+            }
+        };
+    
+        fetchCartItems();
+    }, [baseurl]);
+    
 
-    const addToCart = (itemid) => {
-        setcartItems((prev) => ({ ...prev, [itemid]: prev[itemid] + 1 }));
-        if (localStorage.getItem('auth-token')) {
-            fetch(`${baseurl}/addtocart`, {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/form-data',
-                    'auth-token': `${sessionStorage.getItem('auth-token')}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 'itemId': itemid }),
-            });
+    const addToCart = async (itemid) => {
+        setCartItems((prev) => ({ ...prev, [itemid]: (prev[itemid] || 0) + 1 })); // Ensure default is 0
+    
+        const token = sessionStorage.getItem('auth-token');
+        if (token) {
+            try {
+                const response = await fetch(`${baseurl}/addtocart`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'auth-token': token,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ itemId: itemid }),
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to add item to cart');
+                }
+    
+                const data = await response.json();
+                // Optionally handle the response here (e.g., show a success message or update UI)
+                console.log('Item added to cart:', data); // Logging for debugging
+            } catch (error) {
+                console.error('Error adding item to cart:', error);
+                // Optionally set an error state to inform the user
+            }
         }
     };
+    
 
-    const removeFromCart = (itemId) => {
-        setcartItems((prev) => ({ ...prev, [itemId]: Math.max(prev[itemId] - 1, 0) })); // Ensure quantity doesn't go below 0
-        if (localStorage.getItem('auth-token')) {
-            fetch(`${baseurl}/removefromcart`, {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/form-data',
-                    'auth-token': `${sessionStorage.getItem('auth-token')}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 'itemId': itemId }),
-            });
+    const removeFromCart = async (itemId) => {
+        // Update the local state to ensure quantity doesn't go below 0
+        setCartItems((prev) => ({
+            ...prev,
+            [itemId]: Math.max((prev[itemId] || 0) - 1, 0), // Ensure default is 0
+        }));
+    
+        const token = sessionStorage.getItem('auth-token');
+        if (token) {
+            try {
+                const response = await fetch(`${baseurl}/removefromcart`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'auth-token': token,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ itemId }),
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to remove item from cart');
+                }
+    
+                const data = await response.json();
+                // Optionally handle the response here (e.g., show a success message or update UI)
+                console.log('Item removed from cart:', data); // Logging for debugging
+            } catch (error) {
+                console.error('Error removing item from cart:', error);
+                // Optionally set an error state to inform the user
+            }
         }
     };
+    
 
     const userinfo = async () => {
+        const token = sessionStorage.getItem('auth-token');
         const userId = sessionStorage.getItem('userId');
-        if (sessionStorage.getItem('auth-token') && userId) {
-            return fetch(`${baseurl}/userdetails/${userId}`, {
+    
+        if (!token || !userId) {
+            return null; // Return null immediately if token or userId is missing
+        }
+    
+        try {
+            const response = await fetch(`${baseurl}/userdetails/${userId}`, {
                 method: 'GET',
                 headers: {
-                    'auth-token': `${sessionStorage.getItem('auth-token')}`,
+                    'auth-token': token,
                     'Content-Type': 'application/json',
                 },
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        return data.user; // Return user data if the response is successful
-                    } else {
-                        return null; 
-                    }
-                })
-                .catch(() => {
-                    return null; // Return null if an error occurs
-                });
-        } else {
-            return Promise.resolve(null); // Return a resolved promise with null if token or ID is missing
+            });
+    
+            // Check if the response is ok (status in the range 200-299)
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+    
+            const data = await response.json();
+            // Check if the response indicates success
+            return data.success ? data.user : null; 
+        } catch (error) {
+            console.error('Error fetching user info:', error);
+            return null; // Return null if an error occurs
         }
     };
+    
 
     const myorders = async () => {
         const userId = sessionStorage.getItem('userId');
