@@ -11,14 +11,13 @@ const port = process.env.PORT || 5008;
 connectDB();
 
 // Middleware
-app.use(cors()); // Enable CORS
+app.use(cors({
+    origin: 'http://localhost:5173', // Allow only your frontend origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Adjust methods as needed
+    credentials: true // Allow credentials (cookies, etc.), if needed
+}));
 app.use(express.json()); // Parse JSON bodies
 
-// Multer for file uploads
-//const multer = require('multer');
-//const storage = multer.memoryStorage();
-//const upload = multer({ storage });
-//app.use(upload.any()); // This allows for file uploads; it might be a better option than express-fileupload if you are using multer
 // Using routes
 app.use('/', Routes);
 
