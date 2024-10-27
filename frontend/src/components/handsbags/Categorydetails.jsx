@@ -15,7 +15,7 @@ const Categorydetails = (props) => {
        <Link to={`/${props.category}`} className='cl' > <button>Discover</button> </Link>
         </div>
         <div className="banner">
-          <img src={props.banner} alt='banner'/>
+          <img src={props.banner} alt='banner' loading='lazy'/>
         </div>
         <div className="products">
          {handbags.map((item,i)=>{
