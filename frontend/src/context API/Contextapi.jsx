@@ -1,8 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-//import allproducts from '../assets/allproducts/allproducts';
 export const Context = createContext(null);
-
-
 
 const getdefaultcart = () => {
     let cart = {};
@@ -14,7 +11,7 @@ const getdefaultcart = () => {
 
 const ContextProvider = (props) => {
 
-   //const baseurl = process.env.REACT_APP_BASE_URL;
+   
    const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
    
 
@@ -22,7 +19,7 @@ const ContextProvider = (props) => {
     const [isLoggedIn, setisLoggedIn] = useState(false);
     const [shippingInfo, setShippingInfo] = useState(null);
     const [allproducts, setAllProducts] = useState([]);
-    //const [pm, setpm] = useState(null);
+    
 
     const gettotalcartitems = () => {
         return Object.values(cartItems).reduce((total, quantity) => total + (quantity > 0 ? quantity : 0), 0);
