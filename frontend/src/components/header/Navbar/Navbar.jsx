@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import './navbar.css';
 import logo from '../../../assets/logo.png';
 import { RxHamburgerMenu } from "react-icons/rx";
@@ -14,50 +14,45 @@ import { FaUserCheck } from "react-icons/fa6";
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { gettotalcartitems, isLoggedIn } = useContext(Context); // Use isLoggedIn from context
+  const { gettotalcartitems, isLoggedIn } = useContext(Context);
 
   // Handle scroll to add/remove scrolled class
-  const handleScroll = () => {
-    if (window.scrollY > 20) { 
-      setIsScrolled(true);
-    } else {
-      setIsScrolled(false);
-    }
-  };
+  const handleScroll = useCallback(() => {
+    setIsScrolled(window.scrollY > 20);
+  }, []);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [handleScroll]);
 
   // Toggle menu visibility
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const toggleMenu = useCallback(() => {
+    setIsMenuOpen(prev => !prev);
+  }, []);
 
   return (
     <>
       <div className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
         <div className="child-nav">
           <div className="left">
-            <div className="menu" onClick={toggleMenu}>
+            <div className="menu" onClick={toggleMenu} aria-label="Toggle Menu">
               <RxHamburgerMenu />
               <span>Menu</span>
             </div>
             <div className="search">
               <CiSearch />
-              <input type='text' placeholder='Search' />
+              <input type='text' placeholder='Search' aria-label='Search products' />
             </div>
           </div>
           <div className="middle">
             <Link to='/' className='cl'>
-              <img src={logo} alt='logo' />
+              <img src={logo} alt='Company Logo' />
             </Link>
           </div>
           <div className="right">
             <Link to="/account" className='cl'>
               <div className="account">
-                {/* Conditionally render the icon based on login status from context */}
                 {isLoggedIn ? <FaUserCheck /> : <GoPerson />}
                 <span>Account</span>
               </div>
@@ -80,17 +75,16 @@ const Navbar = () => {
         <div className="sub-overlay">
           <div className="menu-header">
             <span>Menu</span>
-            <AiOutlineClose className="close-icon" onClick={toggleMenu} />
+            <AiOutlineClose className="close-icon" onClick={toggleMenu} aria-label="Close Menu" />
           </div>
           <ul className="menu-items">
-            <li><Link className='cl' to="/" onClick={toggleMenu}>Home</Link></li>
-            <li><Link className='cl' to="/women shoes" onClick={toggleMenu}>Women Shoes</Link></li>
-            <li><Link className='cl' to="/bags" onClick={toggleMenu}>Handbags</Link></li>
-            <li><Link className='cl' to="/perfumes" onClick={toggleMenu}>Fragrances</Link></li>
-            <li><Link className='cl' to="/wallets" onClick={toggleMenu}>Wallets</Link></li>
-            <li><Link className='cl' to="/men shoes" onClick={toggleMenu}>Men Shoes</Link></li>
-            <li><Link className='cl' to="/belts" onClick={toggleMenu}>Belts</Link></li>
-            <li><Link className='cl' to="/horse saddles" onClick={toggleMenu}>Horse Saddle</Link></li>
+            {['/', '/women shoes', '/bags', '/perfumes', '/wallets', '/men shoes', '/belts', '/horse saddles'].map((item, index) => (
+              <li key={index}>
+                <Link className='cl' to={item} onClick={toggleMenu}>
+                  {item.charAt(1).toUpperCase() + item.slice(2)} {/* Capitalize first letter */}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
         <div className="menubottom">
@@ -100,7 +94,7 @@ const Navbar = () => {
       </div>
 
       {/* Background overlay when menu is open */}
-      {isMenuOpen && <div className="backdrop" onClick={toggleMenu}></div>}
+      {isMenuOpen && <div className="backdrop" onClick={toggleMenu} aria-label="Close Menu Overlay"></div>}
     </>
   );
 };

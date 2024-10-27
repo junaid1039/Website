@@ -1,23 +1,28 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import './pitem.css';
 import { Link } from 'react-router-dom';
 
 const Pitem = (props) => {
-  const mainImage = props.image &&  props.image[0];
+  const mainImage = props.image && props.image[0];
+
+  // Wrap scrollTo in a useCallback to avoid recreating it on each render
+  const handleClick = useCallback(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
-    <Link to={`/product/${props.id}`} className='cl'>
-    <div className="pitem" onClick={window.scrollTo(0,0)}>
-        <img src={mainImage}/>
+    <Link to={`/product/${props.id}`} className="cl">
+      <div className="pitem" onClick={handleClick}>
+        <img src={mainImage || 'path/to/fallback-image.jpg'} alt={props.name} loading="lazy" />
         <p>{props.name}</p>
         <div className="prices">
-            <span>${props.oldprice}</span>
-            <span>${props.newprice}</span>
+          <span>${props.oldprice}</span>
+          <span>${props.newprice}</span>
         </div>
-    </div>
+      </div>
     </Link>
-  )
+  );
 };
 
-export default Pitem;
-
+// Memoize the component to prevent unnecessary re-renders
+export default memo(Pitem);

@@ -8,20 +8,18 @@ const Categorys = () => {
     return (
         <div className="category">
             <div className="sub-category">
-                <h5>Trending Categorys</h5>
+                <h5>Trending Categories</h5>
                 <p>Discover top-quality products curated just for you at unbeatable prices!</p>
                 <div className="category-items">
-
-                    {category.map((item, i) => {
-                        return (<Link className='cl' key={i} to={`/${item.category}`}> <Citems key={i} name={item.name} image={item.image} /> </Link>
-                        )
-                    })}
-
-
+                    {category.map((item) => (
+                        <Link className="cl" key={item.id || item.category} to={`/${item.category}`}>
+                            <Citems name={item.name} image={item.image} />
+                        </Link>
+                    ))}
                 </div>
             </div>
         </div>
-    )
+    );
 };
 
-export default Categorys;
+export default React.memo(Categorys);
