@@ -111,11 +111,11 @@ const getAllProducts = async (req, res) => {
             images: product.images ? product.images.map(image => image) : [] // Handle undefined or empty images
         }));
         
-
         res.json({
             success: true,
             products: productsWithImages
         });
+        console.log("Data Sent successfully");
     } catch (error) {
         res.status(500).json({ success: false, message: 'Failed to fetch products', error });
     }
