@@ -11,16 +11,17 @@ const port = process.env.PORT || 5008;
 connectDB();
 
 // Middleware
-app.use(cors({
-    origin: 'http://localhost:5173', // Allow only your frontend origin
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Adjust methods as needed
-    credentials: true // Allow credentials (cookies, etc.), if needed
-}));
+app.use(cors());
 
-app.use(express.json()); // Parse JSON bodies
+app.use(express.json());
+
+
 // Using routes
-app.use('/', Routes);
+//app.use('/', Routes);
 
+app.use('/', (req,res)=>{
+    res.send("Welcome to the Backend");
+})
 app.listen(port, (err) => {
     if (!err) {
         console.log("Server is running on " + port);
