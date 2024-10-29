@@ -4,8 +4,8 @@ import perfume from './perfume.webp';
 import Mshoes from './Mshoes.webp';
 import accessories from './accessories.jpg';
 import Hsaddle from './Hsaddle.webp';
-//import wallet from './wallet.jpg';
-//import bag from './bag.jpg';
+import Mwallets from './Mwallets.jpg';
+import wbags from './wbags.webp;'
 
 let CtgryProducts = [
     {
@@ -17,7 +17,7 @@ let CtgryProducts = [
     {
         "i":2,
         "name": "Bags",
-        "image": belts,
+        "image": wbags,
         "category": "bags"
     },
     {
@@ -35,7 +35,7 @@ let CtgryProducts = [
     {
         "i":5,
         "name": "Wallets",
-        "image": perfume,
+        "image": Mwallets,
         "category": "wallets"
     },
     {
