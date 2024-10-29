@@ -5,7 +5,7 @@ import Mshoes from './Mshoes.webp';
 import accessories from './accessories.jpg';
 import Hsaddle from './Hsaddle.webp';
 //import wallet from './wallet.jpg';
-import bag from './bag.jpg';
+//import bag from './bag.jpg';
 
 let CtgryProducts = [
     {
@@ -17,7 +17,7 @@ let CtgryProducts = [
     {
         "i":2,
         "name": "Bags",
-        "image": bag,
+        "image": belts,
         "category": "bags"
     },
     {
