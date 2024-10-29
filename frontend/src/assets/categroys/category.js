@@ -10,7 +10,7 @@ import WomenBags from './WomenBags.webp';
 let CtgryProducts = [
     {
         "i":1,
-        "name": "Women Shoes",
+        "name": "Women's Shoes",
         "image": Wshoes,
         "category": "women shoes"
     },
@@ -40,7 +40,7 @@ let CtgryProducts = [
     },
     {
         "i":6,
-        "name": "Men Shoes",
+        "name": "Men's Shoes",
         "image": Mshoes,
         "category": "men shoes"
     },
@@ -53,7 +53,7 @@ let CtgryProducts = [
     },
     {
         "i":8,
-        "name": "Horse Saddles",
+        "name": "Horse Saddle's",
         "image": Hsaddle,
         "category": "horse saddles"
     },
