@@ -17,11 +17,8 @@ app.use(express.json());
 
 
 // Using routes
-//app.use('/', Routes);
+app.use('/', Routes);
 
-app.use('/', (req,res)=>{
-    res.send("Welcome to the Backend");
-})
 app.listen(port, (err) => {
     if (!err) {
         console.log("Server is running on " + port);
