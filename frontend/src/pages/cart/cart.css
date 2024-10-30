@@ -9,7 +9,6 @@
     align-items: center;
     flex-direction: column;
     height: 100%;
-    margin: 5em 1em;
 }
 
 .emptycart svg {
@@ -259,5 +258,8 @@
 
     .cartitem-format svg {
         margin: 0;
+    }
+    .emptycart {
+        margin: 2em 0;
     }
 }
