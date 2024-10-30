@@ -6,7 +6,7 @@ import { PiHandbag } from "react-icons/pi";
 import { GoPerson } from "react-icons/go";
 import { CiSearch } from "react-icons/ci";
 import { Link } from 'react-router-dom';
-import { AiOutlineClose } from 'react-icons/ai'; 
+import { AiOutlineClose } from 'react-icons/ai';
 import { BsPeople } from "react-icons/bs";
 import { Context } from '../../../context API/Contextapi';
 import { FaUserCheck } from "react-icons/fa6";
@@ -56,7 +56,7 @@ const Navbar = () => {
                 {isLoggedIn ? <FaUserCheck /> : <GoPerson />}
                 <span>Account</span>
               </div>
-            </Link> 
+            </Link>
             <Link to='/cart' className='cl'>
               <div className="cart">
                 <div className='subcart'>
@@ -78,18 +78,19 @@ const Navbar = () => {
             <AiOutlineClose className="close-icon" onClick={toggleMenu} aria-label="Close Menu" />
           </div>
           <ul className="menu-items">
-            {['/', '/women shoes', '/bags', '/perfumes', '/wallets', '/men shoes', '/belts', '/horse saddles'].map((item, index) => (
+            {['Home', 'Women Shoes', 'Bags', 'Perfumes', 'Wallets', 'Men Shoes', 'Belts', 'Horse Saddles'].map((label, index) => (
               <li key={index}>
-                <Link className='cl' to={item} onClick={toggleMenu}>
-                  {item.charAt(1).toUpperCase() + item.slice(2)} {/* Capitalize first letter */}
+                <Link className='cl' to={label === 'Home' ? '/' : `/${label.toLowerCase().replace(' ', '-')}`} onClick={toggleMenu}>
+                  {label}
                 </Link>
               </li>
             ))}
           </ul>
+
         </div>
         <div className="menubottom">
           <h5><span><BsPeople /></span>About us</h5>
-          <Link className='cl' to="/login" ><h5><span><GoPerson /></span>Account</h5></Link>
+          <Link className='cl' to="/account" ><h5><span><GoPerson /></span>Account</h5></Link>
         </div>
       </div>
 

@@ -108,7 +108,7 @@ const Login = () => {
                         {state === "Sign Up" ? (
                             <p className="login-signup">
                                 Already have an Account? 
-                                <span onClick={() => setState("Login")}>Login here</span>
+                                <span onClick={() => setState("Login")}>Login</span>
                             </p>
                         ) : null}
                         {state === "Login" ? (
