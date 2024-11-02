@@ -22,7 +22,6 @@
     width: 100%; /* Full width */
     height: 100%; /* Maintain aspect ratio */
     object-fit: cover; /* Cover ensures the image covers the area */
-    border-radius: 8px; /* Match the container's border radius */
 }
 
 .product-display__image-list {
@@ -35,7 +34,6 @@
     max-width: 4.5em; /* Set a maximum width for thumbnails */
     object-fit: cover; /* Maintain aspect ratio */
     cursor: pointer; /* Show pointer on hover */
-    border-radius: 5px; /* Rounded corners for thumbnails */
     transition: transform 0.2s ease, box-shadow 0.2s ease; /* Transition effect */
 }
 
