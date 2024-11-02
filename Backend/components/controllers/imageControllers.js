@@ -11,7 +11,7 @@ const uploadImages = async (req, res) => {
             return cloudinary.uploader.upload(file.path, {
                 transformation: [
                     { width: 500, height: 500, crop: "fill" }, // Crop to 1:1 ratio
-                    { quality: "auto", fetch_format: "auto" } // Automatically optimize quality and format
+                    { quality: "auto" }
                 ]
             })
             .then((result) => {
