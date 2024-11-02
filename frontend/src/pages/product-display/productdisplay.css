@@ -16,8 +16,6 @@
     max-width: 30em; /* Adjust max-width as needed */
     max-height: 22em; /* Adjust max-height as needed */
     overflow: hidden; /* Prevents overflow of child elements */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Adds shadow */
 }
 
 .product-display__main-img img {
