@@ -13,8 +13,8 @@
 }
 
 .product-display__main-img {
-    max-width: 30em; /* Adjust max-width as needed */
-    max-height: 22em; /* Adjust max-height as needed */
+    max-width: 27em; /* Adjust max-width as needed */
+    max-height: 27em; /* Adjust max-height as needed */
     overflow: hidden; /* Prevents overflow of child elements */
 }
 
@@ -219,6 +219,6 @@
 }
 @media (max-width: 500px){
     .product-display {
-        margin: 50px 0;
+        margin: 20px 0;
     }
 }
