@@ -190,6 +190,7 @@
 
     .product-display__left {
         align-items: center;
+        gap: 0;
     }
 
     .product-display__right {
