@@ -1,7 +1,11 @@
 const Users = require('../models/usermodel');
 const jwt = require('jsonwebtoken');
 
-
+function newId() {
+    const prefix = 'usr';
+    const randomNumber = Math.floor(Math.random() * 100000);
+    return `${prefix}${randomNumber.toString().padStart(5, '0')}`; 
+}
 
 // Sign up a new user
 const signup = async (req, res) => {
@@ -19,7 +23,10 @@ const signup = async (req, res) => {
         const { name, email, password } = req.body;
 
         const user = await Users.create({
-            name, email, password,
+            userId: newId(),
+            name,
+            email,
+            password, // No hashing, as per your request
             avatar: {
                 public_id: 'some public id',
                 url: 'some url'
@@ -67,7 +74,6 @@ const login = async (req, res) => {
     }
 };
 
-
 // Get all users -- Admin
 const getAllUsers = async (req, res) => {
     try {
@@ -77,7 +83,7 @@ const getAllUsers = async (req, res) => {
             return res.status(400).json({ success: false, message: "Users not found" });
         }
 
-        res.status(200).json({ success: true, users }); // Return the fetched users
+        res.status(200).json({ success: true, users });
 
     } catch (error) {
         res.status(500).json({ success: false, message: "Server error", error });
@@ -137,4 +143,4 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { signup, login,getAllUsers, updateUserDetails, deleteUser, getSingleUser};
+module.exports = { signup, login, getAllUsers, updateUserDetails, deleteUser, getSingleUser };

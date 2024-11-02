@@ -11,15 +11,16 @@ const getdefaultcart = () => {
 
 const ContextProvider = (props) => {
 
-   
-   const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
-   
+
+    const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
+
 
     const [cartItems, setCartItems] = useState(getdefaultcart());
     const [isLoggedIn, setisLoggedIn] = useState(false);
     const [shippingInfo, setShippingInfo] = useState(null);
     const [allproducts, setAllProducts] = useState([]);
-    
+    const [Adminproducts, setAdminproducts] = useState([]);
+
 
     const gettotalcartitems = () => {
         return Object.values(cartItems).reduce((total, quantity) => total + (quantity > 0 ? quantity : 0), 0);
@@ -62,14 +63,14 @@ const ContextProvider = (props) => {
                 }
             }
         };
-    
+
         fetchCartItems();
     }, [baseurl]);
-    
+
 
     const addToCart = async (itemid) => {
         setCartItems((prev) => ({ ...prev, [itemid]: (prev[itemid] || 0) + 1 })); // Ensure default is 0
-    
+
         const token = sessionStorage.getItem('auth-token');
         if (token) {
             try {
@@ -82,11 +83,11 @@ const ContextProvider = (props) => {
                     },
                     body: JSON.stringify({ itemId: itemid }),
                 });
-    
+
                 if (!response.ok) {
                     throw new Error('Failed to add item to cart');
                 }
-    
+
                 const data = await response.json();
                 // Optionally handle the response here (e.g., show a success message or update UI)
                 console.log('Item added to cart:', data); // Logging for debugging
@@ -96,7 +97,7 @@ const ContextProvider = (props) => {
             }
         }
     };
-    
+
 
     const removeFromCart = async (itemId) => {
         // Update the local state to ensure quantity doesn't go below 0
@@ -104,7 +105,7 @@ const ContextProvider = (props) => {
             ...prev,
             [itemId]: Math.max((prev[itemId] || 0) - 1, 0), // Ensure default is 0
         }));
-    
+
         const token = sessionStorage.getItem('auth-token');
         if (token) {
             try {
@@ -117,11 +118,11 @@ const ContextProvider = (props) => {
                     },
                     body: JSON.stringify({ itemId }),
                 });
-    
+
                 if (!response.ok) {
                     throw new Error('Failed to remove item from cart');
                 }
-    
+
                 const data = await response.json();
                 // Optionally handle the response here (e.g., show a success message or update UI)
                 console.log('Item removed from cart:', data); // Logging for debugging
@@ -131,16 +132,16 @@ const ContextProvider = (props) => {
             }
         }
     };
-    
+
 
     const userinfo = async () => {
         const token = sessionStorage.getItem('auth-token');
         const userId = sessionStorage.getItem('userId');
-    
+
         if (!token || !userId) {
             return null; // Return null immediately if token or userId is missing
         }
-    
+
         try {
             const response = await fetch(`${baseurl}/userdetails/${userId}`, {
                 method: 'GET',
@@ -149,21 +150,21 @@ const ContextProvider = (props) => {
                     'Content-Type': 'application/json',
                 },
             });
-    
+
             // Check if the response is ok (status in the range 200-299)
             if (!response.ok) {
                 throw new Error(`Error: ${response.status} ${response.statusText}`);
             }
-    
+
             const data = await response.json();
             // Check if the response indicates success
-            return data.success ? data.user : null; 
+            return data.success ? data.user : null;
         } catch (error) {
             console.error('Error fetching user info:', error);
             return null; // Return null if an error occurs
         }
     };
-    
+
 
     const myorders = async () => {
         const userId = sessionStorage.getItem('userId');
@@ -285,16 +286,16 @@ const ContextProvider = (props) => {
                 const quantity = cartItems[itemId];
                 const productInfo = allproducts.find(product => product.id === Number(itemId));
                 return {
-                    product: productInfo ? productInfo._id : null, 
-                    name: productInfo ? productInfo.name : '', 
+                    product: productInfo ? productInfo._id : null,
+                    name: productInfo ? productInfo.name : '',
                     quantity,
                     price: productInfo ? productInfo.newprice : 0,
                     image: productInfo ? productInfo.images[0] : ''
                 };
-            }).filter(item => item.product !== null && item.quantity > 0), 
+            }).filter(item => item.product !== null && item.quantity > 0),
 
-            shippingInfo: shippingInfo, 
-           
+            shippingInfo: shippingInfo,
+
             paymentInfo: {
                 method: paymentMethod, // Use the correct variable for payment method
                 id: '123', // Assuming you'll set this when payment is confirmed
@@ -319,7 +320,7 @@ const ContextProvider = (props) => {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                   // alert('Order confirmed successfully!');
+                    // alert('Order confirmed successfully!');
                     navigate('/ordersuccess');
                 } else {
                     console.log("Failed to confirm order", data.message || data); // Log the error message from server
@@ -337,18 +338,42 @@ const ContextProvider = (props) => {
     // Fetch all products
     const fetchInfo = async () => {
         try {
-          const response = await fetch(`${baseurl}/allproducts`);
-          if (!response.ok) {
-            throw new Error("Failed to fetch products");
-          }
-          const data = await response.json();
-          setAllProducts(data.products); // Set products state
-          return { success: true, data }; // Explicitly return success
+            const response = await fetch(`${baseurl}/allproducts`);
+            if (!response.ok) {
+                throw new Error("Failed to fetch products");
+            }
+            const data = await response.json();
+            setAllProducts(data.products); // Set products state
+            return { success: true}; // Explicitly return success
         } catch (error) {
-          setAllProducts([]); // Clear products if fetch fails
-          return { success: false, error: error.message }; // Return success false with error
+            setAllProducts([]); // Clear products if fetch fails
+            return { success: false, error: error.message }; // Return success false with error
         }
-      };      
+    };
+
+    //Admin allproducts
+
+    const fnadminproducts = async () => {
+        try {
+            const response = await fetch(`${baseurl}/adminproducts`, {
+                headers: {
+                    'auth-token': sessionStorage.getItem('auth-token'),
+                    'Content-Type': 'application/json',
+                }
+            });
+            if (!response.ok) {
+                throw new Error("Failed to fetch products");
+            }
+            const data = await response.json();
+            setAdminproducts(data.products || []);
+            return { success: true, data};
+        } catch (error) {
+            console.error("Error fetching products:", error.message); 
+            setAdminproducts([]); 
+            return { success: false, error: error.message };
+        }
+    };
+    
 
 
 
@@ -364,7 +389,7 @@ const ContextProvider = (props) => {
                 },
                 body: JSON.stringify({ id: productToDelete })
             });
-            fetchInfo(); // Refresh the product list
+            fnadminproducts(); // Refresh the product list
             setShowModal(false); // Close the modal
         } catch (error) {
             console.error('Failed to remove product:', error);
@@ -426,14 +451,16 @@ const ContextProvider = (props) => {
     // context values to export .
     const contextvalues = {
         allproducts,
+        cartItems,
+        Adminproducts,
         isLoggedIn,
+        fnadminproducts,
         fetchUsers,
         fetchOrders,
         confirmDelete,
         handlePaymentSubmit,
         handleShippingSubmit,
         fetchInfo,
-        cartItems,
         login, signup,
         handleLogout,
         userinfo, myorders,

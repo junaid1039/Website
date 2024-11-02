@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import './adminusers.css';
 import { LuPencilLine } from "react-icons/lu";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -7,39 +7,45 @@ import { BiX } from "react-icons/bi";
 import { Context } from '../../context API/Contextapi';
 
 const AdminUsers = () => {
-
     const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
-
     const { fetchUsers } = useContext(Context);
     const [users, setUsers] = useState([]);
     const [editingUserId, setEditingUserId] = useState(null);
     const [editUser, setEditUser] = useState({ name: '', email: '', role: '' });
     const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+    const [loading, setLoading] = useState(true); // Loading state
+    const [error, setError] = useState(null); // Error state
 
     // Fetch users from backend
     useEffect(() => {
         const loadUsers = async () => {
-            const userData = await fetchUsers(); // Await the fetchUsers call
-            console.log(userData);
-            setUsers(userData); // Set users state with the returned data
+            setLoading(true); // Set loading state
+            try {
+                const userData = await fetchUsers(); // Await the fetchUsers call
+                setUsers(userData); // Set users state with the returned data
+            } catch (err) {
+                setError('Failed to fetch users'); // Handle fetch error
+            } finally {
+                setLoading(false); // Reset loading state
+            }
         };
 
         loadUsers(); // Call the async function
     }, [fetchUsers]);
 
     // Edit function
-    const handleEditClick = (user) => {
+    const handleEditClick = useCallback((user) => {
         setEditingUserId(user._id);
         setEditUser({ name: user.name, email: user.email, role: user.role });
-    };
+    }, []);
 
     // Delete function
-    const handleDeleteClick = (id) => {
+    const handleDeleteClick = useCallback((id) => {
         setConfirmDeleteId(id);
-    };
+    }, []);
 
     // Delete API
-    const confirmDelete = async () => {
+    const confirmDelete = useCallback(async () => {
         try {
             const res = await fetch(`${baseurl}/deleteuser/${confirmDeleteId}`, {
                 method: 'DELETE',
@@ -50,7 +56,7 @@ const AdminUsers = () => {
             });
             const data = await res.json();
             if (data.success) {
-                setUsers(users.filter(user => user._id !== confirmDeleteId)); // Update users state
+                setUsers((prevUsers) => prevUsers.filter(user => user._id !== confirmDeleteId)); // Update users state
             } else {
                 console.error('Error deleting user:', data.message);
             }
@@ -58,19 +64,19 @@ const AdminUsers = () => {
         } catch (error) {
             console.error('Error deleting user:', error);
         }
-    };
+    }, [baseurl, confirmDeleteId]); // Ensure baseurl and confirmDeleteId are dependencies
 
-    const cancelDelete = () => {
+    const cancelDelete = useCallback(() => {
         setConfirmDeleteId(null);
-    };
+    }, []);
 
-    const handleInputChange = (e) => {
+    const handleInputChange = useCallback((e) => {
         const { name, value } = e.target;
-        setEditUser({ ...editUser, [name]: value });
-    };
+        setEditUser((prev) => ({ ...prev, [name]: value }));
+    }, []);
 
     // User info change API
-    const handleSaveClick = async () => {
+    const handleSaveClick = useCallback(async () => {
         try {
             const res = await fetch(`${baseurl}/updateuserdetails/${editingUserId}`, {
                 method: 'PUT',
@@ -82,7 +88,7 @@ const AdminUsers = () => {
             });
             const data = await res.json();
             if (data.success) {
-                setUsers(users.map(user => user._id === editingUserId ? data.user : user)); // Update users state
+                setUsers((prevUsers) => prevUsers.map(user => user._id === editingUserId ? data.user : user)); // Update users state
                 setEditingUserId(null);
             } else {
                 console.error('Error updating user:', data.message);
@@ -90,11 +96,20 @@ const AdminUsers = () => {
         } catch (error) {
             console.error('Error updating user:', error);
         }
-    };
+    }, [baseurl, editingUserId, editUser]);
 
-    const handleCancelClick = () => {
+    const handleCancelClick = useCallback(() => {
         setEditingUserId(null);
-    };
+    }, []);
+
+    // Render loading state or error state if applicable
+    if (loading) {
+        return <div>Loading users...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
 
     return (
         <div className="admin-users-container">
@@ -112,7 +127,7 @@ const AdminUsers = () => {
                 <tbody>
                     {users.map((user) => (
                         <tr key={user._id} className="table-row">
-                            <td>{user._id}</td>
+                            <td>{user.userId}</td>
                             <td>{user.name}</td>
                             <td>{user.email}</td>
                             <td>{user.role}</td>

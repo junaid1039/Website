@@ -1,49 +1,77 @@
 import React, { useState, useEffect } from 'react';
 import '../addproduct/addproduct.css';
 import { IoMdCloudUpload } from "react-icons/io";
-import { RiCloseCircleLine } from 'react-icons/ri'; // Icon for removing images
+import { RiCloseCircleLine } from 'react-icons/ri';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const port = 5000;
+const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
 
 const EditProduct = () => {
-    const { id } = useParams(); // Get product ID from URL
-    const navigate = useNavigate(); // Initialize navigation
+    const { id } = useParams(); 
+    const navigate = useNavigate(); 
     const [productDetails, setProductDetails] = useState({
         name: "",
         category: '',
         newprice: '',
         oldprice: '',
         description: '',
+        brand: '',
+        colors: [],
+        sizes: [],
+        available: '',
+        visible: false // Ensure visible is initialized as a boolean
     });
-    const [images, setImages] = useState([]); // New images to be added
-    const [existingImages, setExistingImages] = useState([]); // Existing images
+    const [images, setImages] = useState([]); 
+    const [existingImages, setExistingImages] = useState([]); 
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const [deletedImages, setDeletedImages] = useState([]); // Track deleted images
+    const [deletedImages, setDeletedImages] = useState([]);
 
     useEffect(() => {
         const fetchProductDetails = async () => {
             try {
-                const response = await fetch(`http://localhost:${port}/productdata/${id}`);
+                const response = await fetch(`${baseurl}/productdata/${id}`);
                 const data = await response.json();
-                setProductDetails({
-                    name: data.name,
-                    category: data.category,
-                    newprice: data.newprice,
-                    oldprice: data.oldprice,
-                    description: data.description,
-                });
-                setExistingImages(data.images); // Set existing images
+                if (data.success) {
+                    console.log(data);
+                    setProductDetails({
+                        name: data.product.name,
+                        category: data.product.category,
+                        newprice: data.product.newprice,
+                        oldprice: data.product.oldprice,
+                        description: data.product.description,
+                        brand: data.product.brand,
+                        colors: data.product.colors || [],
+                        sizes: data.product.sizes || [],
+                        available: data.product.available,
+                        visible: data.product.visible || false, // Initialize visible properly
+                    });
+                    setExistingImages(data.product.images); 
+
+                } else {
+                    throw new Error(data.message || 'Failed to fetch product details');
+                }
             } catch (error) {
                 console.error('Error fetching product:', error);
+                setErrorMessage(error.message);
             }
         };
         fetchProductDetails();
+        
     }, [id]);
 
     const changeHandler = (e) => {
-        setProductDetails({ ...productDetails, [e.target.name]: e.target.value });
+        const { name, value, type, checked } = e.target;
+        setProductDetails(prevDetails => ({
+            ...prevDetails,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+    const arrayHandler = (e, fieldName) => {
+        setProductDetails({
+            ...productDetails,
+            [fieldName]: e.target.value.split(',').map(item => item.trim())
+        });
     };
 
     const imageHandler = (e) => {
@@ -57,14 +85,13 @@ const EditProduct = () => {
 
     const uploadImages = async (formData) => {
         try {
-            const uploadResponse = await fetch(`http://localhost:${port}/uploadimage`, {
+            const uploadResponse = await fetch(`${baseurl}/uploadimage`, {
                 method: 'POST',
                 body: formData,
             });
             const uploadData = await uploadResponse.json();
-
             if (uploadData.success) {
-                return uploadData.data.map(img => img.secure_url); // Return array of secure URLs
+                return uploadData.data.map(img => img.secure_url);
             } else {
                 throw new Error('Failed to upload images');
             }
@@ -77,34 +104,21 @@ const EditProduct = () => {
         setLoading(true);
         setErrorMessage("");
 
-        // Create a new FormData object only if there are new images
         const formData = new FormData();
-        if (images.length > 0) {
-            images.forEach(image => {
-                formData.append('images', image);
-            });
-        }
+        images.forEach(image => formData.append('images', image));
 
         try {
             let uploadedImageUrls = [];
-
-            // Only call uploadImages if there are new images
             if (images.length > 0) {
                 uploadedImageUrls = await uploadImages(formData);
             }
 
-            // Construct the product object
             const product = {
-                name: productDetails.name,
-                images: [...uploadedImageUrls, ...existingImages], // Combine new and existing images
-                category: productDetails.category,
-                newprice: productDetails.newprice,
-                oldprice: productDetails.oldprice,
-                description: productDetails.description,
+                ...productDetails,
+                images: [...uploadedImageUrls, ...existingImages.filter(img => !deletedImages.includes(img))],
             };
 
-            // Send the updated product data to the backend
-            const response = await fetch(`http://localhost:${port}/product/${id}`, {
+            const response = await fetch(`${baseurl}/product/${id}`, {
                 method: 'PUT',
                 headers: {
                     Accept: 'application/json',
@@ -119,10 +133,10 @@ const EditProduct = () => {
                 alert("Product updated successfully");
                 navigate('/admin/productlist');
             } else {
-                setErrorMessage("Failed to update product");
+                throw new Error(data.message || 'Failed to update product');
             }
         } catch (error) {
-            setErrorMessage(error.message); // Use the error message from the upload
+            setErrorMessage(error.message);
             console.error('Error:', error);
         } finally {
             setLoading(false);
@@ -132,7 +146,6 @@ const EditProduct = () => {
     return (
         <div className="add-product">
             <h2>Edit Product</h2>
-            {/* Input Fields */}
             <div className="addproduct-itemfield">
                 <label>Product Title</label>
                 <input
@@ -193,51 +206,75 @@ const EditProduct = () => {
                     <option value='horse saddle'>Horse Saddle</option>
                 </select>
             </div>
-
-            {/* Existing Images */}
+            <div className="addproduct-row">
+                <div className="addproduct-itemfield">
+                    <label>Brand</label>
+                    <input
+                        value={productDetails.brand}
+                        onChange={changeHandler}
+                        type="text"
+                        name='brand'
+                        placeholder='Brand'
+                    />
+                </div>
+                <div className="addproduct-itemfield">
+                    <label>Colors (comma-separated)</label>
+                    <input
+                        value={productDetails.colors.join(', ')}
+                        onChange={(e) => arrayHandler(e, 'colors')}
+                        type="text"
+                        placeholder='e.g., red, blue, green'
+                    />
+                </div>
+            </div>
+            <div className="addproduct-row2">
+                <div className="addproduct-itemfield2">
+                    <label>Visibility</label>
+                    <input
+                        type="checkbox"
+                        name="visible"
+                        checked={productDetails.visible}
+                        onChange={changeHandler}
+                    />
+                </div>
+            </div>
+            <div className="addproduct-itemfield">
+                <label>Sizes (comma-separated)</label>
+                <input
+                    value={productDetails.sizes.join(', ')}
+                    onChange={(e) => arrayHandler(e, 'sizes')}
+                    type="text"
+                    placeholder='e.g., S, M, L'
+                />
+            </div>
             <div className="addproduct-itemfield">
                 <label>Existing Images</label>
                 <div className="image-preview-container">
-                    {existingImages.map((image, index) => (
-                        <div key={index} className="image-preview-edit">
-                            <img src={image} alt={`Existing Image ${index + 1}`} />
-                            <RiCloseCircleLine className="remove-icon" onClick={() => removeExistingImage(image)} />
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* New Image Upload */}
-            <div className="addproduct-itemfield">
-                <div className="image-previews">
-                    {images.length > 0 ? (
-                        images.map((image, index) => (
-                            <img key={index} src={URL.createObjectURL(image)} alt={`Product Preview ${index + 1}`} />
+                    {existingImages.length > 0 ? (
+                        existingImages.map((image, index) => (
+                            <div key={index} className="image-preview-edit">
+                                <img src={image} alt={`Existing Image ${index + 1}`} />
+                                <RiCloseCircleLine className="remove-icon" onClick={() => removeExistingImage(image)} />
+                            </div>
                         ))
                     ) : (
-                        <p>No new images selected</p>
+                        <p>No existing images available.</p>
                     )}
                 </div>
-                <label htmlFor='file-input' className='upload-box'>
-                    <IoMdCloudUpload size={20} />
-                    Upload new images
-                </label>
+            </div>
+            <div className="addproduct-itemfield">
+                <label>Upload Images</label>
                 <input
-                    type='file'
-                    name='images'
-                    id='file-input'
+                    type="file"
                     onChange={imageHandler}
+                    accept="image/*"
                     multiple
-                    hidden
                 />
+                <p><IoMdCloudUpload /> Drag & Drop your images or click to upload</p>
             </div>
-
-            {errorMessage && <p className="error-message">{errorMessage}</p>}
-            <div className="btn-div">
-                <button onClick={editProduct} disabled={loading} className='addproduct-btn'>
-                    {loading ? "Updating..." : "Update Product"}
-                </button>
-            </div>
+            {loading && <p>Loading...</p>}
+            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+            <button onClick={editProduct}>Update Product</button>
         </div>
     );
 };

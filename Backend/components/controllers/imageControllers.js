@@ -8,26 +8,32 @@ const uploadImages = async (req, res) => {
 
     try {
         const uploadPromises = req.files.map((file) => {
-            return cloudinary.uploader.upload(file.path)
-                .then((result) => {
-                    // Remove the local file after upload
-                    fs.unlinkSync(file.path);
-                    return result;
-                });
+            return cloudinary.uploader.upload(file.path, {
+                transformation: [
+                    { width: 500, height: 500, crop: "fill" }, // Crop to 1:1 ratio
+                    { quality: "auto", fetch_format: "auto" } // Automatically optimize quality and format
+                ]
+            })
+            .then((result) => {
+                // Remove the local file after upload
+                fs.unlinkSync(file.path);
+                return result;
+            });
         });
 
         // Wait for all the uploads to complete
         const uploadResults = await Promise.all(uploadPromises);
 
-        
-        return res.status(200).json({ success: true, message: "Images uploaded successfully!",
-             data: uploadResults
+        return res.status(200).json({ 
+            success: true, 
+            message: "Images uploaded and optimized successfully!",
+            data: uploadResults
         });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             success: false,
-            message: "Error uploading images"
+            message: "Please reduce images sizes"
         });
     }
 };
