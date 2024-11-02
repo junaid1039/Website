@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import './adminorders.css';
 import Orderdetails from '../orderdetails/Orderdetails';
 import { LuPencilLine } from "react-icons/lu";
@@ -6,7 +6,6 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { Context } from '../../context API/Contextapi';
 
 const AdminOrders = () => {
-
     const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
     const { fetchOrders } = useContext(Context);
     const [orders, setOrders] = useState([]);
@@ -14,25 +13,25 @@ const AdminOrders = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [deleting, setDeleting] = useState(false);
-    const [showConfirmDelete, setShowConfirmDelete] = useState(false); 
+    const [showConfirmDelete, setShowConfirmDelete] = useState(false);
     const [orderToDelete, setOrderToDelete] = useState(null);
 
-    useEffect(() => {
-        const loadOrders = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const ordersData = await fetchOrders(); // Fetch orders
-                setOrders(ordersData);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadOrders();
+    const loadOrders = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const ordersData = await fetchOrders();
+            setOrders(ordersData);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     }, [fetchOrders]);
+
+    useEffect(() => {
+        loadOrders();
+    }, [loadOrders]);
 
     const viewOrderDetails = (id) => {
         setSelectedOrderId(id);
@@ -43,6 +42,7 @@ const AdminOrders = () => {
     };
 
     const confirmDeleteOrder = (id) => {
+        console.log("here is the id",id);
         setOrderToDelete(id);
         setShowConfirmDelete(true);
     };
@@ -61,7 +61,6 @@ const AdminOrders = () => {
             if (response.ok) {
                 const data = await response.json();
                 if (data.success) {
-                    // Fetch the orders again after deleting
                     const ordersData = await fetchOrders();
                     setOrders(ordersData);
                 } else {
@@ -87,6 +86,8 @@ const AdminOrders = () => {
                 return 'status-shipped';
             case 'Delivered':
                 return 'status-delivered';
+            case 'Cancelled':
+                return 'status-cancelled';
             default:
                 return '';
         }
@@ -121,7 +122,7 @@ const AdminOrders = () => {
                     {orders.length > 0 ? (
                         orders.map((order) => (
                             <tr key={order._id} className="table-row">
-                                <td>{order._id}</td>
+                                <td>{order.orderId}</td>
                                 <td>{new Date(order.dateOrdered).toLocaleString()}</td>
                                 <td className="status-cell">
                                     <span className={getStatusClass(order.orderStatus)}>
@@ -130,10 +131,10 @@ const AdminOrders = () => {
                                 </td>
                                 <td>${order.totalPrice.toFixed(2)}</td>
                                 <td>
-                                    <button onClick={() => viewOrderDetails(order._id)} className="o-db">
+                                    <button onClick={() => viewOrderDetails(order.orderId)} className="o-db">
                                         <LuPencilLine />
                                     </button>
-                                    <button onClick={() => confirmDeleteOrder(order._id)} className="o-db" disabled={deleting}>
+                                    <button onClick={() => confirmDeleteOrder(order.orderId)} className="o-db" disabled={deleting}>
                                         <RiDeleteBin6Line />
                                     </button>
                                 </td>
@@ -149,22 +150,18 @@ const AdminOrders = () => {
 
             {selectedOrderId && (
                 <div className="order-details-container">
-                    <Orderdetails
-                        orderId={selectedOrderId}
-                        onClose={closeOrderDetails}
-                        onStatusUpdate={handleStatusUpdate}
-                    />
+                    <Orderdetails oid={selectedOrderId} onClose={closeOrderDetails} onStatusUpdate={handleStatusUpdate} />
                 </div>
             )}
 
             {showConfirmDelete && (
                 <div className="confirm-delete-overlay">
                     <div className="confirm-delete-modal">
-                        <h3>Confirm Delete</h3>
+                        <h3>Confirm Deletion</h3>
                         <p>Are you sure you want to delete this order?</p>
                         <div className="modal-buttons">
-                            <button className="button confirm-button" onClick={deleteOrder}>Delete</button>
-                            <button className="button cancel-button" onClick={() => setShowConfirmDelete(false)}>Cancel</button>
+                            <button className="confirm-button" onClick={deleteOrder}>Confirm</button>
+                            <button className="cancel-button" onClick={() => setShowConfirmDelete(false)}>Cancel</button>
                         </div>
                     </div>
                 </div>

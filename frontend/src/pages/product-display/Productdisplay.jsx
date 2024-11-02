@@ -1,16 +1,19 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import './productdisplay.css';
 import { FaStar, FaStarHalfAlt } from 'react-icons/fa';
 import { Context } from '../../context API/Contextapi';
 import { useNavigate } from 'react-router-dom';
-import Description from '../../components/description/Description'
+import Description from '../../components/description/Description';
 
 const Productdisplay = ({ product }) => {
-    // Initialize mainImage with the first image from product.images or fallback to product.image
+
     const [mainImage, setMainImage] = useState(product.images && product.images.length > 0 ? product.images[0] : product.image);
-    const { addToCart} = useContext(Context);
+    const [selectedSize, setSelectedSize] = useState(product.sizes ? product.sizes[0] : null); // Default to the first size
+    const [selectedColor, setSelectedColor] = useState(product.colors ? product.colors[0] : null); // Default to the first color
+    const { addToCart } = useContext(Context);
     const navigate = useNavigate();
+    console.log("Here are the product data", product);
 
     const handleAddToCart = () => {
         addToCart(product.id);
@@ -64,25 +67,49 @@ const Productdisplay = ({ product }) => {
                         )}
                         <div className="product-display__new-price">${product.newprice}</div>
                     </div>
-                    {product.size && (
+
+                    {/* Size Selection */}
+                    {product.sizes && product.sizes.length > 0 && (
                         <div className="product-display__size-selection">
-                            <h2>Select Size</h2>
+                            <h4>Select Size</h4>
                             <div className="sizes">
                                 {product.sizes.map((size) => (
-                                    <div key={size} className="size-option">{size}</div>
+                                    <div 
+                                        key={size} 
+                                        className={`size-option ${selectedSize === size ? 'selected' : ''}`} 
+                                        onClick={() => setSelectedSize(size)}
+                                    >
+                                        {size}
+                                    </div>
                                 ))}
                             </div>
                         </div>
                     )}
+
+                    {/* Color Selection */}
+                    {product.colors && product.colors.length > 0 && (
+                        <div className="product-display__color-selection">
+                            <h4>Select Color</h4>
+                            <div className="colors">
+                                {product.colors.map((color) => (
+                                    <div 
+                                        key={color} 
+                                        className={`color-option ${selectedColor === color ? 'selected' : ''}`} 
+                                        style={{ backgroundColor: color }} 
+                                        onClick={() => setSelectedColor(color)}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     <div className="product-display__buttons">
                         <button onClick={handleAddToCart}>Add to Cart</button>
                         <button onClick={handleBuyNow}>Buy Now</button>
                     </div>
                     <p className="product-display__category"><span>Category :</span> {product.category}</p>
                     <p className="product-display__tags"><span>Tags :</span> Latest</p>
-                   
                 </div>
-                
             </div>
             <Description description={product.description} />
         </>
@@ -97,8 +124,8 @@ Productdisplay.propTypes = {
         name: PropTypes.string.isRequired,
         oldprice: PropTypes.number,
         newprice: PropTypes.number.isRequired,
-        size: PropTypes.bool,
         sizes: PropTypes.arrayOf(PropTypes.string), // Array of sizes
+        colors: PropTypes.arrayOf(PropTypes.string), // Array of colors
         category: PropTypes.string.isRequired,
         description: PropTypes.string.isRequired,
     }).isRequired,

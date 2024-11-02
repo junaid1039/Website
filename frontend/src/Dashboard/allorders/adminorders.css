@@ -27,7 +27,7 @@
   border-collapse: collapse;
 }
 
-.admin-orders-table th, 
+.admin-orders-table th,
 .admin-orders-table td {
   padding: 12px 20px;
   text-align: left;
@@ -38,12 +38,6 @@
   background-color: #444;
   color: white;
   font-weight: 600;
-}
-
-.admin-orders-table th, 
-.admin-orders-table td {
-  min-width: 110px;
-  max-width: 20%;
 }
 
 .table-row:hover {
@@ -58,13 +52,11 @@
 
 .status-cell span {
   display: inline-block;
-  background-color: #e0e0e0;
-  color: #333;
   border-radius: 40px;
   padding: 8px 16px;
-  height: auto;
   min-width: 100px;
   text-align: center;
+  color: white;
 }
 
 /* Specific status classes */
@@ -74,24 +66,26 @@
 
 .status-shipped {
   background-color: #007bff; /* Blue for shipped */
-  color: white;
 }
 
 .status-delivered {
   background-color: #28a745; /* Green for delivered */
-  color: white;
+}
+
+.status-cancelled {
+  background-color: rgb(210, 1, 1); /* Red for cancelled */
 }
 
 /* Button Styling */
-.save-button, 
+.save-button,
 .cancel-button {
-  background-color: #444; /* Base color for buttons */
+  background-color: #444;
   color: white;
   border: none;
   padding: 8px 16px;
   border-radius: 5px;
   cursor: pointer;
-  margin-left: 10px; /* Space between buttons */
+  margin-left: 10px;
   transition: background-color 0.3s ease;
 }
 
@@ -109,23 +103,23 @@
   color: white;
 }
 
-.save-button:hover, 
+.save-button:hover,
 .cancel-button:hover {
-  background-color: black; /* Darker color on hover */
+  background-color: black;
 }
 
 .cancel-button {
-  background-color: whitesmoke; /* Specific color for cancel button */
+  background-color: whitesmoke;
   color: black;
 }
 
 .cancel-button:hover {
-  background-color: rgb(195, 195, 195); /* Darker color on hover */
+  background-color: rgb(195, 195, 195);
 }
 
 /* Responsive Styling */
 @media (max-width: 768px) {
-  .admin-orders-table th, 
+  .admin-orders-table th,
   .admin-orders-table td {
     padding: 10px;
     min-width: 100px;
@@ -137,34 +131,20 @@
 }
 
 /* Order Details Modal Overlay */
-.order-details-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000; /* Make sure it's above other content */
-}
-
-/* Confirm Delete Modal Overlay */
+.order-details-container,
 .confirm-delete-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Make sure it's on top of other content */
+  z-index: 1000;
 }
 
-/* Confirm Delete Modal Content */
 .confirm-delete-modal {
   background-color: white;
   padding: 20px;
@@ -204,13 +184,4 @@
 
 .confirm-button:hover {
   background-color: #c0392b;
-}
-
-.cancel-button {
-  background-color: whitesmoke;
-  color: black;
-}
-
-.cancel-button:hover {
-  background-color: rgb(195, 195, 195);
 }

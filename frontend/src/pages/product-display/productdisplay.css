@@ -22,7 +22,7 @@
 
 .product-display__main-img img {
     width: 100%; /* Full width */
-    height: auto; /* Maintain aspect ratio */
+    height: 100%; /* Maintain aspect ratio */
     object-fit: cover; /* Cover ensures the image covers the area */
     border-radius: 8px; /* Match the container's border radius */
 }
@@ -49,7 +49,6 @@
 .product-display__right {
     display: flex;
     flex-direction: column;
-    gap: 15px;
     margin: 0 20px;
 }
 
@@ -57,6 +56,7 @@
     font-size: 1.6rem;
     font-weight: 700;
     color: #222;
+    margin: 0;
 }
 
 .product-display__stars {
@@ -85,28 +85,58 @@
    color: #333;
 }
 
-.product-display__size-selection h2 {
-    font-size: 1.1rem;
-    color: #333;
+.product-display__size-selection,
+.product-display__color-selection {
+    margin: 5px 0;
+
+    h4{
+        margin: 2px;
+    }
+
+    .sizes, .colors{
+        display: flex;
+        gap: 1em;
+    }
 }
 
-.sizes {
-    display: flex;
-    gap: 12px;
-}
-
-.sizes div {
-    padding: 8px 20px;
-    color: #333;
+.size-option,
+.color-option {
     border: 1px solid #ddd;
     border-radius: 3px;
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.sizes div:hover {
-    background-color: #444;
+.size-option:hover,
+.color-option:hover {
+    background-color: #f0f0f0;
+}
+
+.size-option.selected,
+.color-option.selected {
+    background-color: #333;
     color: white;
+    border-color: #444;
+}
+
+.colors {
+    display: flex;
+    gap: 12px;
+}
+
+.color-option {
+    width: 1.4em; /* Fixed width for color options */
+    height: 1.4em; /* Fixed height for color options */
+    border-radius: 50%; /* Make it circular */
+    border: 1px solid #ddd; /* Border for better visibility */
+    cursor: pointer; /* Pointer on hover */
+}
+.size-option{
+    width: 1.4em;
+    height: 1.4em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .product-display__buttons {
@@ -147,6 +177,7 @@
 .product-display__category {
     font-size: 1rem;
     color: #555;
+    margin: 0;
 }
 
 .product-display__category span {

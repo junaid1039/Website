@@ -20,7 +20,8 @@ router.get('/productdata/:id', productController.getProductById);
 router.put('/product/:id', auth,  productController.editProduct); 
 router.post('/addproduct',auth, productController.addProduct); // Adds a new product
 router.post('/removeproduct', auth, productController.removeProduct); // Removes a product
-router.get('/allproducts', productController.getAllProducts); // Fetches all products
+router.get('/allproducts', productController.userAllProducts); // Fetches all visible products
+router.get('/adminproducts', auth, productController.adminAllProducts);// fetch all products
 
 //verify Token
 router.get('/verification', auth);

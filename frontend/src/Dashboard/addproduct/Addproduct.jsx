@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './addproduct.css';
 import { IoMdCloudUpload } from "react-icons/io";
 
-const port = 5000;
+const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
 
 const Addproduct = () => {
     const [images, setImages] = useState([]);
@@ -11,52 +11,73 @@ const Addproduct = () => {
         category: '',
         newprice: '',
         oldprice: '',
-        description: ''
+        description: '',
+        brand: '',
+        colors: [],
+        sizes: [],
+        visible: false // Initialize as boolean
     });
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
     const changeHandler = (e) => {
-        setProductDetails({ ...productDetails, [e.target.name]: e.target.value });
-    }
+        const { name, value, type, checked } = e.target;
+        setProductDetails(prevDetails => ({
+            ...prevDetails,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+
+    const arrayHandler = (e, fieldName) => {
+        setProductDetails({
+            ...productDetails,
+            [fieldName]: e.target.value.split(',').map(item => item.trim())
+        });
+    };
 
     const imageHandler = (e) => {
         setImages(Array.from(e.target.files));
-    }
+    };
 
     const addProduct = async () => {
         setLoading(true);
         setErrorMessage("");
 
+        // Validate required fields
+        if (!productDetails.name || !productDetails.category || !productDetails.newprice || !productDetails.oldprice || !productDetails.description || images.length === 0) {
+            setErrorMessage("Please fill in all required fields and upload at least one image.");
+            setLoading(false);
+            return;
+        }
+
         const formData = new FormData();
         images.forEach(image => {
             formData.append('images', image);
         });
-        formData.append('name', productDetails.name);
-        formData.append('category', productDetails.category);
-        formData.append('newprice', productDetails.newprice);
-        formData.append('oldprice', productDetails.oldprice);
-        formData.append('description', productDetails.description);
+
+        // Create the product object
+        const product = {
+            ...productDetails,
+            images: [] // Placeholder for image URLs after upload
+        };
+
+        Object.entries(product).forEach(([key, value]) => {
+            formData.append(key, Array.isArray(value) ? JSON.stringify(value) : value);
+        });
 
         try {
-            const uploadResponse = await fetch(`http://localhost:${port}/uploadimage`, {
+            // Upload images
+            const uploadResponse = await fetch(`${baseurl}/uploadimage`, {
                 method: 'POST',
                 body: formData,
             });
             const uploadData = await uploadResponse.json();
-            console.log('Upload Data:', uploadData.data.map(img=>img.secure_url));
 
             if (uploadData.success) {
-                const product = {
-                    name: productDetails.name,
-                    images: uploadData.data.map(img => img.secure_url),
-                    category: productDetails.category,
-                    newprice: productDetails.newprice,
-                    oldprice: productDetails.oldprice,
-                    description: productDetails.description
-                };
-
-                const addProductResponse = await fetch(`http://localhost:${port}/addproduct`, {
+                product.images = uploadData.data.map(img => img.secure_url); // Assign the uploaded image URLs
+                
+                // Now send the product data to add it to the database
+                const addProductResponse = await fetch(`${baseurl}/addproduct`, {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',
@@ -67,7 +88,6 @@ const Addproduct = () => {
                 });
 
                 const data = await addProductResponse.json();
-                console.log(data);
 
                 if (data.success) {
                     alert("Product added successfully");
@@ -149,6 +169,52 @@ const Addproduct = () => {
                 </select>
             </div>
 
+            {/* Row for Brand and Colors */}
+            <div className="addproduct-row">
+                <div className="addproduct-itemfield">
+                    <label>Brand</label>
+                    <input 
+                        value={productDetails.brand} 
+                        onChange={changeHandler} 
+                        type="text" 
+                        name='brand' 
+                        placeholder='Brand' 
+                    />
+                </div>
+                <div className="addproduct-itemfield">
+                    <label>Colors (comma-separated)</label>
+                    <input 
+                        value={productDetails.colors.join(', ')} 
+                        onChange={(e) => arrayHandler(e, 'colors')} 
+                        type="text" 
+                        placeholder='e.g., red, blue, green' 
+                    />
+                </div>
+            </div>
+
+            {/* Row for Visible */}
+            <div className="addproduct-row2">
+                <div className="addproduct-itemfield2">
+                    <label>Visibility</label>
+                    <input 
+                        type="checkbox" 
+                        name="visible" 
+                        checked={productDetails.visible} 
+                        onChange={changeHandler} 
+                    />
+                </div>
+            </div>
+
+            <div className="addproduct-itemfield">
+                <label>Sizes (comma-separated)</label>
+                <input 
+                    value={productDetails.sizes.join(', ')} 
+                    onChange={(e) => arrayHandler(e, 'sizes')} 
+                    type="text" 
+                    placeholder='e.g., S, M, L' 
+                />
+            </div>
+
             <div className="addproduct-itemfield">
                 <div className="image-previews">
                     {images.length > 0 ? (
@@ -172,12 +238,11 @@ const Addproduct = () => {
                     hidden
                 />
             </div>
-
             {errorMessage && <p className="error-message">{errorMessage}</p>}
             <div className="btn-div">
-            <button onClick={addProduct} disabled={loading} className='addproduct-btn'>
-                {loading ? "Adding..." : "Add"}
-            </button>
+                <button onClick={addProduct} disabled={loading} className='addproduct-btn'>
+                    {loading ? "Adding..." : "Add"}
+                </button>
             </div>
         </div>
     );

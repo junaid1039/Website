@@ -1,20 +1,21 @@
 const mongoose = require('mongoose');
 
-
 const orderSchema = new mongoose.Schema({
+    orderId: {
+        type: String,
+        required: true
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId, // Reference to User
         ref: 'User',
         required: true
     },
-
     orderItems: [{
         product: {
             type: mongoose.Schema.Types.ObjectId, // Reference to Product
-            ref: 'Products', // Assuming you have a Products model
+            ref: 'Products',
             required: false
         },
-
         name: { type: String, required: true },
         quantity: { type: Number, required: true },
         price: { type: Number, required: true },
@@ -29,15 +30,14 @@ const orderSchema = new mongoose.Schema({
         phone: { type: Number, required: true }
     },
     paymentInfo: {
-        id: { type: String, required: true }, // Payment ID from the payment gateway
+        id: { type: String, required: true },
         status: { type: String, required: true },
-        method: {type: String, required: true}, // Payment status (e.g., "completed", "pending")
-        paidAt: { type: Date, required: true,}
-
+        method: { type: String, required: true },
+        paidAt: { type: Date, required: true }
     },
     orderStatus: {
         type: String,
-        default: 'Processing', // Default status of the order
+        default: 'Processing',
         required: true
     },
     totalPrice: {
@@ -45,10 +45,9 @@ const orderSchema = new mongoose.Schema({
         required: true
     },
     shippingPrice: { type: Number, required: true },
-
     dateOrdered: {
         type: Date,
-        default: Date.now // Automatically set the order creation date
+        default: Date.now
     }
 });
 

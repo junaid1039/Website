@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './orderdetails.css';
 import { RxCross2 } from "react-icons/rx";
 
-const Orderdetails = ({ onClose, orderId, onStatusUpdate }) => {
+const Orderdetails = ({ onClose, oid, onStatusUpdate }) => {
 
   const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
   
@@ -14,7 +14,7 @@ const Orderdetails = ({ onClose, orderId, onStatusUpdate }) => {
   // Function to update order status
   const updateOrderStatus = async () => {
     try {
-      const response = await fetch(`${baseurl}/updateOrderStatus/${orderId}`, {
+      const response = await fetch(`${baseurl}/updateOrderStatus/${oid}`, {
         method: 'PUT',
         headers: {
           'auth-token': `${sessionStorage.getItem('auth-token')}`,
@@ -40,7 +40,7 @@ const Orderdetails = ({ onClose, orderId, onStatusUpdate }) => {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await fetch(`${baseurl}/orderdetails/${orderId}`, {
+        const response = await fetch(`${baseurl}/orderdetails/${oid}`, {
           method: 'GET',
           headers: {
             'auth-token': `${sessionStorage.getItem('auth-token')}`,
@@ -67,7 +67,7 @@ const Orderdetails = ({ onClose, orderId, onStatusUpdate }) => {
     };
 
     fetchOrderDetails();
-  }, [orderId]);
+  }, [oid]);
 
   const handleStatusChange = (event) => {
     setOrderStatus(event.target.value);
@@ -90,7 +90,7 @@ const Orderdetails = ({ onClose, orderId, onStatusUpdate }) => {
   }
 
   const {
-    _id,
+    orderId,
     dateOrdered,
     totalPrice,
     orderItems,
@@ -103,7 +103,7 @@ const Orderdetails = ({ onClose, orderId, onStatusUpdate }) => {
       <RxCross2 className="close-btn" onClick={onClose} />
       <h2>Order Details</h2>
       <div className="order-info">
-        <p><strong>Order ID:</strong> {_id}</p>
+        <p><strong>Order ID:</strong> {orderId}</p>
         <p><strong>Order Date:</strong> {new Date(dateOrdered).toLocaleString()}</p>
         <p><strong>Order Price:</strong> ${totalPrice.toFixed(2)}</p>
         <p><strong>Payment Method:</strong> {paymentInfo.method}</p>
@@ -134,10 +134,10 @@ const Orderdetails = ({ onClose, orderId, onStatusUpdate }) => {
       <div className="status-update">
         <h3>Order Status</h3>
         <select value={orderStatus} onChange={handleStatusChange} className="select">
-          <option value="Confirmed">Confirmed</option>
           <option value="Processing">Processing</option>
           <option value="Shipped">Shipped</option>
           <option value="Delivered">Delivered</option>
+          <option value="Cancelled">Cancelled</option>
         </select>
         <button className="button" onClick={handleUpdateClick}>Update</button>
       </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './productlist.css';
 import { RiDeleteBin5Line, RiEdit2Fill } from "react-icons/ri";
 import { useNavigate } from 'react-router-dom';
@@ -6,41 +6,47 @@ import { Context } from '../../context API/Contextapi';
 import Adminloader from '../adminloader/Adminloader';
 
 const Productlist = () => {
-  const { confirmDelete, allproducts } = useContext(Context);
-  const [loading, setLoading] = useState(false);
+  const { confirmDelete, fnadminproducts } = useContext(Context);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
-  
+  const [Adminproducts, setAdminProducts] = useState([]); // State for products
+
   const navigate = useNavigate();
 
-  // Optional: Uncomment if you need to fetch product data on mount
-  // useEffect(() => {
-  //   const getData = async () => {
-  //     setLoading(true);
-  //     const data = await fetchInfo(); // Assuming fetchInfo() is available
-  //     if (data.success) {
-  //       setLoading(false);
-  //     } else {
-  //       setError(data.error); // Set the error if fetch failed
-  //       setLoading(false);
-  //     }
-  //   };
-  //
-  //   getData();
-  // }, []);
+  useEffect(() => {
+    const loadProducts = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const products = await fnadminproducts(); // Fetch products
+        setAdminProducts(products.data.products); // Set products in state
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadProducts();
+  }, []); // Dependency on fnadminproducts
 
   const handleDeleteClick = (id) => {
     setProductToDelete(id);
     setShowModal(true);
   };
 
-  const handleConfirmDelete = () => {
-    confirmDelete(productToDelete, setShowModal);
-  };
-
-  const handleEditClick = (id) => {
-    navigate(`editproduct/${id}`);
+  const handleConfirmDelete = async () => {
+    try {
+      await confirmDelete(productToDelete); // Delete the product
+      setShowModal(false);
+      // Optionally refresh the product list
+      const products = await fnadminproducts(); // Fetch updated product list
+      setAdminProducts(products); // Update state with new products
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   if (loading) {
@@ -64,19 +70,23 @@ const Productlist = () => {
       </div>
       <div className="listproduct-allproducts">
         <hr />
-        {allproducts.length === 0 ? (
+        {Adminproducts.length === 0 ? (
           <p>No products available</p>
         ) : (
-          allproducts.map((product) => (
+          Adminproducts.map((product) => (
             <React.Fragment key={product.id}>
               <div className="listproduct-format-main listproduct-format">
-                <img src={product.images[0]} alt={product.name} className="listproduct-product-img" />
+                <img 
+                  src={product.images.length > 0 ? product.images[0] : 'default-image-url.jpg'} 
+                  alt={product.name} 
+                  className="listproduct-product-img" 
+                />
                 <p>{product.name}</p>
                 <p>${product.oldprice}</p>
                 <p>${product.newprice}</p>
                 <p>{product.category}</p>
                 <p>
-                  <RiEdit2Fill onClick={() => handleEditClick(product.id)} className="edit-icon" />
+                  <RiEdit2Fill onClick={() => navigate(`editproduct/${product.id}`)} className="edit-icon" />
                   <RiDeleteBin5Line onClick={() => handleDeleteClick(product.id)} className="delete-icon" />
                 </p>
               </div>

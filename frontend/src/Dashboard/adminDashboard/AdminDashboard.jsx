@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
 import './admindashboard.css';
 import { Line } from 'react-chartjs-2';
 import { FaBox, FaUsers, FaShoppingCart, FaDollarSign } from 'react-icons/fa';
@@ -19,8 +19,9 @@ import Adminloader from '../adminloader/Adminloader';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const AdminDashboard = () => {
-    const { fetchOrders, fetchInfo, fetchUsers,allproducts} = useContext(Context);
+    const { fetchOrders, fnadminproducts, fetchUsers } = useContext(Context);
     const navigate = useNavigate();
+    
     const [stats, setStats] = useState({
         totalProducts: 0,
         totalUsers: 0,
@@ -32,40 +33,36 @@ const AdminDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchDashboardData = async () => {
-            setLoading(true);
-            try {
-               
-                await fetchDashboardStats();
-                await fetchOrdersChart();
-            } catch (err) {
-                setError(err.message || 'An error occurred');
-            } finally {
-                setLoading(false);
+    const fetchDashboardData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const productsResult = await fnadminproducts();
+            if (productsResult.success) {
+                const totalProducts = productsResult.data.products.length;
+                await fetchDashboardStats(totalProducts);
+                await fetchOrdersChart(); // Fetch order chart data
             }
-        };
-        fetchDashboardData();
+        } catch (err) {
+            setError(err.message || 'An error occurred');
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
-    const fetchDashboardStats = async () => {
+    const fetchDashboardStats = async (totalProducts) => {
         try {
-            
-            const users = await fetchUsers();
-            const products = await fetchInfo();
-            const orders = await fetchOrders();
-
+            const [users, orders] = await Promise.all([fetchUsers(), fetchOrders()]); // Fetch users and orders concurrently
             const totalSales = orders.reduce((acc, order) => acc + order.totalPrice, 0);
 
             setStats({
-                totalProducts: products.data.products.length,
+                totalProducts,
                 totalUsers: users.length,
                 totalOrders: orders.length,
-                totalSales: totalSales,
+                totalSales,
             });
             setLatestOrders(orders.slice(0, 5));
         } catch (err) {
-            throw new Error('Failed to load dashboard stats');
+            setError('Failed to load dashboard stats');
         }
     };
 
@@ -107,10 +104,12 @@ const AdminDashboard = () => {
         };
     };
 
-    const handleNavigate = (path) => () => navigate(path);
+    useEffect(() => {
+        fetchDashboardData(); // Call the memoized function
+    }, [fetchDashboardData]);
 
     if (loading) {
-        return <div><Adminloader /></div>;
+        return <Adminloader />;
     }
 
     if (error) {
@@ -123,21 +122,21 @@ const AdminDashboard = () => {
                 <h2>Admin Dashboard</h2>
             </div>
             <div className="dashboard-stats">
-                <div className="stats-box" onClick={handleNavigate('/admin/productlist')}>
+                <div className="stats-box" onClick={() => navigate('/admin/productlist')}>
                     <FaBox className="stat-icon" />
                     <div>
                         <p>Total Products</p>
                         <h3>{stats.totalProducts}</h3>
                     </div>
                 </div>
-                <div className="stats-box" onClick={handleNavigate('/admin/users')}>
+                <div className="stats-box" onClick={() => navigate('/admin/users')}>
                     <FaUsers className="stat-icon" />
                     <div>
                         <p>Total Users</p>
                         <h3>{stats.totalUsers}</h3>
                     </div>
                 </div>
-                <div className="stats-box" onClick={handleNavigate('/admin/orders')}>
+                <div className="stats-box" onClick={() => navigate('/admin/orders')}>
                     <FaShoppingCart className="stat-icon" />
                     <div>
                         <p>Total Orders</p>
@@ -161,8 +160,8 @@ const AdminDashboard = () => {
                 <h3>Latest Orders</h3>
                 <ul>
                     {latestOrders.length > 0 ? (
-                        latestOrders.map((order, index) => (
-                            <li key={index}>
+                        latestOrders.map((order) => (
+                            <li key={order._id}>
                                 Order # {order._id} - ${order.totalPrice} - {new Date(order.dateOrdered).toLocaleDateString()}
                             </li>
                         ))
