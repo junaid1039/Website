@@ -36,7 +36,7 @@ const Relatedproducts = () => {
                         key={product.id} 
                         id={product.id} 
                         name={product.name} 
-                        image={product.image} 
+                        image={product.images} 
                         newprice={product.newprice} 
                         oldprice={product.oldprice} 
                     />
