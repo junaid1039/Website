@@ -45,7 +45,7 @@
 .product-display__right {
     display: flex;
     flex-direction: column;
-    margin: 0 20px;
+    padding: 0 15px;
 }
 
 .product-display__right h1 {
