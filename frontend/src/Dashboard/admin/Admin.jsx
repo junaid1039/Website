@@ -9,7 +9,7 @@ import AdminNavbar from '../adminnavbar/AdminNavbar.jsx';
 import AdminOrders from '../allorders/AdminOrders.jsx';
 import AdminUsers from '../adminusers/Adminusers.jsx';
 import AdminDashboard from '../adminDashboard/AdminDashboard.jsx';
-import AdminCarousel from '../admincarousel/Admincarousel.jsx';
+import AdminCarousel from '../admincarousel/AdminCarousel.jsx';
 import AdminQueries from '../adminquories/AdminQueries.jsx';
 
 
