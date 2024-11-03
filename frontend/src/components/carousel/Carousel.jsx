@@ -1,56 +1,68 @@
-import React, { useState, useEffect } from "react";
-import { IoIosArrowBack, IoIosArrowForward} from "react-icons/io";
-
-import "./Bcarosel.css"; 
+import React, { useState, useEffect, useContext } from "react";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { Context } from '../../context API/Contextapi';
+import "./carousel.css";
+import { Link } from "react-router-dom";
 
 const Bcarosel = () => {
+  const { fetchCarousels } = useContext(Context);
+  const [slides, setSlides] = useState([]);
   const [slide, setSlide] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setSlide((prevSlide) =>
-        prevSlide === slides.slides.length - 1 ? 0 : prevSlide + 1
-      );
-    }, 4000); // Change slide every 3 seconds
+    const loadSlides = async () => {
+      const fetchedSlides = await fetchCarousels();
+      setSlides(fetchedSlides);
+    };
+    loadSlides();
+  }, [fetchCarousels]);
 
-    return () => clearInterval(interval); // Clean up interval on component unmount
-  }, []);
+  useEffect(() => {
+    if (slides && slides.length > 0) {
+      const interval = setInterval(() => {
+        setSlide((prevSlide) => (prevSlide === slides.length - 1 ? 0 : prevSlide + 1));
+      }, 4000); // Change slide every 4 seconds
+
+      return () => clearInterval(interval); // Clean up interval on component unmount
+    }
+  }, [slides]);
 
   const nextSlide = () => {
-    setSlide((prevSlide) =>
-      prevSlide === slides.slides.length - 1 ? 0 : prevSlide + 1
-    );
+    setSlide((prevSlide) => (prevSlide === slides.length - 1 ? 0 : prevSlide + 1));
   };
 
   const prevSlide = () => {
-    setSlide((prevSlide) =>
-      prevSlide === 0 ? slides.slides.length - 1 : prevSlide - 1
-    );
+    setSlide((prevSlide) => (prevSlide === 0 ? slides.length - 1 : prevSlide - 1));
   };
+
+  // Check if slides exist
+  if (!slides || slides.length === 0) {
+    return <div className="carousel-error">No slides available</div>;
+  }
 
   return (
     <div className="main-c">
-    <div className="carousel">
-      <IoIosArrowBack onClick={prevSlide} className="arrow arrow-left" />
-      {slides.slides.map((item, idx) => (
-        <img
-          src={item.src}
-          alt={item.alt}
-          key={idx}
-          className={slide === idx ? "slide" : "slide slide-hidden"}
-        />
-      ))}
-      <IoIosArrowForward onClick={nextSlide} className="arrow arrow-right" />
-      <span className="indicators">
-        {slides.slides.map((_, idx) => (
-          <button
+      <div className="carousel">
+        <IoIosArrowBack onClick={prevSlide} className="arrow arrow-left" />
+        {slides.map((item, idx) => (
+          <Link to={item.linkto}><img
+            src={item.carousel} // Assuming each slide has a `carousel` field for the image URL
+            alt={`Slide ${idx}`}
             key={idx}
-            className={slide === idx ? "indicator" : "indicator indicator-inactive"}
-            onClick={() => setSlide(idx)}
-          ></button>
+            className={slide === idx ? "slide" : "slide slide-hidden"}
+          /></Link>
         ))}
-      </span>
-    </div>
+        <IoIosArrowForward onClick={nextSlide} className="arrow arrow-right" />
+        <span className="indicators">
+          {slides.map((_, idx) => (
+            <button
+              key={idx}
+              className={slide === idx ? "indicator" : "indicator indicator-inactive"}
+              onClick={() => setSlide(idx)}
+            ></button>
+          ))}
+        </span>
+      </div>
     </div>
   );
 };

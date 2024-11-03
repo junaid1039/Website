@@ -7,16 +7,23 @@ import { useNavigate } from 'react-router-dom';
 import Description from '../../components/description/Description';
 
 const Productdisplay = ({ product }) => {
-
     const [mainImage, setMainImage] = useState(product.images && product.images.length > 0 ? product.images[0] : product.image);
-    const [selectedSize, setSelectedSize] = useState(product.sizes ? product.sizes[0] : null); // Default to the first size
-    const [selectedColor, setSelectedColor] = useState(product.colors ? product.colors[0] : null); // Default to the first color
+    const [selectedSize, setSelectedSize] = useState(product.sizes ? product.sizes[0] : null);
+    const [selectedColor, setSelectedColor] = useState(product.colors ? product.colors[0] : null);
     const { addToCart } = useContext(Context);
     const navigate = useNavigate();
-    console.log("Here are the product data", product);
-
+    
     const handleAddToCart = () => {
-        addToCart(product.id);
+        if ((product.sizes && product.sizes.length > 0 && !selectedSize) || 
+            (product.colors && product.colors.length > 0 && !selectedColor)) {
+            alert("Please select both a size and a color before adding to cart.");
+        } else {
+            addToCart({
+                id: product.id,
+                size: selectedSize,
+                color: selectedColor,
+            });
+        }
     };
 
     const handleImageClick = (image) => {
@@ -24,8 +31,17 @@ const Productdisplay = ({ product }) => {
     };
 
     const handleBuyNow = () => {
-        addToCart(product.id);
-        navigate('/cart/checkout');
+        if ((product.sizes && product.sizes.length > 0 && !selectedSize) || 
+            (product.colors && product.colors.length > 0 && !selectedColor)) {
+            alert("Please select both a size and a color before buying.");
+        } else {
+            addToCart({
+                id: product.id,
+                size: selectedSize,
+                color: selectedColor,
+            });
+            navigate('/cart/checkout');
+        }
     };
 
     return (
@@ -39,7 +55,7 @@ const Productdisplay = ({ product }) => {
                         {product.images && product.images.length > 0 ? (
                             product.images.map((img, index) => (
                                 <img
-                                    key={img} // Using image URL as key, ensure it's unique
+                                    key={img}
                                     src={img}
                                     alt={`Product thumbnail ${index + 1}`}
                                     onClick={() => handleImageClick(img)}
@@ -120,12 +136,12 @@ Productdisplay.propTypes = {
     product: PropTypes.shape({
         id: PropTypes.number.isRequired,
         image: PropTypes.string.isRequired,
-        images: PropTypes.arrayOf(PropTypes.string), // Specify the type of items in the images array
+        images: PropTypes.arrayOf(PropTypes.string),
         name: PropTypes.string.isRequired,
         oldprice: PropTypes.number,
         newprice: PropTypes.number.isRequired,
-        sizes: PropTypes.arrayOf(PropTypes.string), // Array of sizes
-        colors: PropTypes.arrayOf(PropTypes.string), // Array of colors
+        sizes: PropTypes.arrayOf(PropTypes.string),
+        colors: PropTypes.arrayOf(PropTypes.string),
         category: PropTypes.string.isRequired,
         description: PropTypes.string.isRequired,
     }).isRequired,

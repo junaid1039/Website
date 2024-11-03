@@ -8,12 +8,13 @@
     top: 2em;
     left: 0;
     z-index: 100;
-    background-color: #f1f6eb;
+    background-color: #f1f6ebcf;
     transition: top 0.1s ease-out, 1s ease;
 }
 
 .navbar.scrolled {
    top: 0;
+   background-color: #f1f6eb;
 }
 
 .child-nav {
@@ -59,9 +60,9 @@
 .middle {
     display: flex;
     justify-content: center;
+    align-items: center;
     z-index: 50;
 }
-
 .middle img {
     height: 2.5em;
 }
@@ -142,19 +143,34 @@
     cursor: pointer;
 }
 .menu-items {
-    list-style: none;
+    list-style: none; /* Remove bullet points */
     width: 100%;
     padding: 0;
     color: black;
 }
+
 .menu-items li {
+    list-style-type: none; /* Ensure no bullet points */
+    padding: 0; /* Reset padding */
+    margin: 0; /* Reset margin */
     font-size: 1.2em;
-    margin-bottom: 5px;
+    border: none;
+    background-color: inherit;
 }
+
 .menu-items li a {
-    color: black;
-    text-decoration: none;
+    color: black; /* Link color */
+    text-decoration: none; /* Remove underline */
+    display: block; 
+    padding: 5px; 
+    transition: background-color 0.3s;
+   
 }
+
+.menu-items li a:hover {
+    background-color: #f0f0f0; /* Optional: Change background on hover */
+}
+
 /* Backdrop */
 .backdrop {
     position: fixed;
@@ -170,8 +186,13 @@
     width: 90%;
     height: 100%;
     padding-left: 10%;
+    padding-top: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
 }
-.menubottom h5{
+.b-d{
+    display: flex;
     gap: 1em;
 }
 

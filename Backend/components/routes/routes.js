@@ -5,10 +5,26 @@ const productController = require('../controllers/productControllers');
 const userController = require('../controllers/userControllers');
 const cartController = require('../controllers/cartControllers');
 const orderController = require('../controllers/orderControllers');
-const uploadImages = require('../controllers/imageControllers') // Image controller for upload
+const {uploadImages, uploadCarousel} = require('../controllers/imageControllers') // Image controller for upload
 const { auth, userauth } = require('../middleware/auth'); // Middleware for authenticating users
+const carouselController  = require('../controllers/carouselController');
+const {createQuery, getQueries,updateQuery,deleteQuery} = require('../controllers/userquoryController')
+
 const upload = require('../middleware/multer')
 
+
+// Define the routes for quories
+router.post('/createquory', createQuery); // Create a new query
+router.get('/allquories', getQueries); // Get all queries
+//router.get('/:id', getQueryById); // Get a query by ID
+router.put('/updatequory/:id', updateQuery); // Update a query by ID
+router.delete('/delquory/:id', deleteQuery); // Delete a query by ID
+
+//carousel routes
+router.post('/uploadcarousel',auth, upload.single('image'), uploadCarousel);
+router.post('/postcarousel', auth, carouselController.addCarousel);
+router.get('/getcarousel', carouselController.getAllCarousels);
+router.delete('/delcarousel', auth, carouselController.deleteCarousel);
 
 router.post('/uploadimage', upload.array('images', 5), uploadImages); // Handles multiple images
  // Handles multiple images
