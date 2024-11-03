@@ -2,7 +2,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-    margin: 50px 5%;
+    margin: 80px 5%;
 }
 
 .product-display__left {
@@ -185,7 +185,7 @@
     .product-display {
         display: flex;
         flex-direction: column;
-        margin: 20px 5%;
+        margin: 70px 5%;
     }
 
     .product-display__left {
@@ -220,6 +220,6 @@
 }
 @media (max-width: 500px){
     .product-display {
-        margin: 20px 0;
+        margin: 70px 0;
     }
 }

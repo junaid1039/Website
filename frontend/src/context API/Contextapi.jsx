@@ -445,6 +445,28 @@ const ContextProvider = (props) => {
             return []; // Return an empty array on error
         }
     };
+    
+     // Fetch all carousel entries
+     const fetchCarousels = async () => {
+        try {
+            const response = await fetch(`${baseurl}/getcarousel`, {
+                method: 'GET',
+                headers: {
+                    'auth-token': sessionStorage.getItem('auth-token'),
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                return data.carousels;
+            } else {
+                console.error('Failed to fetch carousels:', data.message);
+            }
+        } catch (error) {
+            console.error('Error fetching carousels:', error);
+        }
+    };
 
 
 
@@ -454,6 +476,7 @@ const ContextProvider = (props) => {
         cartItems,
         Adminproducts,
         isLoggedIn,
+        fetchCarousels,
         fnadminproducts,
         fetchUsers,
         fetchOrders,

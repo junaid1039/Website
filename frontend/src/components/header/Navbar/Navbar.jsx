@@ -10,6 +10,8 @@ import { AiOutlineClose } from 'react-icons/ai';
 import { BsPeople } from "react-icons/bs";
 import { Context } from '../../../context API/Contextapi';
 import { FaUserCheck } from "react-icons/fa6";
+import { TbMessageForward } from "react-icons/tb";
+
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -78,9 +80,9 @@ const Navbar = () => {
             <AiOutlineClose className="close-icon" onClick={toggleMenu} aria-label="Close Menu" />
           </div>
           <ul className="menu-items">
-            {['Home', 'Women Shoes', 'Bags', 'Perfumes', 'Wallets', 'Men Shoes', 'Belts', 'Horse Saddles'].map((label, index) => (
+            {['Home', 'Women Shoes', 'Bags', 'Perfumes', 'Wallets', 'Men Shoes', 'Belts', 'Horse Saddle'].map((label, index) => (
               <li key={index}>
-                <Link className='cl' to={label === 'Home' ? '/' : `/${label.toLowerCase().replace(' ', '-')}`} onClick={toggleMenu}>
+                <Link className='cl' to={label === 'Home' ? '/' : `/${label.toLowerCase()}`} onClick={toggleMenu}>
                   {label}
                 </Link>
               </li>
@@ -89,8 +91,9 @@ const Navbar = () => {
 
         </div>
         <div className="menubottom">
-          <h5><span><BsPeople /></span>About us</h5>
-          <Link className='cl' to="/account" ><h5><span><GoPerson /></span>Account</h5></Link>
+        <Link className='cl' to="/aboutus" ><div className='b-d'><span><BsPeople /></span><span>About us</span></div></Link>
+          <Link className='cl' to="/account" ><div className='b-d'><span><GoPerson /></span><span>Account</span></div></Link>
+          <Link className='cl' to="/contactus" ><div className='b-d'><span><TbMessageForward /></span><span>Contact us</span></div></Link>
         </div>
       </div>
 

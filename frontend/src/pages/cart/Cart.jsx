@@ -56,7 +56,7 @@ export const Cart = () => {
                                                             <RxCross2 onClick={() => removeFromCart(product.id)} />
                                                         </div>
                                                         <div className='details'>
-                                                            <div className="color"> other details here</div>
+                                                            <div className="color">{product.colors}, {product.sizes}</div>
                                                             <div className="d-q"><AiOutlineMinus onClick={() => {
                                                                 if (cartItems[product.id] > 0) removeFromCart(product.id);
                                                             }} />

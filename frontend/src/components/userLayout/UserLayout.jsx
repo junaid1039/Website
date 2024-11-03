@@ -10,6 +10,10 @@ import Login from '../../pages/login/signup/Login';
 import Checkout from '../../pages/checkout/Checkout';
 import Payment from '../confirmorder/Payment';
 import Ordersuccess from '../ordersuccess/Ordersuccess';
+import AboutUs from '../aboutus/AboutUs';
+import ContactUs from '../contactus/ContactUs';
+
+
 
 const UserLayout = () => {
     return (
@@ -31,6 +35,9 @@ const UserLayout = () => {
                 <Route path='/cart/checkout' element={<Checkout />} />
                 <Route path='/cart/checkout/payment' element={<Payment />} />
                 <Route path='/ordersuccess' element={<Ordersuccess />} />
+                <Route path='/aboutus' element={<AboutUs />} />
+                <Route path='/contactus' element={<ContactUs/>}/>
+                
             </Routes>
             <Footer />
         </>

@@ -6,6 +6,10 @@ import { LuLayoutDashboard } from "react-icons/lu";
 import { MdOutlineVerified } from "react-icons/md";
 import { LiaUserSolid } from "react-icons/lia";
 import { FiMenu } from "react-icons/fi"; // Hamburger icon
+import { BiCarousel } from "react-icons/bi";
+import { AiOutlineMessage } from "react-icons/ai";
+
+
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,6 +42,14 @@ const Sidebar = () => {
       <Link to="users" className="sidebar_item" aria-label="Users">
         <LiaUserSolid />
         <p>Manage Users</p>
+      </Link>
+      <Link to="carousel" className="sidebar_item" aria-label="Users">
+        <BiCarousel />
+        <p>Manage Carousel</p>
+      </Link>
+      <Link to="queries" className="sidebar_item" aria-label="Users">
+        <AiOutlineMessage />
+        <p>Manage Queries</p>
       </Link>
     </div>
   );

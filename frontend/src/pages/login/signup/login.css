@@ -2,12 +2,13 @@
 .loginsignup {
     width: calc(100% - 30px); /* Account for 15px margin on both sides */
     height: 100%;
-    padding: 50px 0;
+    padding: 70px 0;
     margin: 0 15px; /* Add 15px margin to the left and right */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     justify-content: center; 
     align-items: center;
+    
 }
 
 /* Box Container */
