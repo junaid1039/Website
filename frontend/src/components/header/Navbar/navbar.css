@@ -63,6 +63,10 @@
     align-items: center;
     z-index: 50;
 }
+.middle a{
+    display: flex;
+    align-items: center;
+}
 .middle img {
     height: 2.5em;
 }
@@ -206,6 +210,9 @@
     .account span,
     .tcart {
         display: none;
+    }
+    .child-nav {
+        padding: 0;
     }
 }
 
