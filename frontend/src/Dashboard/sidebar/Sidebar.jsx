@@ -7,6 +7,7 @@ import { MdOutlineVerified } from "react-icons/md";
 import { LiaUserSolid } from "react-icons/lia";
 import { FiMenu } from "react-icons/fi"; // Hamburger icon
 import { BiCarousel } from "react-icons/bi";
+import { IoMdNotifications } from "react-icons/io";
 import { AiOutlineMessage } from "react-icons/ai";
 
 
@@ -50,6 +51,10 @@ const Sidebar = () => {
       <Link to="queries" className="sidebar_item" aria-label="Users">
         <AiOutlineMessage />
         <p>Manage Queries</p>
+      </Link>
+      <Link to="popup" className="sidebar_item" aria-label="Users">
+        <IoMdNotifications />
+        <p>Popups</p>
       </Link>
     </div>
   );

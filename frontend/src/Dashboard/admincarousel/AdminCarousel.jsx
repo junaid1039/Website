@@ -11,6 +11,8 @@ const AdminCarousel = () => {
     const [loading, setLoading] = useState(false);
     const [carousellink, setCarousellink] = useState(''); // State for the link input
     const [selectedOption, setSelectedOption] = useState(''); // State for the selected option
+    const [title, setTitle] = useState(''); // State for title input
+    const [description, setDescription] = useState(''); // State for description input
 
     // Fetch carousels on component mount
     useEffect(() => {
@@ -50,19 +52,26 @@ const AdminCarousel = () => {
             if (uploadData.success) {
                 const secureUrl = uploadData.data.secure_url;
 
-                // Send secure URL and selected option to backend
+                // Send secure URL, title, description, and selected option to backend
                 const postResponse = await fetch(`${baseurl}/postcarousel`, {
                     method: 'POST',
                     headers: {
                         'auth-token': sessionStorage.getItem('auth-token'),
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ carousel: secureUrl, linkto: selectedOption }),
+                    body: JSON.stringify({
+                        carousel: secureUrl,
+                        linkto: selectedOption,
+                        title: title,
+                        description: description,
+                    }),
                 });
 
                 const postData = await postResponse.json();
                 if (postData.success) {
                     setImageFiles([]);
+                    setTitle('');
+                    setDescription('');
                     setEditId(null);
                     setLoading(false);
 
@@ -120,6 +129,19 @@ const AdminCarousel = () => {
                     onChange={(e) => setImageFiles(Array.from(e.target.files))}
                     required
                 />
+                <input
+                    type="text"
+                    placeholder="Title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                />
+                <textarea
+                    placeholder="Description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                />
                 <select 
                     value={selectedOption} 
                     onChange={(e) => setSelectedOption(e.target.value)} 
@@ -145,6 +167,10 @@ const AdminCarousel = () => {
                 {carousels.map((carousel) => (
                     <li key={carousel._id}>
                         <img src={carousel.carousel} alt={`Carousel ${carousel._id}`} className="carousel-image" />
+                        <div>
+                            <h3>{carousel.title}</h3>
+                            <p>{carousel.description}</p>
+                        </div>
                         <button onClick={() => handleDelete(carousel._id)}>Delete</button>
                     </li>
                 ))}

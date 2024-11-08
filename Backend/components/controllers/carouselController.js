@@ -3,12 +3,19 @@ const Carousel = require('../models/carousel');
 // Add a new carousel entry
 const addCarousel = async (req, res) => {
     try {
-        const { carousel, linkto } = req.body; // Destructure carousel from request body
+        const { carousel, linkto, title, description } = req.body; // Include title and description from request body
+
         if (!carousel) {
-            return res.status(400).json({ message: 'Carousel entry is required.' });
+            return res.status(400).json({ message: 'Carousel image URL is required.' });
         }
 
-        const newCarousel = new Carousel({ carousel, linkto });
+        const newCarousel = new Carousel({
+            carousel,
+            linkto: linkto || null, // Optional fields
+            title: title || null,
+            description: description || null,
+        });
+
         await newCarousel.save();
 
         return res.status(201).json({ success: true, carousel: newCarousel });
@@ -21,7 +28,7 @@ const addCarousel = async (req, res) => {
 // Fetch all carousel entries
 const getAllCarousels = async (req, res) => {
     try {
-        const carousels = await Carousel.find();
+        const carousels = await Carousel.find(); // Fetch all carousel entries
         return res.status(200).json({ success: true, carousels });
     } catch (error) {
         console.error('Error fetching carousels:', error);
@@ -31,7 +38,7 @@ const getAllCarousels = async (req, res) => {
 
 // Delete a carousel entry
 const deleteCarousel = async (req, res) => {
-    const { id } = req.body; // Get the ID from request parameters
+    const { id } = req.body; // Get the ID from request body
 
     try {
         const deletedCarousel = await Carousel.findByIdAndDelete(id);
