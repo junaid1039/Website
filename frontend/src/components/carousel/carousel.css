@@ -99,10 +99,11 @@
 }
 
 .indicator {
-  width: 10px;
-  height: 10px;
+  width: 13px;
+  height: 13px;
+  padding: 0;
   margin: 0 5px;
-  background-color: #fff;
+  background-color: #ffffffe3;
   border-radius: 50%;
   border: none;
   cursor: pointer;

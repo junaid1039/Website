@@ -17,7 +17,7 @@ const Footer = React.memo(() => {
             <h5>Customer Service</h5>
             <p>Monday to Friday: 9am - 9pm EST, Saturday: 10am - 9pm EST</p>
             <a href="tel:your-phone-number">+923021725822</a>
-            <button onClick={() => navigate('/contactus')}>Contact us</button>
+            <label onClick={() => navigate('/contactus')}>Contact us</label>
           </div>
           <div className="f-middle">
             <h5>NewsLetter</h5>
