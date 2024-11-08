@@ -11,6 +11,7 @@ import AdminUsers from '../adminusers/Adminusers.jsx';
 import AdminDashboard from '../adminDashboard/AdminDashboard.jsx';
 import AdminCarousel from '../admincarousel/AdminCarousel.jsx';
 import AdminQueries from '../adminquories/AdminQueries.jsx';
+import Adminpopup from '../popup/Adminpopup.jsx';
 
 
 
@@ -33,6 +34,7 @@ const Admin = () => {
             <Route path='users' element={<AdminUsers />} />
             <Route path='carousel' element={<AdminCarousel />} />
             <Route path='queries' element={<AdminQueries/>} />
+            <Route path='popup' element={<Adminpopup/>}/>
           </Routes>
         </div>
       </div>

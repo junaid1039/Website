@@ -1,7 +1,8 @@
 
 .admin-carousel-container {
-    max-width: 800px;
-    margin: 20px auto; /* Add margin for better spacing */
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 30px; /* Add margin for better spacing */
     padding: 20px;
     background-color: #fff;
     border-radius: 8px;
@@ -27,6 +28,10 @@ form input[type="file"] {
     border: 1px solid #ddd;
     border-radius: 4px;
 }
+form textarea{
+    width: 100%;
+    margin: 1em 0;
+}
 
 form select {
     margin-bottom: 10px; /* Consistent spacing with file input */
@@ -47,6 +52,7 @@ form button {
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s; /* Added transform for scale effect */
 }
+
 
 form button:hover {
     background-color: #218838;

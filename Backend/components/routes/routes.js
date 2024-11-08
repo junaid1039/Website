@@ -9,8 +9,20 @@ const {uploadImages, uploadCarousel} = require('../controllers/imageControllers'
 const { auth, userauth } = require('../middleware/auth'); // Middleware for authenticating users
 const carouselController  = require('../controllers/carouselController');
 const {createQuery, getQueries,updateQuery,deleteQuery} = require('../controllers/userquoryController')
+const PopupController = require('../controllers/popupControllers');
 
 const upload = require('../middleware/multer')
+
+
+
+
+//popup Routes
+router.post('/createpopup', PopupController.createPopup);
+router.get('/allpopups', PopupController.getAllPopups);
+router.get('/active', PopupController.getActivePopups);
+router.get('/getbyid/:id', PopupController.getPopupById);
+router.put('/update/:id', PopupController.updatePopup);
+router.delete('/del/:id', PopupController.deletePopup);
 
 
 // Define the routes for quories
