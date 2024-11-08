@@ -21,7 +21,6 @@ const Body = () => {
         }
         
         const result = await response.json();
-        console.log("here are the data", result);
         const activePopups = result.data;
 
         // Check if there are active popups
