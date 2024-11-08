@@ -5,7 +5,7 @@
     align-items: center;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     position: fixed;
-    top: 2em;
+    top: 1.4em;
     left: 0;
     z-index: 100;
     background-color: #f1f6ebcf;
@@ -21,7 +21,7 @@
     width: 95%;
     display: grid;
     grid-template-columns: 40% 20% 40%;
-    padding: 0.5em 0;
+    padding: 0.4em 0;
     margin: 0 auto;
 }
 
@@ -40,7 +40,7 @@
 
 .menu svg,
 .right svg {
-    font-size: 1.5em;
+    font-size: 1.3em;
 }
 
 .search {
@@ -68,7 +68,7 @@
     align-items: center;
 }
 .middle img {
-    height: 2.5em;
+    height: 2.2em;
 }
 
 .right {
