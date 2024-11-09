@@ -189,13 +189,18 @@ const getProductById = async (req, res) => {
 };
 
 // Fetch perfumes or other categories
-const perfumes = async (req, res) => {
+const subcategorys = async (req, res) => {
     try {
-        const perfumeProducts = await Product.find({ category: 'perfume' });
-        res.json({ success: true, perfumes: perfumeProducts });
+        const { category } = req.query; // Read from query instead of body
+        if (!category) {
+            return res.status(400).json({ success: false, message: 'Category is required' });
+        }
+        const products = await Product.find({ category }).limit(4);
+        res.json({ success: true, products });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Failed to fetch perfumes', error });
+        res.status(500).json({ success: false, message: 'Failed to fetch products', error });
     }
 };
 
-module.exports = { addProduct, removeProduct, userAllProducts, adminAllProducts, editProduct, perfumes, getProductById };
+
+module.exports = { addProduct, removeProduct, userAllProducts, adminAllProducts, editProduct, subcategorys, getProductById };

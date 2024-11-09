@@ -13,8 +13,8 @@ const Bcarosel = () => {
   useEffect(() => {
     const loadSlides = async () => {
       const fetchedSlides = await fetchCarousels();
-      setSlides(fetchedSlides);
-
+      const filteredSlides = fetchedSlides.filter(slide => slide.subcategory === null);
+      setSlides(filteredSlides);
     };
     loadSlides();
   }, [fetchCarousels]);

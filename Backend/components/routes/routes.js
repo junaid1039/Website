@@ -50,6 +50,7 @@ router.post('/addproduct',auth, productController.addProduct); // Adds a new pro
 router.post('/removeproduct', auth, productController.removeProduct); // Removes a product
 router.get('/allproducts', productController.userAllProducts); // Fetches all visible products
 router.get('/adminproducts', auth, productController.adminAllProducts);// fetch all products
+router.get('/subcategorys', productController.subcategorys); // Fetches all subcategories
 
 //verify Token
 router.get('/verification', auth);

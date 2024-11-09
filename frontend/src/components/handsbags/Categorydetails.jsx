@@ -21,7 +21,8 @@ const Categorydetails = React.memo(({ data, heading, oneliner, category, banner 
           {data.map((item) => (
             <Pitem 
               key={item.id || item.name}  // Use a unique ID if available
-              image={item.image} 
+              id={item.id}
+              image={item.images} 
               name={item.name} 
               oldprice={item.oldprice} 
               newprice={item.newprice} 

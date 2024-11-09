@@ -9,12 +9,11 @@ const AdminCarousel = () => {
     const [imageFiles, setImageFiles] = useState([]);
     const [editId, setEditId] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [carousellink, setCarousellink] = useState(''); // State for the link input
-    const [selectedOption, setSelectedOption] = useState(''); // State for the selected option
-    const [title, setTitle] = useState(''); // State for title input
-    const [description, setDescription] = useState(''); // State for description input
+    const [selectedOption, setSelectedOption] = useState('');
+    const [subcategory, setSubcategory] = useState('');
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
 
-    // Fetch carousels on component mount
     useEffect(() => {
         const loadCarousels = async () => {
             const fetchedCarousels = await fetchCarousels();
@@ -23,7 +22,6 @@ const AdminCarousel = () => {
         loadCarousels();
     }, [fetchCarousels]);
 
-    // Handle image upload and carousel entry creation
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -39,7 +37,6 @@ const AdminCarousel = () => {
 
         setLoading(true);
         try {
-            // Upload image to Cloudinary
             const uploadResponse = await fetch(`${baseurl}/uploadcarousel`, {
                 method: 'POST',
                 headers: {
@@ -52,7 +49,6 @@ const AdminCarousel = () => {
             if (uploadData.success) {
                 const secureUrl = uploadData.data.secure_url;
 
-                // Send secure URL, title, description, and selected option to backend
                 const postResponse = await fetch(`${baseurl}/postcarousel`, {
                     method: 'POST',
                     headers: {
@@ -62,6 +58,7 @@ const AdminCarousel = () => {
                     body: JSON.stringify({
                         carousel: secureUrl,
                         linkto: selectedOption,
+                        subcategory: subcategory,
                         title: title,
                         description: description,
                     }),
@@ -72,10 +69,11 @@ const AdminCarousel = () => {
                     setImageFiles([]);
                     setTitle('');
                     setDescription('');
+                    setSubcategory('');
+                    setSelectedOption('');
                     setEditId(null);
                     setLoading(false);
 
-                    // Refresh carousel list
                     const fetchedCarousels = await fetchCarousels();
                     setCarousels(fetchedCarousels);
                 } else {
@@ -92,7 +90,6 @@ const AdminCarousel = () => {
         }
     };
 
-    // Handle deleting a carousel entry
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this carousel entry?')) {
             try {
@@ -108,7 +105,7 @@ const AdminCarousel = () => {
                 const data = await response.json();
                 if (data.success) {
                     const fetchedCarousels = await fetchCarousels();
-                    setCarousels(fetchedCarousels); // Refresh carousel list
+                    setCarousels(fetchedCarousels);
                 } else {
                     alert(data.message);
                 }
@@ -120,7 +117,7 @@ const AdminCarousel = () => {
 
     return (
         <div className="admin-carousel-container">
-            <h1>Admin Carousel Management</h1>
+            <h1>Carousel Management</h1>
             <form onSubmit={handleSubmit}>
                 <input
                     type="file"
@@ -142,20 +139,34 @@ const AdminCarousel = () => {
                     onChange={(e) => setDescription(e.target.value)}
                     required
                 />
-                <select 
-                    value={selectedOption} 
-                    onChange={(e) => setSelectedOption(e.target.value)} 
+                <select
+                    value={subcategory}
+                    onChange={(e) => setSubcategory(e.target.value)}
+                >
+                    <option value="">Subcategory/Optional</option>
+                    <option value="/bags">Bags</option>
+                    <option value="/belts">Belts</option>
+                    <option value="/women shoes">Women Shoes</option>
+                    <option value="/wallets">Wallets</option>
+                    <option value="/men shoes">Men Shoes</option>
+                    <option value="/horse saddle">Horse Saddle</option>
+                    <option value="/accessories">Accessories</option>
+                    <option value="/perfumes">Perfumes</option>
+                </select>
+                <select
+                    value={selectedOption}
+                    onChange={(e) => setSelectedOption(e.target.value)} // Correct handler for link to
                     required
                 >
-                    <option value="">Select Category</option>
-                    <option value="/bags">bags</option>
-                    <option value="/belts">belts</option>
+                    <option value="">Link to</option>
+                    <option value="/bags">Bags</option>
+                    <option value="/belts">Belts</option>
                     <option value="/women shoes">Women Shoes</option>
-                    <option value="/wallets">wallets</option>
+                    <option value="/wallets">Wallets</option>
                     <option value="/men shoes">Men Shoes</option>
-                    <option value="/horse saddle">Horse saddle</option>
-                    <option value="/accessories">accessories</option>
-                    <option value="/perfumes">perfumes</option>
+                    <option value="/horse saddle">Horse Saddle</option>
+                    <option value="/accessories">Accessories</option>
+                    <option value="/perfumes">Perfumes</option>
                 </select>
                 <button type="submit" disabled={loading}>
                     {loading ? 'Uploading...' : editId ? 'Update Carousel' : 'Add Carousel'}
@@ -170,6 +181,7 @@ const AdminCarousel = () => {
                         <div>
                             <h3>{carousel.title}</h3>
                             <p>{carousel.description}</p>
+                            {carousel.subcategory && <p><strong>Subcategory:</strong> {carousel.subcategory}</p>}
                         </div>
                         <button onClick={() => handleDelete(carousel._id)}>Delete</button>
                     </li>
