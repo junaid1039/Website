@@ -3,7 +3,7 @@ const Carousel = require('../models/carousel');
 // Add a new carousel entry
 const addCarousel = async (req, res) => {
     try {
-        const { carousel, linkto, title, description } = req.body; // Include title and description from request body
+        const { carousel, linkto, subcategory, title, description } = req.body; // Include all fields
 
         if (!carousel) {
             return res.status(400).json({ message: 'Carousel image URL is required.' });
@@ -11,7 +11,8 @@ const addCarousel = async (req, res) => {
 
         const newCarousel = new Carousel({
             carousel,
-            linkto: linkto || null, // Optional fields
+            linkto: linkto || null,
+            subcategory: subcategory || null, // Optional fields
             title: title || null,
             description: description || null,
         });

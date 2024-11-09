@@ -23,7 +23,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-start; /* Align items to the start for better spacing */
-  padding: 5px 20px; /* Better padding */
+  padding: 0px 20px; /* Better padding */
   border-radius: 6px;
   background: transparent; /* Set to transparent for hover effect */
   cursor: pointer; /* Change cursor to pointer on hover */
@@ -42,6 +42,7 @@
 
 .sidebar_item p {
   color: #343a40; /* Consistent color with icons */
+  margin: 10px;
   margin-left: 15px; /* More space between icon and text */
   font-weight: 500; /* Slightly bolder text */
   font-size: 16px; /* Slightly larger font */
