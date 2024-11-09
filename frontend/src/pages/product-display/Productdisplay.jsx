@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './productdisplay.css';
 import { FaStar, FaStarHalfAlt } from 'react-icons/fa';
@@ -13,6 +13,11 @@ const Productdisplay = ({ product }) => {
     const { addToCart } = useContext(Context);
     const navigate = useNavigate();
     
+    // Update main image when product changes
+    useEffect(() => {
+        setMainImage(product.images && product.images.length > 0 ? product.images[0] : product.image);
+    }, [product]);
+
     const handleAddToCart = () => {
         if ((product.sizes && product.sizes.length > 0 && !selectedSize) || 
             (product.colors && product.colors.length > 0 && !selectedColor)) {
