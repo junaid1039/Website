@@ -6,15 +6,24 @@ import './subcategory.css';
 const Subcategory = () => {
     const { fetchCarousels } = useContext(Context);
     const [carousels, setCarousels] = useState([]);
-    const [categoryProducts, setCategoryProducts] = useState({}); // Map each category to its products
+    const [categoryProducts, setCategoryProducts] = useState({});
+    const [loading, setLoading] = useState(true); // Track loading state
+    const [error, setError] = useState(null); // Track error state
 
     const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
 
     useEffect(() => {
         const loadCarousels = async () => {
-            const fetchedCarousels = await fetchCarousels();
-            const filteredCarousels = fetchedCarousels.filter(slide => slide.subcategory !== null);
-            setCarousels(filteredCarousels);
+            try {
+                const fetchedCarousels = await fetchCarousels();
+                const filteredCarousels = fetchedCarousels.filter(slide => slide.subcategory !== null);
+                setCarousels(filteredCarousels);
+            } catch (error) {
+                console.error("Error fetching carousels:", error);
+                setError("Failed to load carousels.");
+            } finally {
+                setLoading(false); // Set loading to false after fetch completes
+            }
         };
         loadCarousels();
     }, [fetchCarousels]);
@@ -44,12 +53,17 @@ const Subcategory = () => {
             }
         };
 
-        carousels.forEach((carousel) => {
-            if (carousel.subcategory) {
-                loadCategoryProducts(carousel.subcategory);
-            }
-        });
+        if (carousels.length > 0) {
+            carousels.forEach((carousel) => {
+                if (carousel.subcategory) {
+                    loadCategoryProducts(carousel.subcategory);
+                }
+            });
+        }
     }, [carousels, baseurl]);
+
+    if (loading) return <div>Loading carousels...</div>;
+    if (error) return <div className="error-message">{error}</div>;
 
     return (
         <div className="subcategory">
