@@ -1,10 +1,12 @@
-.description{
+.description {
     margin: 0 10%;
 }
-.des-navigator{
+
+.des-navigator {
     display: flex;
 }
-.des-nav-box{
+
+.des-nav-box {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -14,11 +16,13 @@
     height: 60px;
     border: 1px solid rgb(82, 82, 82);
 }
-.des-nav-box.fade{
+
+.des-nav-box.fade {
     background: #fbfbfb;
     color: #555;
 }
-.des-description{
+
+.des-description {
     display: flex;
     flex-direction: column;
     gap: 25px;
@@ -27,15 +31,22 @@
     padding-bottom: 70px;
     font-family: sans-serif;
 }
-@media (max-width: 500px){
-    .description{
+
+/* Preserve whitespace and line breaks */
+.des-description p {
+    white-space: pre-wrap;  /* Keeps line breaks and extra spaces */
+    margin: 0;
+}
+
+@media (max-width: 500px) {
+    .description {
         margin: 0px 2%;
     }
-    .des-nav-box{
+    .des-nav-box {
         height: 40px;
         width: 100%;
     }
-    .des-description{
+    .des-description {
         gap: 10px;
         padding: 10px;
     }
