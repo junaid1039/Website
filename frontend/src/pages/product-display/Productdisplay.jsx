@@ -6,20 +6,34 @@ import { Context } from '../../context API/Contextapi';
 import { useNavigate } from 'react-router-dom';
 import Description from '../../components/description/Description';
 
+
+
+
+const getCurrencySymbol = (currency) => {
+    switch (currency) {
+        case 'US': return '$';
+        case 'EU': return '€';
+        case 'GB': return '£';
+        case 'AE': return 'د.إ';
+        case 'PK': return '₨';
+        default: return '$'; // Default currency sign
+    }
+};
+
 const Productdisplay = ({ product }) => {
     const [mainImage, setMainImage] = useState(product.images && product.images.length > 0 ? product.images[0] : product.image);
     const [selectedSize, setSelectedSize] = useState(product.sizes ? product.sizes[0] : null);
     const [selectedColor, setSelectedColor] = useState(product.colors ? product.colors[0] : null);
     const { addToCart } = useContext(Context);
     const navigate = useNavigate();
-    
+
     // Update main image when product changes
     useEffect(() => {
         setMainImage(product.images && product.images.length > 0 ? product.images[0] : product.image);
     }, [product]);
 
     const handleAddToCart = () => {
-        if ((product.sizes && product.sizes.length > 0 && !selectedSize) || 
+        if ((product.sizes && product.sizes.length > 0 && !selectedSize) ||
             (product.colors && product.colors.length > 0 && !selectedColor)) {
             alert("Please select both a size and a color before adding to cart.");
         } else {
@@ -36,7 +50,7 @@ const Productdisplay = ({ product }) => {
     };
 
     const handleBuyNow = () => {
-        if ((product.sizes && product.sizes.length > 0 && !selectedSize) || 
+        if ((product.sizes && product.sizes.length > 0 && !selectedSize) ||
             (product.colors && product.colors.length > 0 && !selectedColor)) {
             alert("Please select both a size and a color before buying.");
         } else {
@@ -48,6 +62,7 @@ const Productdisplay = ({ product }) => {
             navigate('/cart/checkout');
         }
     };
+    const currencySymbol = getCurrencySymbol(product.countryCode);
 
     return (
         <>
@@ -84,9 +99,9 @@ const Productdisplay = ({ product }) => {
                     </div>
                     <div className="product-display__prices">
                         {product.oldprice && (
-                            <div className="product-display__old-price">${product.oldprice}</div>
+                            <div className="product-display__old-price">{currencySymbol} {product.oldprice}</div>
                         )}
-                        <div className="product-display__new-price">${product.newprice}</div>
+                        <div className="product-display__new-price">{currencySymbol} {product.newprice}</div>
                     </div>
 
                     {/* Size Selection */}
@@ -95,9 +110,9 @@ const Productdisplay = ({ product }) => {
                             <h4>Select Size</h4>
                             <div className="sizes">
                                 {product.sizes.map((size) => (
-                                    <div 
-                                        key={size} 
-                                        className={`size-option ${selectedSize === size ? 'selected' : ''}`} 
+                                    <div
+                                        key={size}
+                                        className={`size-option ${selectedSize === size ? 'selected' : ''}`}
                                         onClick={() => setSelectedSize(size)}
                                     >
                                         {size}
@@ -113,10 +128,10 @@ const Productdisplay = ({ product }) => {
                             <h4>Select Color</h4>
                             <div className="colors">
                                 {product.colors.map((color) => (
-                                    <div 
-                                        key={color} 
-                                        className={`color-option ${selectedColor === color ? 'selected' : ''}`} 
-                                        style={{ backgroundColor: color }} 
+                                    <div
+                                        key={color}
+                                        className={`color-option ${selectedColor === color ? 'selected' : ''}`}
+                                        style={{ backgroundColor: color }}
                                         onClick={() => setSelectedColor(color)}
                                     />
                                 ))}

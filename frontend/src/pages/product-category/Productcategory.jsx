@@ -6,11 +6,6 @@ import {Context} from '../../context API/Contextapi'
 const Productcategory = (props) => {
     const { allproducts } = useContext(Context);
 
-   //useEffect(() => {
-   //    // Fetch products only once when the component mounts
-   //    fetchproducts();
-   //}, []); // Dependency array to prevent re-fetching on every render
-
     const [sortOrder, setSortOrder] = useState(''); // State for sorting (empty by default)
 
     // Filter bags based on selected category
@@ -33,7 +28,7 @@ const Productcategory = (props) => {
         <div className="shop-catagory">
             <div className="shopcatagory-indexsort">
                 <p className='quantity'>
-                    {props.category} <span>({quantity})</span> {/* Display the quantity */}
+                    {props.category} <span>({quantity})</span>
                 </p>
                 <div className="shopcatagory-sort">
                     Sort by
@@ -51,12 +46,13 @@ const Productcategory = (props) => {
             <div className="shopcatagory-products">
                 {sortedBags.map((item) => (
                     <Pitem 
-                        key={item.id} // Use item.id instead of index for better performance
+                        key={item.id}
                         id={item.id} 
                         image={item.images} 
                         name={item.name} 
                         newprice={item.newprice} 
-                        oldprice={item.oldprice} 
+                        oldprice={item.oldprice}
+                        countryCode={item.countryCode}
                     />
                 ))}
             </div>

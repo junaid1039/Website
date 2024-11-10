@@ -25,7 +25,8 @@ const Categorydetails = React.memo(({ data, heading, oneliner, category, banner 
               image={item.images} 
               name={item.name} 
               oldprice={item.oldprice} 
-              newprice={item.newprice} 
+              newprice={item.newprice}
+              countryCode={item.countryCode}
             />
           ))}
         </div>
