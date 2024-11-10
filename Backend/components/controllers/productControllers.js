@@ -1,6 +1,5 @@
 const Product = require('../models/productmodel');
 const cloudinary = require('../utils/cloudinary');
-const geoip = require('geoip-lite');
 
 // Define a mapping from country codes to currencies
 const countryToCurrency = {
@@ -14,7 +13,7 @@ const countryToCurrency = {
 
 // Helper function to get price by currency
 const getPriceByCurrency = (product, currency) => {
-    return product.prices[currency] || product.prices['US']; // Default to PKR if currency not available
+    return product.prices[currency] || product.prices['USD'];
 };
 
 // Add a new product
@@ -30,7 +29,7 @@ const addProduct = async (req, res) => {
             name,
             images,
             category,
-            prices,  // Optional pricing for multiple currencies
+            prices,
             description,
             colors,
             sizes,
@@ -145,20 +144,16 @@ const adminAllProducts = async (req, res) => {
     try {
         const products = await Product.find();
         res.json({ success: true, products });
-        console.log("Admin product data sent successfully");
     } catch (error) {
         console.error("Error fetching admin products:", error);
         res.status(500).json({ success: false, message: 'Failed to fetch admin products', error });
     }
 };
 
-// Get all visible products for users with geoip-based currency
+// Get all visible products for users with frontend-based currency
 const userAllProducts = async (req, res) => {
-    const ip = req.query.ip || req.ip;
-    const geo = geoip.lookup(ip);
-    const countryCode = geo ? geo.country : 'US';
-    const currency = req.query.currency || countryToCurrency[countryCode] || 'US'; // Get currency from query or geo lookup
-
+    const countryCode = req.query.countryCode || 'US';
+    const currency = req.query.currency || countryToCurrency[countryCode] || 'USD';
     try {
         const products = await Product.find({ visible: true });
         const productsWithPrices = products.map(product => {
@@ -184,13 +179,12 @@ const userAllProducts = async (req, res) => {
     }
 };
 
-// Get a single product by ID with currency filtering
+// Get a single product by ID with frontend-based currency
 const getProductById = async (req, res) => {
     const { id } = req.params;
-    const ip = req.query.ip || req.ip;
-    const geo = geoip.lookup(ip);
-    const countryCode = geo ? geo.country : 'US';
-    const currency = req.query.currency || countryToCurrency[countryCode] || 'US';
+    const countryCode = req.query.countryCode || 'US';
+    const currency = req.query.currency || countryToCurrency[countryCode] || 'USD';
+    
 
     try {
         const product = await Product.findOne({ id });
@@ -212,14 +206,11 @@ const getProductById = async (req, res) => {
     }
 };
 
-// Fetch products by category with currency filtering
+// Fetch products by category with frontend-based currency
 const subcategorys = async (req, res) => {
     const { category } = req.query;
-    
-    const ip = req.query.ip || req.ip;
-    const geo = geoip.lookup(ip);
-    const countryCode = geo ? geo.country : 'US';
-    const currency = req.query.currency || countryToCurrency[countryCode] || 'US';
+    const countryCode = req.query.countryCode || 'US';
+    const currency = req.query.currency || countryToCurrency[countryCode] || 'USD';
 
     try {
         if (!category) {
