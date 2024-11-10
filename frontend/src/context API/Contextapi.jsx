@@ -340,7 +340,7 @@ const ContextProvider = (props) => {
         try {
             const response = await fetch('https://ipinfo.io/json');  // Fetch user's IP from external service
             const data = await response.json();
-            return data.ip;  // Extract and return the IP address
+            return data.country;
         } catch (error) {
             console.error('Error fetching IP:', error);
             return null;
@@ -350,12 +350,9 @@ const ContextProvider = (props) => {
     const fetchInfo = async () => {
         try {
             // Get the user's IP address
-            const userIP = await fetchUserIP();
-
-            console.log("Here is the User IP data", userIP);
-    
+            const countryCode = await fetchUserIP();
             // Construct the API request with IP in query params
-            const url = userIP ? `${baseurl}/allproducts?ip=${userIP}` : `${baseurl}/allproducts`;
+            const url = countryCode ? `${baseurl}/allproducts?countryCode=${countryCode}` : `${baseurl}/allproducts`;
     
             const response = await fetch(url);
             if (!response.ok) {
