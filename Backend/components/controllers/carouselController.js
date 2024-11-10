@@ -8,7 +8,6 @@ const addCarousel = async (req, res) => {
         if (!carousel) {
             return res.status(400).json({ message: 'Carousel image URL is required.' });
         }
-
         const newCarousel = new Carousel({
             carousel,
             linkto: linkto || null,
@@ -16,9 +15,7 @@ const addCarousel = async (req, res) => {
             title: title || null,
             description: description || null,
         });
-
         await newCarousel.save();
-
         return res.status(201).json({ success: true, carousel: newCarousel });
     } catch (error) {
         console.error('Error adding carousel:', error);
