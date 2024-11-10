@@ -1,14 +1,31 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback} from 'react';
 import './pitem.css';
 import { Link } from 'react-router-dom';
 
-const Pitem = (props) => {
-  const mainImage = props.image && props.image[0];
 
+
+// Helper function to get currency symbol
+const getCurrencySymbol = (currency) => {
+  switch (currency) {
+    case 'US': return '$';
+    case 'EU': return '€';
+    case 'GB': return '£';
+    case 'AE': return 'د.إ';
+    case 'PK': return '₨';
+    default: return '$'; // Default currency sign
+  }
+};
+
+const Pitem = (props) => {
+
+  const mainImage = props.image && props.image[0];
   // Wrap scrollTo in a useCallback to avoid recreating it on each render
   const handleClick = useCallback(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Get the currency symbol dynamically
+  const currencySymbol = getCurrencySymbol(props.countryCode);
 
   return (
     <Link to={`/product/${props.id}`} className="cl">
@@ -16,8 +33,8 @@ const Pitem = (props) => {
         <img src={mainImage || 'path/to/fallback-image.jpg'} alt={props.name} loading="lazy" />
         <p>{props.name}</p>
         <div className="prices">
-          <span>${props.oldprice}</span>
-          <span>${props.newprice}</span>
+          <span>{currencySymbol}{props.oldprice}</span>
+          <span>{currencySymbol}{props.newprice}</span>
         </div>
       </div>
     </Link>

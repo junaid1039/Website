@@ -1,30 +1,71 @@
 const Product = require('../models/productmodel');
 const cloudinary = require('../utils/cloudinary');
+const geoip = require('geoip-lite');
+
+// Define a mapping from country codes to currencies
+const countryToCurrency = {
+    US: 'USD',
+    DE: 'EUR',
+    PK: 'PKR',
+    GB: 'GBP',
+    AE: 'AED',
+    // Add more mappings as needed
+};
+
+// Helper function to get price by currency
+const getPriceByCurrency = (product, currency) => {
+    return product.prices[currency] || product.prices['US']; // Default to PKR if currency not available
+};
 
 // Add a new product
 const addProduct = async (req, res) => {
+    const generateNewId = async () => {
+        const lastProduct = await Product.findOne().sort({ id: -1 });
+        return lastProduct ? lastProduct.id + 1 : 1;
+    };
+    const newId = await generateNewId();
+
     try {
-        // Generate a new ID
-        const generateNewId = async () => {
-            const lastProduct = await Product.findOne().sort({ id: -1 });
-            return lastProduct ? lastProduct.id + 1 : 1;
-        };
-        const newId = await generateNewId();
-        
-        // Create a new product with the uploaded data
+        const {
+            name,
+            images,
+            category,
+            prices,  // Optional pricing for multiple currencies
+            description,
+            colors,
+            sizes,
+            brand,
+            visible
+        } = req.body;
+
+        if (!name || !images || !category || !description || visible === undefined) {
+            return res.status(400).json({ success: false, message: 'Missing required fields' });
+        }
+
+        const validPrices = {};
+        if (prices) {
+            ['USD', 'EUR', 'PKR', 'GBP', 'AED'].forEach(currency => {
+                if (prices[currency] && prices[currency].oldprice && prices[currency].newprice) {
+                    if (isNaN(prices[currency].oldprice) || isNaN(prices[currency].newprice)) {
+                        return res.status(400).json({ success: false, message: `Invalid price format for ${currency}` });
+                    }
+                    validPrices[currency] = prices[currency];
+                }
+            });
+        }
+
         const product = new Product({
             id: newId,
-            name: req.body.name,
-            images: req.body.images,
-            category: req.body.category,
-            newprice: req.body.newprice,
-            oldprice: req.body.oldprice,
-            description: req.body.description,
-            colors: req.body.colors,
-            sizes: req.body.sizes,
-            brand: req.body.brand,
-            visible: req.body.visible,
-        });  
+            name,
+            images,
+            category,
+            prices: validPrices,
+            description,
+            colors,
+            sizes,
+            brand,
+            visible,
+        });
 
         await product.save();
         res.json({ success: true, product });
@@ -38,27 +79,27 @@ const addProduct = async (req, res) => {
 const editProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        // Find the product by ID
+        if (!id) {
+            return res.status(400).json({ success: false, message: 'Product ID is required' });
+        }
+
         const product = await Product.findOne({ id });
         if (!product) {
             return res.status(404).json({ success: false, message: 'Product not found' });
         }
 
-        // Prepare the update data
         const updatedData = {
             name: req.body.name,
             images: req.body.images,
             category: req.body.category,
-            newprice: req.body.newprice,
-            oldprice: req.body.oldprice,
+            prices: req.body.prices,
             description: req.body.description,
             colors: req.body.colors,
             sizes: req.body.sizes,
             brand: req.body.brand,
-            visible: req.body.visible // Include visibility
-        };        
+            visible: req.body.visible,
+        };
 
-        // Update the product
         const updatedProduct = await Product.findOneAndUpdate(
             { id },
             updatedData,
@@ -75,22 +116,23 @@ const editProduct = async (req, res) => {
 // Remove product from database
 const removeProduct = async (req, res) => {
     try {
-        // Find the product by ID
+        if (!req.body.id) {
+            return res.status(400).json({ success: false, message: 'Product ID is required' });
+        }
+
         const product = await Product.findOne({ id: req.body.id });
-        
         if (!product) {
             return res.status(404).json({ success: false, message: 'Product not found' });
         }
 
-        // Delete images from Cloudinary
-        const imageDeletionPromises = product.images.map(image => 
-            cloudinary.uploader.destroy(image)
-        );
-        await Promise.all(imageDeletionPromises);
+        if (Array.isArray(product.images)) {
+            const imageDeletionPromises = product.images.map(image =>
+                cloudinary.uploader.destroy(image)
+            );
+            await Promise.all(imageDeletionPromises);
+        }
 
-        // Delete the product from the database
         await Product.findOneAndDelete({ id: req.body.id });
-
         res.status(200).json({ success: true, message: 'Product and associated images removed successfully' });
     } catch (error) {
         console.error('Error removing product and images:', error);
@@ -98,30 +140,11 @@ const removeProduct = async (req, res) => {
     }
 };
 
-// Get all products
-// Get all products for admin
+// Get all products for admin (no currency filtering, showing all data)
 const adminAllProducts = async (req, res) => {
     try {
-        // Fetch all products, regardless of visibility
         const products = await Product.find();
-        // Map through products to include necessary details
-        const productsWithDetails = products.map(product => ({
-            id: product.id,
-            name: product.name,
-            category: product.category,
-            newprice: product.newprice,
-            oldprice: product.oldprice,
-            description: product.description,
-            images: product.images ? product.images.map(image => image) : [],
-            colors: product.colors || [], // Include colors
-            sizes: product.sizes || [], // Include sizes
-            brand: product.brand, // Include brand
-            visible: product.visible, // Include visibility status
-        }));
-        res.json({
-            success: true,
-            products: productsWithDetails
-        });
+        res.json({ success: true, products });
         console.log("Admin product data sent successfully");
     } catch (error) {
         console.error("Error fetching admin products:", error);
@@ -129,29 +152,31 @@ const adminAllProducts = async (req, res) => {
     }
 };
 
-
-// Get all visible products for users
+// Get all visible products for users with geoip-based currency
 const userAllProducts = async (req, res) => {
+    const ip = req.query.ip || req.ip;
+    const geo = geoip.lookup(ip);
+    const countryCode = geo ? geo.country : 'US';
+    const currency = req.query.currency || countryToCurrency[countryCode] || 'US'; // Get currency from query or geo lookup
+
     try {
-        // Fetch all visible products
-        const products = await Product.find({ visible: true});
-        // Map through products to include necessary details
-        const productsWithDetails = products.map(product => ({
-            id: product.id,
-            name: product.name,
-            category: product.category,
-            newprice: product.newprice,
-            oldprice: product.oldprice,
-            description: product.description,
-            images: product.images ? product.images.map(image => image) : [],
-            colors: product.colors || [], // Include colors
-            sizes: product.sizes || [], // Include sizes
-            brand: product.brand // Include brand
-        }));
+        const products = await Product.find({ visible: true });
+        const productsWithPrices = products.map(product => {
+            const { newprice, oldprice } = getPriceByCurrency(product, currency);
+            return {
+                id: product.id,
+                images: product.images,
+                name: product.name,
+                category: product.category,
+                newprice,
+                oldprice,
+                countryCode,
+            };
+        });
 
         res.json({
             success: true,
-            products: productsWithDetails
+            products: productsWithPrices
         });
     } catch (error) {
         console.error("Error fetching user products:", error);
@@ -159,28 +184,27 @@ const userAllProducts = async (req, res) => {
     }
 };
 
-// Get a single product by ID
+// Get a single product by ID with currency filtering
 const getProductById = async (req, res) => {
     const { id } = req.params;
+    const ip = req.query.ip || req.ip;
+    const geo = geoip.lookup(ip);
+    const countryCode = geo ? geo.country : 'US';
+    const currency = req.query.currency || countryToCurrency[countryCode] || 'US';
+
     try {
         const product = await Product.findOne({ id });
         if (!product) {
             return res.status(404).json({ success: false, message: 'Product not found' });
         }
+
+        const priceData = getPriceByCurrency(product, currency);
         res.json({
             success: true,
             product: {
-                id: product.id,
-                name: product.name,
-                category: product.category,
-                newprice: product.newprice,
-                oldprice: product.oldprice,
-                description: product.description,
-                images: product.images,
-                colors: product.colors, // Include colors
-                sizes: product.sizes, // Include sizes
-                brand: product.brand, // Include brand
-                visible: product.visible,
+                ...product.toObject(),
+                newprice: priceData.newprice,
+                oldprice: priceData.oldprice,
             }
         });
     } catch (error) {
@@ -188,19 +212,35 @@ const getProductById = async (req, res) => {
     }
 };
 
-// Fetch perfumes or other categories
+// Fetch products by category with currency filtering
 const subcategorys = async (req, res) => {
+    const { category } = req.query;
+    
+    const ip = req.query.ip || req.ip;
+    const geo = geoip.lookup(ip);
+    const countryCode = geo ? geo.country : 'US';
+    const currency = req.query.currency || countryToCurrency[countryCode] || 'US';
+
     try {
-        const { category } = req.query; // Read from query instead of body
         if (!category) {
             return res.status(400).json({ success: false, message: 'Category is required' });
         }
-        const products = await Product.find({ category }).limit(4);
-        res.json({ success: true, products });
+
+        const products = await Product.find({ category, visible: true }).limit(4);
+        const productsWithPrices = products.map(product => {
+            const priceData = getPriceByCurrency(product, currency);
+            return {
+                ...product.toObject(),
+                newprice: priceData.newprice,
+                oldprice: priceData.oldprice,
+                countryCode: countryCode,
+            };
+        });
+
+        res.json({ success: true, products: productsWithPrices });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Failed to fetch products', error });
     }
 };
-
 
 module.exports = { addProduct, removeProduct, userAllProducts, adminAllProducts, editProduct, subcategorys, getProductById };

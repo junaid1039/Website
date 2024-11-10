@@ -9,13 +9,18 @@ const Addproduct = () => {
     const [productDetails, setProductDetails] = useState({
         name: "",
         category: '',
-        newprice: '',
-        oldprice: '',
+        prices: {
+            USD: { oldprice: '', newprice: '' },
+            EUR: { oldprice: '', newprice: '' },
+            PKR: { oldprice: '', newprice: '' },
+            GBP: { oldprice: '', newprice: '' },
+            AED: { oldprice: '', newprice: '' }
+        },
         description: '',
         brand: '',
         colors: [],
         sizes: [],
-        visible: false // Initialize as boolean
+        visible: false
     });
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -25,6 +30,20 @@ const Addproduct = () => {
         setProductDetails(prevDetails => ({
             ...prevDetails,
             [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+
+    const pricesChangeHandler = (e, currency, priceType) => {
+        const { value } = e.target;
+        setProductDetails(prevDetails => ({
+            ...prevDetails,
+            prices: {
+                ...prevDetails.prices,
+                [currency]: {
+                    ...prevDetails.prices[currency],
+                    [priceType]: value
+                }
+            }
         }));
     };
 
@@ -44,7 +63,7 @@ const Addproduct = () => {
         setErrorMessage("");
 
         // Validate required fields
-        if (!productDetails.name || !productDetails.category || !productDetails.newprice || !productDetails.oldprice || !productDetails.description || images.length === 0) {
+        if (!productDetails.name || !productDetails.category || !productDetails.description || images.length === 0) {
             setErrorMessage("Please fill in all required fields and upload at least one image.");
             setLoading(false);
             return;
@@ -119,26 +138,24 @@ const Addproduct = () => {
                 />
             </div>
             <div className="addproduct-price">
-                <div className="addproduct-itemfield">
-                    <label>Old Price</label>
-                    <input 
-                        value={productDetails.oldprice} 
-                        onChange={changeHandler} 
-                        type='text' 
-                        name='oldprice' 
-                        placeholder='Type here' 
-                    />
-                </div>
-                <div className="addproduct-itemfield">
-                    <label>New Price</label>
-                    <input 
-                        value={productDetails.newprice} 
-                        onChange={changeHandler} 
-                        type='text' 
-                        name='newprice' 
-                        placeholder='Type here' 
-                    />
-                </div>
+                {['USD', 'EUR', 'PKR', 'GBP', 'AED'].map(currency => (
+                    <div className="addproduct-itemfield" key={currency}>
+                        <label>{currency} - Old Price</label>
+                        <input 
+                            value={productDetails.prices[currency].oldprice} 
+                            onChange={(e) => pricesChangeHandler(e, currency, 'oldprice')} 
+                            type="text" 
+                            placeholder={`Old price in ${currency}`} 
+                        />
+                        <label>{currency} - New Price</label>
+                        <input 
+                            value={productDetails.prices[currency].newprice} 
+                            onChange={(e) => pricesChangeHandler(e, currency, 'newprice')} 
+                            type="text" 
+                            placeholder={`New price in ${currency}`} 
+                        />
+                    </div>
+                ))}
             </div>
             <div className="addproduct-itemfield">
                 <label>Description</label>
@@ -192,7 +209,7 @@ const Addproduct = () => {
                 </div>
             </div>
 
-            {/* Row for Visible */}
+            {/* Row for Visibility */}
             <div className="addproduct-row2">
                 <div className="addproduct-itemfield2">
                     <label>Visibility</label>
@@ -241,7 +258,7 @@ const Addproduct = () => {
             {errorMessage && <p className="error-message">{errorMessage}</p>}
             <div className="btn-div">
                 <button onClick={addProduct} disabled={loading} className='addproduct-btn'>
-                    {loading ? "Adding..." : "Add"}
+                    {loading ? "Adding..." : "Add Product"}
                 </button>
             </div>
         </div>

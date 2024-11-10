@@ -4,11 +4,11 @@ import { Context } from '../../context API/Contextapi';
 import './subcategory.css';
 
 const Subcategory = () => {
-    const { fetchCarousels } = useContext(Context);
+    const { fetchCarousels, fetchUserIP } = useContext(Context);
     const [carousels, setCarousels] = useState([]);
     const [categoryProducts, setCategoryProducts] = useState({});
-    const [loading, setLoading] = useState(true); // Track loading state
-    const [error, setError] = useState(null); // Track error state
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
 
@@ -22,7 +22,7 @@ const Subcategory = () => {
                 console.error("Error fetching carousels:", error);
                 setError("Failed to load carousels.");
             } finally {
-                setLoading(false); // Set loading to false after fetch completes
+                setLoading(false);
             }
         };
         loadCarousels();
@@ -31,8 +31,13 @@ const Subcategory = () => {
     useEffect(() => {
         const loadCategoryProducts = async (category) => {
             const sanitizedCategory = category.replace(/^\//, "");
+
             try {
-                const response = await fetch(`${baseurl}/subcategorys?category=${sanitizedCategory}`, {
+                // Fetch user's IP and currency
+                const ip = await fetchUserIP();
+                //const currency = 'USD';  // Ideally, get the currency dynamically based on IP or user's settings
+
+                const response = await fetch(`${baseurl}/subcategorys?category=${sanitizedCategory}&ip=${ip}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -72,7 +77,7 @@ const Subcategory = () => {
                     <Categorydetails
                         key={carousel._id}
                         heading={carousel.title || 'No Title'}
-                        data={categoryProducts[carousel.subcategory.replace(/^\//, "")] || []} // Pass products for each category
+                        data={categoryProducts[carousel.subcategory.replace(/^\//, "")] || []}
                         category={carousel.subcategory}
                         oneliner={carousel.description || 'No Description'}
                         banner={carousel.carousel}

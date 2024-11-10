@@ -12,14 +12,18 @@ const EditProduct = () => {
     const [productDetails, setProductDetails] = useState({
         name: "",
         category: '',
-        newprice: '',
-        oldprice: '',
+        prices: {
+            USD: { oldprice: '', newprice: '' },
+            EUR: { oldprice: '', newprice: '' },
+            PKR: { oldprice: '', newprice: '' },
+            GBP: { oldprice: '', newprice: '' },
+            AED: { oldprice: '', newprice: '' }
+        },
         description: '',
         brand: '',
         colors: [],
         sizes: [],
-        available: '',
-        visible: false // Ensure visible is initialized as a boolean
+        visible: false
     });
     const [images, setImages] = useState([]); 
     const [existingImages, setExistingImages] = useState([]); 
@@ -33,21 +37,25 @@ const EditProduct = () => {
                 const response = await fetch(`${baseurl}/productdata/${id}`);
                 const data = await response.json();
                 if (data.success) {
-                    console.log(data);
+                    const product = data.product;
+                    
                     setProductDetails({
-                        name: data.product.name,
-                        category: data.product.category,
-                        newprice: data.product.newprice,
-                        oldprice: data.product.oldprice,
-                        description: data.product.description,
-                        brand: data.product.brand,
-                        colors: data.product.colors || [],
-                        sizes: data.product.sizes || [],
-                        available: data.product.available,
-                        visible: data.product.visible || false, // Initialize visible properly
+                        name: product.name,
+                        category: product.category,
+                        prices: {
+                            USD: { oldprice: product.prices?.USD?.oldprice || '', newprice: product.prices?.USD?.newprice || '' },
+                            EUR: { oldprice: product.prices?.EUR?.oldprice || '', newprice: product.prices?.EUR?.newprice || '' },
+                            PKR: { oldprice: product.prices?.PKR?.oldprice || '', newprice: product.prices?.PKR?.newprice || '' },
+                            GBP: { oldprice: product.prices?.GBP?.oldprice || '', newprice: product.prices?.GBP?.newprice || '' },
+                            AED: { oldprice: product.prices?.AED?.oldprice || '', newprice: product.prices?.AED?.newprice || '' },
+                        },
+                        description: product.description,
+                        brand: product.brand || '',
+                        colors: product.colors || [],
+                        sizes: product.sizes || [],
+                        visible: product.visible || false,
                     });
-                    setExistingImages(data.product.images); 
-
+                    setExistingImages(product.images || []); 
                 } else {
                     throw new Error(data.message || 'Failed to fetch product details');
                 }
@@ -57,9 +65,8 @@ const EditProduct = () => {
             }
         };
         fetchProductDetails();
-        
     }, [id]);
-
+    
     const changeHandler = (e) => {
         const { name, value, type, checked } = e.target;
         setProductDetails(prevDetails => ({
@@ -67,6 +74,21 @@ const EditProduct = () => {
             [name]: type === 'checkbox' ? checked : value
         }));
     };
+
+    const pricesChangeHandler = (e, currency, priceType) => {
+        const { value } = e.target;
+        setProductDetails(prevDetails => ({
+            ...prevDetails,
+            prices: {
+                ...prevDetails.prices,
+                [currency]: {
+                    ...prevDetails.prices[currency],
+                    [priceType]: value
+                }
+            }
+        }));
+    };
+
     const arrayHandler = (e, fieldName) => {
         setProductDetails({
             ...productDetails,
@@ -157,26 +179,24 @@ const EditProduct = () => {
                 />
             </div>
             <div className="addproduct-price">
-                <div className="addproduct-itemfield">
-                    <label>Old Price</label>
-                    <input
-                        value={productDetails.oldprice}
-                        onChange={changeHandler}
-                        type='text'
-                        name='oldprice'
-                        placeholder='Type here'
-                    />
-                </div>
-                <div className="addproduct-itemfield">
-                    <label>New Price</label>
-                    <input
-                        value={productDetails.newprice}
-                        onChange={changeHandler}
-                        type='text'
-                        name='newprice'
-                        placeholder='Type here'
-                    />
-                </div>
+                {['USD', 'EUR', 'PKR', 'GBP', 'AED'].map(currency => (
+                    <div className="addproduct-itemfield" key={currency}>
+                        <label>{currency} - Old Price</label>
+                        <input
+                            value={productDetails.prices[currency].oldprice}
+                            onChange={(e) => pricesChangeHandler(e, currency, 'oldprice')}
+                            type="text"
+                            placeholder={`Old price in ${currency}`}
+                        />
+                        <label>{currency} - New Price</label>
+                        <input
+                            value={productDetails.prices[currency].newprice}
+                            onChange={(e) => pricesChangeHandler(e, currency, 'newprice')}
+                            type="text"
+                            placeholder={`New price in ${currency}`}
+                        />
+                    </div>
+                ))}
             </div>
             <div className="addproduct-itemfield">
                 <label>Description</label>

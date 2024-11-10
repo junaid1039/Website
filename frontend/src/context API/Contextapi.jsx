@@ -336,20 +336,40 @@ const ContextProvider = (props) => {
         fetchInfo();
     }, []);
     // Fetch all products
+    const fetchUserIP = async () => {
+        try {
+            const response = await fetch('https://ipinfo.io/json');  // Fetch user's IP from external service
+            const data = await response.json();
+            return data.ip;  // Extract and return the IP address
+        } catch (error) {
+            console.error('Error fetching IP:', error);
+            return null;
+        }
+    };
+    
     const fetchInfo = async () => {
         try {
-            const response = await fetch(`${baseurl}/allproducts`);
+            // Get the user's IP address
+            const userIP = await fetchUserIP();
+
+            console.log("Here is the User IP data", userIP);
+    
+            // Construct the API request with IP in query params
+            const url = userIP ? `${baseurl}/allproducts?ip=${userIP}` : `${baseurl}/allproducts`;
+    
+            const response = await fetch(url);
             if (!response.ok) {
                 throw new Error("Failed to fetch products");
             }
             const data = await response.json();
             setAllProducts(data.products); // Set products state
-            return { success: true}; // Explicitly return success
+            return { success: true }; // Explicitly return success
         } catch (error) {
             setAllProducts([]); // Clear products if fetch fails
             return { success: false, error: error.message }; // Return success false with error
         }
     };
+    
 
     //Admin allproducts
 
@@ -476,6 +496,7 @@ const ContextProvider = (props) => {
         cartItems,
         Adminproducts,
         isLoggedIn,
+        fetchUserIP,
         fetchCarousels,
         fnadminproducts,
         fetchUsers,
