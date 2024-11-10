@@ -163,6 +163,9 @@ const userAllProducts = async (req, res) => {
                 images: product.images,
                 name: product.name,
                 category: product.category,
+                description: product.description,
+                sizes: product.sizes,
+                colors: product.colors,
                 newprice,
                 oldprice,
                 countryCode,
@@ -199,6 +202,7 @@ const getProductById = async (req, res) => {
                 ...product.toObject(),
                 newprice: priceData.newprice,
                 oldprice: priceData.oldprice,
+                countryCode,
             }
         });
     } catch (error) {
