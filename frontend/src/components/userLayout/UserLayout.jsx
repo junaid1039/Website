@@ -5,7 +5,7 @@ import Footer from '../footer/Footer';
 import Body from '../bodysection/Body';
 import Productcategory from '../../pages/product-category/Productcategory';
 import Fullproductdisplay from '../../pages/fullproductdisplay/Fullproductdisplay';
-import { Cart } from '../../pages/cart/Cart';
+import Cart from '../../pages/cart/Cart';
 import Login from '../../pages/login/signup/Login';
 import Checkout from '../../pages/checkout/Checkout';
 import Payment from '../confirmorder/Payment';

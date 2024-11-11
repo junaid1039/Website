@@ -1,128 +1,144 @@
-import React, { useContext,useState } from 'react';
+import React, { useContext, useState } from 'react';
 import './cart.css';
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { LuHeading, LuShoppingCart } from "react-icons/lu";
+import { LuShoppingCart } from "react-icons/lu";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
-import { PiHandbagBold } from "react-icons/pi";
-import { Context } from '../../context API/Contextapi';
-import { RxCross2 } from "react-icons/rx";
 import { SlHandbag } from "react-icons/sl";
 import { Link } from 'react-router-dom';
 import { FiPhone } from "react-icons/fi";
+import { RxCross2 } from "react-icons/rx";
 import Stepper from '../../components/stepper/Stepper';
+import { Context } from '../../context API/Contextapi';  // Adjusted to use CartContext
 
-
-
-
-export const Cart = () => {
-    const { allproducts, addToCart, cartItems, removeFromCart, getTotalCartAmount } = useContext(Context);
-    const [currentStep] = useState(1); // Set current step to 1 for Cart
-    // Ensure allProducts and cartItems are defined before processing
-    /*if (!allproducts || !cartItems) {
-        return <h5>Loading cart...</h5>; // Or display a loading spinner
-    }*/
-
-    // Check if the cart is empty by verifying all product quantities
-    const isCartEmpty = allproducts.every((product) => cartItems[product.id] === 0);
-    //const isCartEmpty= true;
-    return (
-        <>
-            <div className="cart-page">
-            <Stepper currentStep={currentStep} /> {/**stepper */}
-                
-                <div className="cartitem">
-                    <div className="sub-cartitem">
-                        <div className="cartitem-cart">
-                            {isCartEmpty ? (
-                                <div className="emptycart">
-                                    <SlHandbag />
-                                    <h4>Your cart is Empty</h4>
-                                    <Link to='/' className='cl' ><button>Continue Shopping</button></Link>
-
-                                </div>
-                            ) : (
-                                allproducts.map((product) => {
-                                    const mainImage = product.images &&  product.images[0];
-                                 
-                                    // Safely check if the product is in the cart and its quantity is greater than 0
-                                    if (cartItems[product.id] && cartItems[product.id] > 0) {
-                                        return (
-                                            <div className="main-format" key={product.id}>
-                                                <div className="cartitem-format">
-                                                    <img className='mi' src={mainImage} alt='Image' />
-                                                    <div className="dside">
-                                                        <div className='name'>
-                                                            <span>{product.name}</span>
-                                                            <RxCross2 onClick={() => removeFromCart(product.id)} />
-                                                        </div>
-                                                        <div className='details'>
-                                                            <div className="color">{product.colors}, {product.sizes}</div>
-                                                            <div className="d-q"><AiOutlineMinus onClick={() => {
-                                                                if (cartItems[product.id] > 0) removeFromCart(product.id);
-                                                            }} />
-                                                                <span className='cartitem-quantity'>{cartItems[product.id]}</span>
-                                                                <AiOutlinePlus onClick={() => addToCart(product.id)} />
-
-                                                            </div>
-                                                            <span className="tprice">{"$" + (product.newprice * cartItems[product.id]).toFixed(2)}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        );
-                                    }
-                                    return null;
-                                })
-                            )}
-                        </div>
-
-                        {/* Cart Totals Section */}
-
-                        <div className="cartitem-down">
-                            <div className="cs">
-                                <div className="sub-cs">
-                                    <h4>Customer Service</h4>
-                                    <div className="cntct">
-                                        {/* Use the 'tel:' scheme inside an <a> tag for clickable phone numbers */}
-                                        <p><FiPhone /> <a href="tel:+923021725822">+92302-1725822</a></p>
-                                        <p>Monday to Friday: 9am to 9pm PST</p>
-                                    </div>
-                                    <div className="dlv"></div>
-                                </div>
-                            </div>
-
-                            <div className="sub-down">
-                                <div className="ct-promoCode">
-                                    <p>ENTER PROMO CODE</p>
-                                    <div className="ct-promoBox">
-                                        <input type='text' placeholder='Promo Code' />
-                                        <button>Submit</button>
-                                    </div>
-                                </div>
-                                <div className="cartitem-total">
-                                    <div>
-                                        <div className="ct-item">
-                                            <p>Subtotal</p>
-                                            <p>${getTotalCartAmount()}</p>
-                                        </div>
-                                        <hr />
-                                        <div className="ct-item">
-                                            <p>Shipping Fee</p>
-                                            <p>Free</p>
-                                        </div>
-                                        <hr />
-                                        <div className="ct-item">
-                                            <h3>Total</h3>
-                                            <h3>${getTotalCartAmount()}</h3>
-                                        </div>
-                                    </div>
-                                    <Link to='/cart/checkout' className='cl' ><button><LuShoppingCart /> Checkout</button></Link>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
-    );
+// Helper function to get currency symbol based on country code
+const getCurrencySymbol = (currency) => {
+    switch (currency) {
+        case 'US': return '$';
+        case 'EU': return '€';
+        case 'GB': return '£';
+        case 'AE': return 'د.إ';
+        case 'PK': return '₨';
+        default: return '$'; // Default currency symbol
+    }
 };
+
+const Cart = () => {
+    const {allproducts,countryCode, cart, removeFromCart, addToCart, getTotalCartAmount } = useContext(Context);
+    const [currentStep] = useState(1); 
+  
+    // Check if the cart is empty
+    const isCartEmpty = !cart || Object.keys(cart).length === 0;
+    const currencySymbol = getCurrencySymbol(countryCode);
+
+    console.log("This is cart of cart", countryCode);
+  
+    return (
+      <div className="cart-page">
+        <Stepper currentStep={currentStep} />
+        
+        <div className="cartitem">
+          <div className="sub-cartitem">
+            <div className="cartitem-cart">
+              {isCartEmpty ? (
+                <div className="emptycart">
+                  <SlHandbag />
+                  <h4>Your cart is Empty</h4>
+                  <Link to='/' className='cl'><button>Continue Shopping</button></Link>
+                </div>
+              ) : (
+                Object.entries(cart).map(([productId, { quantity, color, size }]) => {
+                  // Check if `products` exists and has items, then find the product
+                  const product = allproducts && allproducts.length > 0 ? 
+                    allproducts.find((p) => p.id === parseInt(productId)) : null;
+  
+                  if (product) {
+                    return (
+                      <div className="main-format" key={productId}>
+                        <div className="cartitem-format">
+                          <img className='mi' src={product.images && product.images[0]} alt={product.name} />
+                          <div className="dside">
+                            <div className='name'>
+                              <span>{product.name}</span>
+                              {/* Delete Icon to remove the item */}
+                              <RxCross2 onClick={() => removeFromCart(productId)} />
+                            </div>
+                            <div className='details'>
+                              <div className="color">
+                                <span>Color: {color}</span>
+                                <br/>
+                                <span>Size: {size}</span>
+                              </div>
+                              <div className="d-q">
+                                <AiOutlineMinus onClick={() => {
+                                  if (quantity > 1) removeFromCart(productId);
+                                }} />
+                                <span className='cartitem-quantity'>{quantity}</span>
+                                <AiOutlinePlus onClick={() => addToCart(productId)} />
+                              </div>
+                              <span className="tprice">
+                                {currencySymbol}{(product.newprice * quantity).toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  } else {
+                    console.warn(`Product with ID ${productId} not found in products array.`);
+                  }
+                  return null;
+                })
+              )}
+            </div>
+  
+            {/* Cart Totals Section */}
+            <div className="cartitem-down">
+              <div className="cs">
+                <div className="sub-cs">
+                  <h4>Customer Service</h4>
+                  <div className="cntct">
+                    <p><FiPhone /> <a href="tel:+923021725822">+92302-1725822</a></p>
+                    <p>Monday to Friday: 9am to 9pm PST</p>
+                  </div>
+                </div>
+              </div>
+  
+              <div className="sub-down">
+                <div className="ct-promoCode">
+                  <p>ENTER PROMO CODE</p>
+                  <div className="ct-promoBox">
+                    <input type='text' placeholder='Promo Code' />
+                    <button>Submit</button>
+                  </div>
+                </div>
+                <div className="cartitem-total">
+                  <div>
+                    <div className="ct-item">
+                      <p>Subtotal</p>
+                      <p>{currencySymbol}{getTotalCartAmount()}</p>
+                    </div>
+                    <hr />
+                    <div className="ct-item">
+                      <p>Shipping Fee</p>
+                      <p>Free</p>
+                    </div>
+                    <hr />
+                    <div className="ct-item">
+                      <h3>Total</h3>
+                      <h3>{currencySymbol}{getTotalCartAmount()}</h3>
+                    </div>
+                  </div>
+                  <Link to='/cart/checkout' className='cl'>
+                    <button><LuShoppingCart /> Checkout</button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+
+export default Cart;
