@@ -16,7 +16,7 @@ import { TbMessageForward } from "react-icons/tb";
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { gettotalcartitems, isLoggedIn } = useContext(Context);
+  const { getTotalCartItems, isLoggedIn } = useContext(Context);
 
   // Handle scroll to add/remove scrolled class
   const handleScroll = useCallback(() => {
@@ -63,7 +63,7 @@ const Navbar = () => {
               <div className="cart">
                 <div className='subcart'>
                   <PiHandbag />
-                  {gettotalcartitems() > 0 && <span>{gettotalcartitems()}</span>}
+                  {getTotalCartItems() > 0 && <span>{getTotalCartItems()}</span>}
                 </div>
                 <span className='tcart'>Cart</span>
               </div>

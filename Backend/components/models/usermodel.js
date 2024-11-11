@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-    userId:{type: String, required: true},
-    name: { type: String, required: [true, "Please enter you username."] },
-    email: { type: String, required: [true, "Please enter you email."] },
+    userId: { type: String, required: true },
+    name: { type: String, required: [true, "Please enter your username."] },
+    email: { type: String, required: [true, "Please enter your email."] },
     password: { type: String, required: [true, "Please enter your password"], select: false },
     avatar: {
         public_id: {
@@ -17,7 +17,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "user",
     },
-    cartData: { type: Object },
+    // Define structured cartData for better management
+    cartData: [
+        {
+            productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+            quantity: { type: Number, default: 1, required: true },
+            color: { type: String, required: true },  // Selected color
+            size: { type: String, required: true }    // Selected size
+        }
+    ],
     date: { type: Date, default: Date.now }
 });
 

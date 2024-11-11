@@ -1,12 +1,9 @@
 import React, { createContext, useState, useEffect } from 'react';
 export const Context = createContext(null);
 
-const getdefaultcart = () => {
-    let cart = {};
-    for (let i = 0; i <= 100; i++) {
-        cart[i] = 0;
-    }
-    return cart;
+const getStoredCart = () => {
+  const cart = localStorage.getItem('cart');
+  return cart ? JSON.parse(cart) : {};  // Returns stored cart or an empty object
 };
 
 const ContextProvider = (props) => {
@@ -14,125 +11,105 @@ const ContextProvider = (props) => {
 
     const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
 
-
-    const [cartItems, setCartItems] = useState(getdefaultcart());
+    const [cart, setCart] = useState(getStoredCart());
+   // const [cartItems, setCartItems] = useState(getdefaultcart());
     const [isLoggedIn, setisLoggedIn] = useState(false);
     const [shippingInfo, setShippingInfo] = useState(null);
     const [allproducts, setAllProducts] = useState([]);
     const [Adminproducts, setAdminproducts] = useState([]);
-
-
-    const gettotalcartitems = () => {
-        return Object.values(cartItems).reduce((total, quantity) => total + (quantity > 0 ? quantity : 0), 0);
-    };
-
-    const getTotalCartAmount = () => {
-        let totalamount = 0;
-        for (const item in cartItems) {
-            if (cartItems[item] > 0) {
-                let itemInfo = allproducts.find((product) => product.id === Number(item));
-                if (itemInfo) {
-                    totalamount += itemInfo.newprice * cartItems[item];
-                }
-            }
-        }
-        return totalamount.toFixed(2);
-    };
-
+    const [countryCode, setCountryCode] = useState();
 
     useEffect(() => {
-        const fetchCartItems = async () => {
-            const token = sessionStorage.getItem('auth-token');
-            if (token) {
-                try {
-                    const response = await fetch(`${baseurl}/getcart`, {
-                        method: 'POST',
-                        headers: {
-                            'auth-token': token,
-                            'Content-Type': 'application/json',
-                        },
-                    });
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch cart items');
-                    }
-                    const data = await response.json();
-                    setCartItems(data);
-                } catch (error) {
-                    console.error("Error fetching cart items:", error);
-                    // Optionally set an error state here to inform the user
-                }
-            }
-        };
+        // Store cart in localStorage whenever it updates
+        localStorage.setItem('cart', JSON.stringify(cart));
+      }, [cart]);
 
+    useEffect(() => {
         fetchCartItems();
     }, [baseurl]);
 
-
-    const addToCart = async (itemid) => {
-        setCartItems((prev) => ({ ...prev, [itemid]: (prev[itemid] || 0) + 1 })); // Ensure default is 0
-
+    const fetchCartItems = async () => {
         const token = sessionStorage.getItem('auth-token');
         if (token) {
             try {
-                const response = await fetch(`${baseurl}/addtocart`, {
+                const response = await fetch(`${baseurl}/getcart`, {
                     method: 'POST',
                     headers: {
-                        'Accept': 'application/json',
                         'auth-token': token,
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ itemId: itemid }),
                 });
-
                 if (!response.ok) {
-                    throw new Error('Failed to add item to cart');
+                    throw new Error('Failed to fetch cart items');
                 }
-
                 const data = await response.json();
-                // Optionally handle the response here (e.g., show a success message or update UI)
-                console.log('Item added to cart:', data); // Logging for debugging
+                setCartItems(data);
             } catch (error) {
-                console.error('Error adding item to cart:', error);
-                // Optionally set an error state to inform the user
+                console.error("Error fetching cart items:", error);
             }
         }
     };
 
+    //add To cart 
 
-    const removeFromCart = async (itemId) => {
-        // Update the local state to ensure quantity doesn't go below 0
-        setCartItems((prev) => ({
-            ...prev,
-            [itemId]: Math.max((prev[itemId] || 0) - 1, 0), // Ensure default is 0
-        }));
-
-        const token = sessionStorage.getItem('auth-token');
-        if (token) {
-            try {
-                const response = await fetch(`${baseurl}/removefromcart`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'auth-token': token,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ itemId }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to remove item from cart');
-                }
-
-                const data = await response.json();
-                // Optionally handle the response here (e.g., show a success message or update UI)
-                console.log('Item removed from cart:', data); // Logging for debugging
-            } catch (error) {
-                console.error('Error removing item from cart:', error);
-                // Optionally set an error state to inform the user
+    
+    const addToCart = (productId, quantity, color, size) => {
+        setCart((prevCart) => {
+            const newCart = { ...prevCart };
+            
+            // Find the product details from allproducts
+            const product = allproducts.find((p) => p.id === productId);
+            if (!product) {
+                console.error("Product not found:", productId);
+                return prevCart; // Return the previous cart if product is not found
             }
-        }
+            // If the product already exists in the cart, increase its quantity
+            if (newCart[productId]) {
+                newCart[productId].quantity += quantity;
+            } else {
+                // Otherwise, add the product with full details
+                newCart[productId] = {
+                    quantity,
+                    color,
+                    size,
+                    name: product.name,         // Updated from title to name
+                    image: product.images[0],    // Assuming the first image
+                    newprice: product.newprice   // Price as per your product structure
+                };
+            }
+            return newCart;
+        });
     };
 
+    
+//cart remove
+
+      const removeFromCart = (productId) => {
+        setCart((prevCart) => {
+          const newCart = { ...prevCart };
+          delete newCart[productId];
+          return newCart;
+        });
+      };
+
+      const getTotalCartItems = () => {
+        return Object.values(cart).reduce((total, item) => total + item.quantity, 0);
+      };
+
+      const getTotalCartAmount = () => {
+        if (!allproducts || !cart) return 0; // Safe check
+      
+        return Object.entries(cart).reduce((total, [productId, { quantity }]) => {
+          const product = allproducts.find((p) => p.id === parseInt(productId));
+          if (product) {
+            total += product.newprice * quantity;
+          }
+          return total;
+        }, 0);
+      };
+      
+      
+    //userinfo fetch
 
     const userinfo = async () => {
         const token = sessionStorage.getItem('auth-token');
@@ -340,7 +317,9 @@ const ContextProvider = (props) => {
         try {
             const response = await fetch('https://ipinfo.io/json');  // Fetch user's IP from external service
             const data = await response.json();
+            setCountryCode(data.country);
             return data.country;
+            
         } catch (error) {
             console.error('Error fetching IP:', error);
             return null;
@@ -360,6 +339,7 @@ const ContextProvider = (props) => {
             }
             const data = await response.json();
             setAllProducts(data.products); // Set products state
+
             return { success: true }; // Explicitly return success
         } catch (error) {
             setAllProducts([]); // Clear products if fetch fails
@@ -490,9 +470,10 @@ const ContextProvider = (props) => {
     // context values to export .
     const contextvalues = {
         allproducts,
-        cartItems,
         Adminproducts,
         isLoggedIn,
+        cart,
+        countryCode,
         fetchUserIP,
         fetchCarousels,
         fnadminproducts,
@@ -506,8 +487,8 @@ const ContextProvider = (props) => {
         handleLogout,
         userinfo, myorders,
         addToCart, removeFromCart,
-        getTotalCartAmount, gettotalcartitems,
-        getdefaultcart
+        getTotalCartAmount, getTotalCartItems,
+        getStoredCart
     };
 
     return (

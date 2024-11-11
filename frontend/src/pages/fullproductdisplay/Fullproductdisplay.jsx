@@ -4,6 +4,7 @@ import Productdisplay from '../product-display/Productdisplay';
 import Relatedproducts from '../../components/relatedproducts/Relatedproducts';
 import { Context } from '../../context API/Contextapi';
 import { useParams } from 'react-router-dom';
+import Loader from '../../components/loader/Loader'
 
 const Fullproductdisplay = () => {
     const { allproducts } = useContext(Context);
@@ -12,7 +13,7 @@ const Fullproductdisplay = () => {
 
     // Check if allproducts is loaded before trying to access it
     if (!allproducts || allproducts.length === 0) {
-        return <div>Loading...</div>; // You can show a loading indicator or a placeholder
+        return <div>{<Loader/>}</div>; // You can show a loading indicator or a placeholder
     }
 
     // Find the product that matches the URL id

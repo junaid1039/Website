@@ -1,13 +1,9 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './productdisplay.css';
-import { FaStar, FaStarHalfAlt } from 'react-icons/fa';
 import { Context } from '../../context API/Contextapi';
 import { useNavigate } from 'react-router-dom';
 import Description from '../../components/description/Description';
-
-
-
 
 const getCurrencySymbol = (currency) => {
     switch (currency) {
@@ -22,27 +18,22 @@ const getCurrencySymbol = (currency) => {
 
 const Productdisplay = ({ product }) => {
     const [mainImage, setMainImage] = useState(product.images && product.images.length > 0 ? product.images[0] : product.image);
-    const [selectedSize, setSelectedSize] = useState(product.sizes ? product.sizes[0] : null);
-    const [selectedColor, setSelectedColor] = useState(product.colors ? product.colors[0] : null);
+    const [selectedSize, setSelectedSize] = useState('');
+    const [selectedColor, setSelectedColor] = useState('');
+    const [quantity, setQuantity] = useState(1);
     const { addToCart } = useContext(Context);
     const navigate = useNavigate();
 
-    // Update main image when product changes
     useEffect(() => {
         setMainImage(product.images && product.images.length > 0 ? product.images[0] : product.image);
     }, [product]);
 
     const handleAddToCart = () => {
-        if ((product.sizes && product.sizes.length > 0 && !selectedSize) ||
-            (product.colors && product.colors.length > 0 && !selectedColor)) {
-            alert("Please select both a size and a color before adding to cart.");
-        } else {
-            addToCart({
-                id: product.id,
-                size: selectedSize,
-                color: selectedColor,
-            });
+        if (!selectedSize || !selectedColor) {
+            alert("Please select both a size and a color.");
+            return;
         }
+        addToCart(product.id, quantity, selectedColor, selectedSize);
     };
 
     const handleImageClick = (image) => {
@@ -50,18 +41,14 @@ const Productdisplay = ({ product }) => {
     };
 
     const handleBuyNow = () => {
-        if ((product.sizes && product.sizes.length > 0 && !selectedSize) ||
-            (product.colors && product.colors.length > 0 && !selectedColor)) {
-            alert("Please select both a size and a color before buying.");
-        } else {
-            addToCart({
-                id: product.id,
-                size: selectedSize,
-                color: selectedColor,
-            });
-            navigate('/cart/checkout');
+        if (!selectedSize || !selectedColor) {
+            alert("Please select both a size and a color.");
+            return;
         }
+        addToCart(product.id, quantity, selectedColor, selectedSize);
+        navigate('/cart/checkout');
     };
+
     const currencySymbol = getCurrencySymbol(product.countryCode);
 
     return (
@@ -72,31 +59,19 @@ const Productdisplay = ({ product }) => {
                         <img src={mainImage} alt={product.name} />
                     </div>
                     <div className="product-display__image-list">
-                        {product.images && product.images.length > 0 ? (
-                            product.images.map((img, index) => (
-                                <img
-                                    key={img}
-                                    src={img}
-                                    alt={`Product thumbnail ${index + 1}`}
-                                    onClick={() => handleImageClick(img)}
-                                    style={{ cursor: 'pointer' }}
-                                />
-                            ))
-                        ) : (
-                            <img src={product.image} alt="Main product thumbnail" />
-                        )}
+                        {product.images && product.images.map((img, index) => (
+                            <img
+                                key={img}
+                                src={img}
+                                alt={`Product thumbnail ${index + 1}`}
+                                onClick={() => handleImageClick(img)}
+                                style={{ cursor: 'pointer' }}
+                            />
+                        ))}
                     </div>
                 </div>
                 <div className="product-display__right">
                     <h1>{product.name}</h1>
-                    <div className="product-display__stars">
-                        <FaStar />
-                        <FaStar />
-                        <FaStar />
-                        <FaStar />
-                        <FaStarHalfAlt />
-                        <p>(15)</p>
-                    </div>
                     <div className="product-display__prices">
                         {product.oldprice && (
                             <div className="product-display__old-price">{currencySymbol} {product.oldprice}</div>
@@ -139,6 +114,18 @@ const Productdisplay = ({ product }) => {
                         </div>
                     )}
 
+                    {/* Quantity Selection */}
+                    <div className="product-display__quantity-selection">
+                        <h4>Quantity</h4>
+                        <input
+                            type="number"
+                            min="1"
+                            max="10"
+                            value={quantity}
+                            onChange={(e) => setQuantity(Math.max(1, e.target.value))}
+                        />
+                    </div>
+
                     <div className="product-display__buttons">
                         <button onClick={handleAddToCart}>Add to Cart</button>
                         <button onClick={handleBuyNow}>Buy Now</button>
@@ -164,6 +151,7 @@ Productdisplay.propTypes = {
         colors: PropTypes.arrayOf(PropTypes.string),
         category: PropTypes.string.isRequired,
         description: PropTypes.string.isRequired,
+        countryCode: PropTypes.string.isRequired, // Assuming this field exists for country code
     }).isRequired,
 };
 
