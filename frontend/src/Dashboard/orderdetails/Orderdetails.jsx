@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import './orderdetails.css';
 import { RxCross2 } from "react-icons/rx";
+import { Context } from '../../context API/Contextapi';
 
 const Orderdetails = ({ onClose, oid, onStatusUpdate }) => {
 
   const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
-  
+
+  const {countryCode} = useContext(Context);
   const [orderDetails, setOrderDetails] = useState(null); // State to hold order details
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
@@ -97,6 +99,15 @@ const Orderdetails = ({ onClose, oid, onStatusUpdate }) => {
     shippingInfo,
     paymentInfo,
   } = orderDetails; // Destructure order details
+  // Get currency symbol based on country code
+  const currencySymbols = {
+    US: '$',
+    EU: '€',
+    PK: '₨',
+    GB: '£',
+    AE: 'د.إ'
+};
+const currencySymbol = currencySymbols[countryCode] || '$';
 
   return (
     <div className="container">
@@ -105,7 +116,7 @@ const Orderdetails = ({ onClose, oid, onStatusUpdate }) => {
       <div className="order-info">
         <p><strong>Order ID:</strong> {orderId}</p>
         <p><strong>Order Date:</strong> {new Date(dateOrdered).toLocaleString()}</p>
-        <p><strong>Order Price:</strong> ${totalPrice.toFixed(2)}</p>
+        <p><strong>Order Price:</strong> {currencySymbol}{totalPrice.toFixed(2)}</p>
         <p><strong>Payment Method:</strong> {paymentInfo.method}</p>
         <p><strong>Payment Status:</strong> {paymentInfo.status}</p>
         <p><strong>Order Status:</strong> <span className="status">{orderStatus}</span></p>
@@ -117,7 +128,9 @@ const Orderdetails = ({ onClose, oid, onStatusUpdate }) => {
           <div key={index} className="o-details">
             <p><strong>Title:</strong> {item.name}</p>
             <p><strong>Quantity:</strong> {item.quantity}</p>
-            <p><strong>Price:</strong> ${item.price.toFixed(2)}</p>
+            <p><strong>Price:</strong> {currencySymbol}{item.price}</p>
+            <p><strong>Size:</strong> {item.size}</p>
+            <p><strong>Color:</strong> {item.color}</p>
           </div>
         ))}
       </div>

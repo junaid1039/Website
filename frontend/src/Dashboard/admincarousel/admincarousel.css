@@ -31,6 +31,7 @@ form input[type="file"] {
 form textarea{
     width: 100%;
     margin: 1em 0;
+    font-family: sans-serif;
 }
 
 form select {
@@ -50,6 +51,7 @@ form button {
     color: white;
     font-size: 16px;
     cursor: pointer;
+    
     transition: background-color 0.3s, transform 0.2s; /* Added transform for scale effect */
 }
 
