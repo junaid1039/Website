@@ -1,18 +1,15 @@
-/* Main Container */
-.loginsignup {
-    width: calc(100% - 30px); /* Account for 15px margin on both sides */
-    height: 100%;
+/* Login.css */
+.login__auth-container {
+    width: calc(100% - 30px);
     padding: 70px 0;
-    margin: 0 15px; /* Add 15px margin to the left and right */
+    margin: 0 15px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     justify-content: center; 
     align-items: center;
-    
 }
 
-/* Box Container */
-.box {
+.login__box {
     width: 90%;
     max-width: 400px;
     padding: 30px;
@@ -20,29 +17,28 @@
     background: #ffffff;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center-align items horizontally */
+    align-items: center;
 }
 
-.box h1 {
+.login__box h1 {
     font-size: 1.8em;
     color: #333;
     margin-bottom: 20px;
     text-align: center;
 }
 
-/* Input Fields */
-.loginsignup-fields {
-    width: 100%; /* Ensure the fields take up full width of the box */
+.login__fields {
+    width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center-align items */
+    align-items: center;
     gap: 15px;
     margin-top: 15px;
 }
 
-.loginsignup-fields input {
-    width: 90%; /* Center input fields horizontally by reducing width */
-    max-width: 320px; /* Optional: Set a max-width for input fields */
+.login__fields input {
+    width: 90%;
+    max-width: 320px;
     height: 45px;
     padding: 0 15px;
     border: 1px solid #d3d3d3;
@@ -53,12 +49,11 @@
     outline: none;
 }
 
-.loginsignup-fields input::placeholder {
+.login__fields input::placeholder {
     color: #b0b0b0;
 }
 
-/* Button Styling */
-.box button {
+.login__box button {
     width: 90%;
     max-width: 320px;
     height: 50px;
@@ -71,8 +66,7 @@
     cursor: pointer;
 }
 
-/* Login/Signup Switch Text */
-.login-signup {
+.login__switch {
     display: flex;
     justify-content: center;
     margin-top: 20px;
@@ -80,15 +74,14 @@
     color: #444;
 }
 
-.login-signup span {
+.login__switch span {
     color: #00509d;
     font-weight: 600;
     cursor: pointer;
     margin-left: 5px;
 }
 
-/* Agreement Checkbox */
-.loginsignup-agree {
+.login__agree {
     display: flex;
     align-items: center;
     margin-top: 10px;
@@ -96,11 +89,8 @@
     font-size: 0.85em;
     color: #666;
 }
-.loginsignup-agree input{
-width: auto;
-}
-/* Account Section */
-.myacc {
+
+.login__my-account {
     text-align: center;
     font-size: 1.5em;
     color: #333;
@@ -108,56 +98,53 @@ width: auto;
     margin-top: 50px;
 }
 
-.main {
+.login__main {
     width: 100%;
     max-width: 1200px;
     margin: auto;
     display: flex;
     flex-direction: column;
-    padding: 0 20px;
 }
 
-/* Left Navigation */
-.u-left {
+.login__left-nav {
     display: flex;
     gap: 15px;
     align-items: center;
     justify-content: space-between;
+    padding: 0 1em;
 }
 
-.u-left .cl {
+.login__link {
     font-size: 1em;
     color: #555;
 }
 
-.u-left .cl.active h4 {
+.login__link--active h4 {
     color: #444;
     text-decoration: underline;
     font-weight: bold;
 }
 
-.u-left h4 {
+.login__left-nav h4 {
     cursor: pointer;
 }
 
-
-/* Responsive Design */
 @media (max-width: 500px) {
-    .box {
+    .login__box {
         width: 90%;
         padding: 20px;
     }
 
-    .loginsignup-fields input {
+    .login__fields input {
         height: 45px;
         padding-left: 15px;
     }
 
-    .myacc {
+    .login__my-account {
         font-size: 1.2em;
     }
 
-    .u-left .cl h4 {
+    .login__left-nav .login__link h4 {
         font-size: 0.95em;
     }
 }
