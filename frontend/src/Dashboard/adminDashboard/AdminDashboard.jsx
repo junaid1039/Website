@@ -118,9 +118,7 @@ const AdminDashboard = () => {
 
     return (
         <div className="dashboard">
-            <div className="dashboard-header">
-                <h2>Admin Dashboard</h2>
-            </div>
+            
             <div className="dashboard-stats">
                 <div className="stats-box" onClick={() => navigate('/admin/productlist')}>
                     <FaBox className="stat-icon" />

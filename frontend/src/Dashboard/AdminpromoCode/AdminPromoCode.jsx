@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './adminPromoCode.css'; // Ensure to create the appropriate CSS for styling
+import './adminPromoCode.css';
 
 const AdminPromoCode = () => {
   const [promoCodes, setPromoCodes] = useState([]);
@@ -11,7 +11,6 @@ const AdminPromoCode = () => {
 
   const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
 
-  // Fetch all active promo codes when the component mounts
   useEffect(() => {
     const fetchPromoCodes = async () => {
       try {
@@ -30,7 +29,6 @@ const AdminPromoCode = () => {
     fetchPromoCodes();
   }, []);
 
-  // Handle promo code creation
   const handleCreatePromoCode = async (e) => {
     e.preventDefault();
     try {
@@ -49,7 +47,7 @@ const AdminPromoCode = () => {
       const data = await response.json();
       if (response.ok) {
         alert(data.message);
-        setPromoCodes([...promoCodes, data.promoCode]); // Add new code to the list
+        setPromoCodes([...promoCodes, data.promoCode]);
         setNewCode('');
         setDiscount('');
         setExpirationDate('');
@@ -62,7 +60,6 @@ const AdminPromoCode = () => {
     }
   };
 
-  // Handle promo code validation
   const handleValidatePromoCode = async () => {
     try {
       const response = await fetch(`${baseurl}/validateCode`, {
@@ -88,64 +85,66 @@ const AdminPromoCode = () => {
   return (
     <div className="admin-promo-code">
       <form onSubmit={handleCreatePromoCode} className="create-form">
-        <h3>Create Promo Code</h3>
-        <div className="form-group">
-          <label htmlFor="code">Promo Code</label>
+        <h3 className="create-form-title">Create Promo Code</h3>
+        <div className="form-group create-code-group">
+          <label htmlFor="code" className="create-code-label">Promo Code</label>
           <input
             type="text"
             id="code"
+            className="create-code-input"
             value={newCode}
             onChange={(e) => setNewCode(e.target.value)}
             required
           />
         </div>
-        <div className="form-group">
-          <label htmlFor="discount">Discount Percentage</label>
+        <div className="form-group create-discount-group">
+          <label htmlFor="discount" className="create-discount-label">Discount Percentage</label>
           <input
             type="number"
             id="discount"
+            className="create-discount-input"
             value={discount}
             onChange={(e) => setDiscount(e.target.value)}
             required
           />
         </div>
-        <div className="form-group">
-          <label htmlFor="expirationDate">Expiration Date</label>
+        <div className="form-group create-expiration-group">
+          <label htmlFor="expirationDate" className="create-expiration-label">Expiration Date</label>
           <input
             type="date"
             id="expirationDate"
+            className="create-expiration-input"
             value={expirationDate}
             onChange={(e) => setExpirationDate(e.target.value)}
             required
           />
         </div>
-        <button type="submit">Create Promo Code</button>
+        <button type="submit" className="create-submit-button">Create Promo Code</button>
       </form>
 
-      {/* Promo code validation */}
       <div className="validate-section">
-        <h3>Validate Promo Code</h3>
+        <h3 className="validate-title">Validate Promo Code</h3>
         <input
           type="text"
+          className="validate-input"
           value={promoCodeToValidate}
           onChange={(e) => setPromoCodeToValidate(e.target.value)}
           placeholder="Enter promo code"
         />
-        <button onClick={handleValidatePromoCode}>Validate</button>
-        {validationMessage && <p>{validationMessage}</p>}
+        <button onClick={handleValidatePromoCode} className="validate-button">Validate</button>
+        {validationMessage && <p className="validation-message">{validationMessage}</p>}
       </div>
 
-      {/* List all active promo codes */}
       <div className="promo-codes-list">
-        <h3>Active Promo Codes</h3>
+        <h3 className="promo-codes-title">Active Promo Codes</h3>
         {promoCodes.length === 0 ? (
-          <p>No active promo codes available.</p>
+          <p className="no-promo-message">No active promo codes available.</p>
         ) : (
-          <ul>
+          <ul className="promo-codes-ul">
             {promoCodes.map((promo) => (
-              <li key={promo._id}>
-                <strong>{promo.code}</strong> - {promo.discount}% off
-                <span> (Expires on {new Date(promo.expirationDate).toLocaleDateString()})</span>
+              <li key={promo._id} className="promo-code-item">
+                <strong className="promo-code-text">{promo.code}</strong> - {promo.discount}% off
+                <span className="promo-expiration"> (Expires on {new Date(promo.expirationDate).toLocaleDateString()})</span>
               </li>
             ))}
           </ul>
