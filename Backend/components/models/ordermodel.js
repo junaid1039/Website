@@ -20,8 +20,8 @@ const orderSchema = new mongoose.Schema({
         quantity: { type: Number, required: true },
         price: { type: Number, required: true },
         image: { type: String, required: true },
-        colors: {type: String, required: false},
-        sizes: {type: String, required: false}
+        color: { type: String, required: true },  // Added color field
+        size: { type: String, required: true },   // Added size field
     }],
     shippingInfo: {
         address: { type: String, required: true },
