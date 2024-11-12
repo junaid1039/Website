@@ -1,0 +1,52 @@
+.admin-promo-code {
+    padding: 20px;
+  }
+  
+  .create-form, .validate-section, .promo-codes-list {
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 10px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  input {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+  }
+  
+  button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  
+  .promo-codes-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .promo-codes-list li {
+    background: #f9f9f9;
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+  }
+  
+  .promo-codes-list li span {
+    font-size: 0.9em;
+    color: #666;
+  }
+  
