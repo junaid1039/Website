@@ -18,14 +18,15 @@ const userSchema = new mongoose.Schema({
         default: "user",
     },
     // Define structured cartData for better management
-    cartData: [
-        {
-            productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
-            quantity: { type: Number, default: 1, required: true },
-            color: { type: String, required: true },  // Selected color
-            size: { type: String, required: true }    // Selected size
-        }
-    ],
+    //cartData: [
+    //    {
+    //        productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: false },
+    //        quantity: { type: Number, default: 1, required: FinalizationRegistry },
+    //        color: { type: String, required: false },  // Selected color
+    //        size: { type: String, required: false }    // Selected size
+    //    }
+    //],
+    
     date: { type: Date, default: Date.now }
 });
 
