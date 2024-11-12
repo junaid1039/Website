@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Context } from '../../context API/Contextapi';
 import Stepper from '../stepper/Stepper';
 import { loadStripe } from '@stripe/stripe-js';
+import Loader from '../loader/Loader';
 
 const stripePromise = loadStripe('YOUR_STRIPE_PUBLIC_KEY'); // Replace with your Stripe public key
 
@@ -15,11 +16,13 @@ const Payment = () => {
     const [currentStep] = useState(3);
     const [paymentMethod, setPaymentMethod] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false); // State to manage loading indicator
 
     // Memoize the total cart amount to avoid recalculating
     const totalAmount = useMemo(() => getTotalCartAmount(), [getTotalCartAmount]);
 
     const handleStripePayment = async () => {
+        setLoading(true); // Show loading indicator
         try {
             const stripe = await stripePromise;
             const response = await fetch('/create-checkout-session', {
@@ -36,6 +39,8 @@ const Payment = () => {
             if (result.error) setError(result.error.message);
         } catch (err) {
             setError(err.message);
+        } finally {
+            setLoading(false); // Hide loading indicator after response
         }
     };
 
@@ -44,9 +49,11 @@ const Payment = () => {
             setError('Please select a payment method.');
             return;
         }
-        
+
+        setLoading(true); // Show loading indicator
         if (paymentMethod === 'COD') {
             handlePaymentSubmit(navigate, setError, paymentMethod);
+            setLoading(false); // Hide loading indicator after submission
         } else if (paymentMethod === 'CreditCard') {
             handleStripePayment();
         }
@@ -96,7 +103,12 @@ const Payment = () => {
                     </div>
                 </div>
                 
-                <button className="submit-button" onClick={handleConfirmOrder}>Confirm Order</button>
+                <button className="submit-button" onClick={handleConfirmOrder} disabled={loading}>
+                    {loading ? 'Processing...' : 'Confirm Order'}
+                </button>
+
+                {/* Loading Indicator */}
+                {loading && <div className="loading-indicator"><Loader/></div>}
             </div>
         </>
     );
