@@ -1,4 +1,3 @@
-// Login.js
 import React, { useState, useContext } from "react";
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import Myorders from "../../../components/userinfo/orders/Myorders";
@@ -6,6 +5,7 @@ import AdressBook from "../../../components/userinfo/adressbook/Adressbook";
 import Pi from "../../../components/userinfo/pi/Pi";
 import { Context } from "../../../context API/Contextapi";
 import './login.css';
+import Loader from "../../../components/loader/Loader";
 
 const Login = () => {
     const { signup, login, handleLogout } = useContext(Context);
@@ -15,8 +15,8 @@ const Login = () => {
         password: "",
         email: ""
     });
-
     const [activeLink, setActiveLink] = useState('userinfo');
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     const changeHandler = (e) => {
@@ -26,6 +26,19 @@ const Login = () => {
     const handleLinkClick = (link) => {
         setActiveLink(link);
         navigate(`/${link}`);
+    };
+
+    const handleAuth = async () => {
+        setIsLoading(true);
+        try {
+            if (state === "Login") {
+                await login(formData, navigate);
+            } else {
+                await signup(formData, navigate);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -41,12 +54,6 @@ const Login = () => {
                                 onClick={() => handleLinkClick('userinfo')}>
                                 <h4>Profile</h4>
                             </Link>
-                           {/* <Link
-                                className={`login__link ${activeLink === 'addressbook' ? 'login__link--active' : ''}`}
-                                to="addressbook"
-                                onClick={() => handleLinkClick('addressbook')}>
-                                <h4>Addresse</h4>
-                            </Link> */}
                             <Link
                                 className={`login__link ${activeLink === 'myorders' ? 'login__link--active' : ''}`}
                                 to="myorders"
@@ -99,10 +106,8 @@ const Login = () => {
                                 <p>By Continuing, I agree to the Terms and Privacy.</p>
                             </div>
                         )}
-                        <button onClick={() => {
-                            state === "Login" ? login(formData, navigate) : signup(formData, navigate);
-                        }}>
-                            Continue
+                        <button onClick={handleAuth} disabled={isLoading}>
+                            {isLoading ? <Loader/> : "Continue"}
                         </button>
                         {state === "Sign Up" ? (
                             <p className="login__switch">
