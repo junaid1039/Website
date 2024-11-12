@@ -22,35 +22,56 @@ const getCurrencySymbol = (currency) => {
   }
 };
 
+const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
+
 const Cart = () => {
-  const { allproducts, countryCode, cart, removeFromCart, addToCart, getTotalCartAmount } = useContext(Context);
+  const { allproducts, countryCode, cart, applyPromoCode, removeFromCart, addToCart, getTotalCartAmount, promoCode, discount, resetPromoCode } = useContext(Context);
   const [currentStep] = useState(1);
-  const [isUpdating, setIsUpdating] = useState(false); // Track ongoing update to prevent duplicate actions
-  
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [promoCodeInput, setPromoCodeInput] = useState('');
+  const [promoError, setPromoError] = useState('');
+
   // Check if the cart is empty
   const isCartEmpty = !cart || Object.keys(cart).length === 0;
   const currencySymbol = getCurrencySymbol(countryCode);
   const totalCartAmount = getTotalCartAmount();
+  const discountedTotal = totalCartAmount - discount;
 
-  // Prevent multiple clicks by debouncing the addToCart/removeFromCart calls
+  const handlePromoCodeSubmit = async () => {
+    if (!promoCodeInput) {
+      setPromoError('Please enter a promo code');
+      return;
+    }
+    const result = await applyPromoCode(promoCodeInput);
+    if (result.success) {
+      setPromoError('');
+    } else {
+      setPromoError(result.message);
+    }
+  };
+
   const handleAddToCart = useCallback((productId) => {
-    if (isUpdating) return; // Skip if already updating
+    if (isUpdating) return;
     setIsUpdating(true);
-    addToCart(productId);  // Trigger addToCart action
-    setTimeout(() => setIsUpdating(false), 500);  // Reset after delay
+    addToCart(productId);
+    setTimeout(() => setIsUpdating(false), 500);
   }, [isUpdating, addToCart]);
 
   const handleRemoveFromCart = useCallback((productId) => {
-    if (isUpdating) return; // Skip if already updating
+    if (isUpdating) return;
     setIsUpdating(true);
-    removeFromCart(productId);  // Trigger removeFromCart action
-    setTimeout(() => setIsUpdating(false), 500);  // Reset after delay
+    removeFromCart(productId);
+    setTimeout(() => setIsUpdating(false), 500);
   }, [isUpdating, removeFromCart]);
+
+  const handleRemovePromoCode = () => {
+    resetPromoCode(); // Reset the promo code and discount
+  };
 
   return (
     <div className="cart-page">
       <Stepper currentStep={currentStep} />
-      
+
       <div className="cartitem">
         <div className="sub-cartitem">
           <div className="cartitem-cart">
@@ -62,9 +83,7 @@ const Cart = () => {
               </div>
             ) : (
               Object.entries(cart).map(([productId, { quantity, color, size }]) => {
-                // Check if `products` exists and has items, then find the product
-                const product = allproducts && allproducts.length > 0 ? 
-                  allproducts.find((p) => p.id === parseInt(productId)) : null;
+                const product = allproducts ? allproducts.find((p) => p.id === parseInt(productId)) : null;
 
                 if (product) {
                   return (
@@ -74,13 +93,12 @@ const Cart = () => {
                         <div className="dside">
                           <div className='name'>
                             <span>{product.name}</span>
-                            {/* Delete Icon to remove the item */}
                             <RxCross2 onClick={() => handleRemoveFromCart(productId)} />
                           </div>
                           <div className='details'>
                             <div className="color">
                               <span>Color: {color}</span>
-                              <br/>
+                              <br />
                               <span>Size: {size}</span>
                             </div>
                             <div className="d-q">
@@ -96,15 +114,13 @@ const Cart = () => {
                       </div>
                     </div>
                   );
-                } else {
-                  console.warn(`Product with ID ${productId} not found in products array.`);
                 }
                 return null;
               })
             )}
           </div>
 
-          {/* Cart Totals Section */}
+
           <div className="cartitem-down">
             <div className="cs">
               <div className="sub-cs">
@@ -116,38 +132,48 @@ const Cart = () => {
               </div>
             </div>
 
-            <div className="sub-down">
-              <div className="ct-promoCode">
-                <p>ENTER PROMO CODE</p>
-                <div className="ct-promoBox">
-                  <input type='text' placeholder='Promo Code' />
-                  <button>Submit</button>
+            <div className="ct-promoCode">
+              <p>ENTER PROMO CODE</p>
+              <div className="ct-promoBox">
+                <input
+                  type='text'
+                  value={promoCodeInput}
+                  onChange={(e) => setPromoCodeInput(e.target.value)}
+                  placeholder='Promo Code'
+                />
+                <button onClick={handlePromoCodeSubmit}>Submit</button>
+              </div>
+              {promoError && <div className="error-message">{promoError}</div>}
+              {promoCode && (
+                <div className="promo-applied">
+                  <p>Promo Code Applied: {promoCode} - Discount: {discount}%</p>
+                  <button onClick={handleRemovePromoCode}>Remove Code</button>
+                </div>
+              )}
+            </div>
+            
+            <div className="cartitem-total">
+              <div>
+                <div className="ct-item">
+                  <p>Subtotal</p>
+                  <p>{currencySymbol}{totalCartAmount.toFixed(0)}</p>
+                </div>
+                <hr />
+                <div className="ct-item">
+                  <p>Shipping Fee</p>
+                  <p>Free</p>
+                </div>
+                <hr />
+                <div className="ct-item">
+                  <h3>Total</h3>
+                  <h3>{currencySymbol}{totalCartAmount.toFixed(0)}</h3>
                 </div>
               </div>
-              <div className="cartitem-total">
-                <div>
-                  <div className="ct-item">
-                    <p>Subtotal</p>
-                    <p>{currencySymbol}{totalCartAmount}</p>
-                  </div>
-                  <hr />
-                  <div className="ct-item">
-                    <p>Shipping Fee</p>
-                    <p>Free</p>
-                  </div>
-                  <hr />
-                  <div className="ct-item">
-                    <h3>Total</h3>
-                    <h3>{currencySymbol}{totalCartAmount}</h3>
-                  </div>
-                </div>
-                {/* Disable checkout button if cart is empty or total amount is 0 */}
-                <Link to='/cart/checkout' className='cl'>
-                  <button disabled={isCartEmpty || totalCartAmount === 0}>
-                    <LuShoppingCart /> Checkout
-                  </button>
-                </Link>
-              </div>
+              <Link to='/cart/checkout' className='cl'>
+                <button disabled={isCartEmpty || discountedTotal === 0}>
+                  <LuShoppingCart /> Checkout
+                </button>
+              </Link>
             </div>
           </div>
         </div>

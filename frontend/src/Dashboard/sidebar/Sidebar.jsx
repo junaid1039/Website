@@ -9,6 +9,8 @@ import { FiMenu } from "react-icons/fi"; // Hamburger icon
 import { BiCarousel } from "react-icons/bi";
 import { IoMdNotifications } from "react-icons/io";
 import { AiOutlineMessage } from "react-icons/ai";
+import { RiDiscountPercentLine } from "react-icons/ri";
+
 
 
 
@@ -55,6 +57,10 @@ const Sidebar = () => {
       <Link to="popup" className="sidebar_item" aria-label="Users">
         <IoMdNotifications />
         <p>Popups</p>
+      </Link>
+      <Link to="promocode" className="sidebar_item" aria-label="Users">
+        <RiDiscountPercentLine />
+        <p>Promo Codes</p>
       </Link>
     </div>
   );

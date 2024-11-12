@@ -18,6 +18,8 @@ const ContextProvider = (props) => {
     const [allproducts, setAllProducts] = useState([]);
     const [Adminproducts, setAdminproducts] = useState([]);
     const [countryCode, setCountryCode] = useState();
+    const [promoCode, setPromoCode] = useState('');
+    const [discount, setDiscount] = useState(0);
 
     useEffect(() => {
         // Store cart in localStorage whenever it updates
@@ -96,17 +98,50 @@ const ContextProvider = (props) => {
         return Object.values(cart).reduce((total, item) => total + item.quantity, 0);
     };
 
+    //promocode
+    const applyPromoCode = async (code) => {
+        const token = sessionStorage.getItem('auth-token');
+        try {
+            const response = await fetch(`${baseurl}/validateCode`, {
+                method: 'POST',
+                headers: {
+                    'auth-token': token,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ promoCode: code }),
+            });
+    
+            const data = await response.json();
+            if (data.success) {
+                setPromoCode(code);
+                setDiscount(data.discount); // Assuming the server returns the discount
+            } else {
+                alert(data.message); // Show error message if promocode is invalid
+            }
+        } catch (error) {
+            console.error('Error applying promocode:', error);
+            alert('Failed to apply promocode');
+        }
+    };
+    
+
     const getTotalCartAmount = () => {
         if (!allproducts || !cart) return 0; // Safe check
-
-        return Object.entries(cart).reduce((total, [productId, { quantity }]) => {
+    
+        // Calculate the total price as before
+        const total = Object.entries(cart).reduce((total, [productId, { quantity }]) => {
             const product = allproducts.find((p) => p.id === parseInt(productId));
             if (product) {
                 total += product.newprice * quantity;
             }
             return total;
         }, 0);
+    
+        // Apply the discount if any
+        const discountedTotal = Math.round(total - (total * (discount / 100)));
+        return discountedTotal; // Return the total after discount
     };
+    
 
     //userinfo fetch
 
@@ -490,7 +525,7 @@ const ContextProvider = (props) => {
         userinfo, myorders,
         addToCart, removeFromCart,
         getTotalCartAmount, getTotalCartItems,
-        getStoredCart
+        getStoredCart,applyPromoCode
     };
 
     return (
