@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback, useMemo } from "react";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { Context } from '../../context API/Contextapi';
 import "./carousel.css";
 import { useNavigate } from "react-router-dom";
 
-const Bcarosel = () => {
+const Bcarousel = () => {
   const { fetchCarousels } = useContext(Context);
   const [slides, setSlides] = useState([]);
-  const [slide, setSlide] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
   const navigate = useNavigate();
 
+  // Load slides once when component mounts
   useEffect(() => {
     const loadSlides = async () => {
       const fetchedSlides = await fetchCarousels();
@@ -19,69 +20,76 @@ const Bcarosel = () => {
     loadSlides();
   }, [fetchCarousels]);
 
+  // Auto-slide feature
   useEffect(() => {
     if (slides.length > 0) {
       const interval = setInterval(() => {
-        setSlide((prevSlide) => (prevSlide === slides.length - 1 ? 0 : prevSlide + 1));
-      }, 4000); // Change slide every 4 seconds
-
-      return () => clearInterval(interval); // Clean up interval on component unmount
+        setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
+      }, 4000);
+      return () => clearInterval(interval); // Cleanup interval on unmount
     }
-  }, [slides]);
+  }, [slides.length]);
 
-  const nextSlide = () => {
-    setSlide((prevSlide) => (prevSlide === slides.length - 1 ? 0 : prevSlide + 1));
-  };
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
+  }, [slides.length]);
 
-  const prevSlide = () => {
-    setSlide((prevSlide) => (prevSlide === 0 ? slides.length - 1 : prevSlide - 1));
-  };
+  const prevSlide = useCallback(() => {
+    setCurrentSlide((prevSlide) => (prevSlide - 1 + slides.length) % slides.length);
+  }, [slides.length]);
 
-  if (!slides || slides.length === 0) {
+  if (!slides.length) {
     return <div className="carousel-error">No slides available</div>;
   }
 
-  const currentSlide = slides[slide]; // Get the currently active slide
+  const current = slides[currentSlide];
 
   return (
-    <div className="main-c">
+    <div className="carousel-container">
       <div className="carousel">
         <IoIosArrowBack onClick={prevSlide} className="arrow arrow-left" />
         
-        {slides.map((item, idx) => (
-          <div key={idx} className={slide === idx ? "slide" : "slide slide-hidden"}>
-            <img src={item.carousel} alt={`Slide ${idx}`} />
-          </div>
-        ))}
-
-        {/* Overlay content for the current slide */}
-        {currentSlide && (
-          <div className="carousel-overlay">
-            <h2 className="carousel-title">{currentSlide.title}</h2>
-            <p className="carousel-description">{currentSlide.description}</p>
-            <label
-              className="carousel-button"
-              onClick={() => navigate(currentSlide.linkto)}
+        <div className="slide-container">
+          {slides.map((item, idx) => (
+            <div 
+              key={idx} 
+              className={`slide ${currentSlide === idx ? "slide-active" : "slide-hidden"}`}
             >
-              {currentSlide.buttonText || "Discover"}
-            </label>
-          </div>
-        )}
+              <img 
+                src={item.carousel} 
+                alt={`Slide ${idx}`} 
+                loading="lazy"  // Lazy load images to enhance performance
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className="carousel-overlay">
+          <h2 className="carousel-title">{current.title}</h2>
+          <p className="carousel-description">{current.description}</p>
+          <label
+            className="carousel-button"
+            onClick={() => navigate(current.linkto)}
+          >
+            {current.buttonText || "Discover"}
+          </label>
+        </div>
 
         <IoIosArrowForward onClick={nextSlide} className="arrow arrow-right" />
-        
-        <span className="indicators">
+
+        <div className="indicators">
           {slides.map((_, idx) => (
             <button
               key={idx}
-              className={slide === idx ? "indicator" : "indicator indicator-inactive"}
-              onClick={() => setSlide(idx)}
+              className={`indicator ${currentSlide === idx ? "indicator-active" : ""}`}
+              onClick={() => setCurrentSlide(idx)}
+              aria-label={`Go to slide ${idx + 1}`}
             ></button>
           ))}
-        </span>
+        </div>
       </div>
     </div>
   );
 };
 
-export default Bcarosel;
+export default Bcarousel;

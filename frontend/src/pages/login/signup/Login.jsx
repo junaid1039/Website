@@ -41,12 +41,12 @@ const Login = () => {
                                 onClick={() => handleLinkClick('userinfo')}>
                                 <h4>Profile</h4>
                             </Link>
-                            <Link
+                           {/* <Link
                                 className={`login__link ${activeLink === 'addressbook' ? 'login__link--active' : ''}`}
                                 to="addressbook"
                                 onClick={() => handleLinkClick('addressbook')}>
-                                <h4>Addresses</h4>
-                            </Link>
+                                <h4>Addresse</h4>
+                            </Link> */}
                             <Link
                                 className={`login__link ${activeLink === 'myorders' ? 'login__link--active' : ''}`}
                                 to="myorders"
