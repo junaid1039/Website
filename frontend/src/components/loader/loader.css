@@ -1,5 +1,4 @@
-/* loader.css */
-.loader-container {
+.loader-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -8,7 +7,7 @@
     background: #f1f6eb;
 }
 
-.loader {
+.loading-animation {
     width: 100px;
     height: 60px;
     display: flex;
@@ -17,7 +16,7 @@
     position: relative;
 }
 
-.circle {
+.dot {
     width: 20px;
     height: 20px;
     background-color: #444;
@@ -25,15 +24,15 @@
     animation: bounce 0.5s alternate infinite ease;
 }
 
-.circle:nth-child(2) {
+.dot:nth-child(2) {
     animation-delay: 0.1s;
 }
 
-.circle:nth-child(3) {
+.dot:nth-child(3) {
     animation-delay: 0.2s;
 }
 
-.shadow {
+.shadow-effect {
     width: 20px;
     height: 4px;
     background-color: rgba(0, 0, 0, 0.1);
@@ -43,17 +42,17 @@
     animation: shrink 0.5s alternate infinite ease;
 }
 
-.shadow:nth-child(4) {
+.shadow-effect:nth-child(4) {
     left: 0;
     animation-delay: 0.1s;
 }
 
-.shadow:nth-child(5) {
+.shadow-effect:nth-child(5) {
     left: calc(50% - 10px);
     animation-delay: 0.2s;
 }
 
-.shadow:nth-child(6) {
+.shadow-effect:nth-child(6) {
     right: 0;
     animation-delay: 0.3s;
 }
