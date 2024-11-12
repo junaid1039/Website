@@ -1,52 +1,99 @@
 .admin-promo-code {
-    padding: 20px;
-  }
-  
-  .create-form, .validate-section, .promo-codes-list {
-    margin-bottom: 20px;
-  }
-  
-  .form-group {
-    margin-bottom: 10px;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  input {
-    width: 100%;
-    padding: 8px;
-    margin: 5px 0;
-  }
-  
-  button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #45a049;
-  }
-  
-  .promo-codes-list ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .promo-codes-list li {
-    background: #f9f9f9;
-    margin: 5px 0;
-    padding: 10px;
-    border: 1px solid #ddd;
-  }
-  
-  .promo-codes-list li span {
-    font-size: 0.9em;
-    color: #666;
-  }
-  
+  padding: 30px;
+  padding-top: 0;
+  width: 100%;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+  color: #333;
+  background-color: #f4f4f4;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2, h3 {
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.create-form, .validate-section, .promo-codes-list {
+  display: block;
+  margin-bottom: 25px;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+input {
+  width: calc(100% - 20px);
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  transition: border-color 0.3s;
+}
+
+input:focus {
+  border-color: #4CAF50;
+  outline: none;
+}
+
+button {
+  width: 100%;
+  padding: 12px 0;
+  background-color: #4CAF50;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+.validate-section input {
+  width: calc(100% - 20px);
+  padding: 12px;
+  margin-bottom: 15px;
+}
+
+.promo-codes-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.promo-codes-list li {
+  background: #ffffff;
+  margin: 10px 0;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.promo-codes-list li strong {
+  font-weight: bold;
+  color: #333;
+}
+
+.promo-codes-list li span {
+  font-size: 0.85em;
+  color: #888;
+}

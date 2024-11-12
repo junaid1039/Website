@@ -87,9 +87,6 @@ const AdminPromoCode = () => {
 
   return (
     <div className="admin-promo-code">
-      <h2>Manage Promo Codes</h2>
-
-      {/* Promo code creation form */}
       <form onSubmit={handleCreatePromoCode} className="create-form">
         <h3>Create Promo Code</h3>
         <div className="form-group">
