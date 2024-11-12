@@ -1,11 +1,11 @@
+// Login.js
 import React, { useState, useContext } from "react";
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import Myorders from "../../../components/userinfo/orders/Myorders";
-import Adressbook from "../../../components/userinfo/adressbook/Adressbook";
+import AdressBook from "../../../components/userinfo/adressbook/Adressbook";
 import Pi from "../../../components/userinfo/pi/Pi";
 import { Context } from "../../../context API/Contextapi";
 import './login.css';
-
 
 const Login = () => {
     const { signup, login, handleLogout } = useContext(Context);
@@ -16,7 +16,6 @@ const Login = () => {
         email: ""
     });
 
-    // Set the default link to 'userinfo'
     const [activeLink, setActiveLink] = useState('userinfo');
     const navigate = useNavigate();
 
@@ -26,51 +25,51 @@ const Login = () => {
 
     const handleLinkClick = (link) => {
         setActiveLink(link);
-        navigate(`/${link}`); // Navigate to the selected link
+        navigate(`/${link}`);
     };
 
     return (
         <div>
             {sessionStorage.getItem('auth-token') ? (
                 <>
-                    <div className="myacc">My Account</div>
-                    <div className="main">
-                        <div className="u-left">
+                    <div className="login__my-account">My Account</div>
+                    <div className="login__main">
+                        <div className="login__left-nav">
                             <Link
-                                className={`cl ${activeLink === 'userinfo' ? 'active' : ''}`}
+                                className={`login__link ${activeLink === 'userinfo' ? 'login__link--active' : ''}`}
                                 to="userinfo"
                                 onClick={() => handleLinkClick('userinfo')}>
                                 <h4>Profile</h4>
                             </Link>
                             <Link
-                                className={`cl ${activeLink === 'addressbook' ? 'active' : ''}`}
+                                className={`login__link ${activeLink === 'addressbook' ? 'login__link--active' : ''}`}
                                 to="addressbook"
                                 onClick={() => handleLinkClick('addressbook')}>
                                 <h4>Addresses</h4>
                             </Link>
                             <Link
-                                className={`cl ${activeLink === 'myorders' ? 'active' : ''}`}
+                                className={`login__link ${activeLink === 'myorders' ? 'login__link--active' : ''}`}
                                 to="myorders"
                                 onClick={() => handleLinkClick('myorders')}>
                                 <h4>Orders</h4>
                             </Link>
-                            <h4 onClick={()=>handleLogout(navigate)}>Logout</h4>
+                            <h4 onClick={() => handleLogout(navigate)}>Logout</h4>
                         </div>
-                        <div className="u-right">
+                        <div className="login__content">
                             <Routes>
                                 <Route path="userinfo" element={<Pi />} />
-                                <Route path="addressbook" element={<Adressbook />} />
+                                <Route path="addressbook" element={<AdressBook />} />
                                 <Route path="myorders" element={<Myorders />} />
                             </Routes>
                         </div>
                     </div>
                 </>
             ) : (
-                <div className="loginsignup">
-                    <div className="box">
+                <div className="login__auth-container">
+                    <div className="login__box">
                         <h1>{state}</h1>
-                        <div className="loginsignup-fields">
-                            {state === "Sign Up" ? (
+                        <div className="login__fields">
+                            {state === "Sign Up" && (
                                 <input
                                     name="name"
                                     value={formData.name}
@@ -78,7 +77,7 @@ const Login = () => {
                                     type="text"
                                     placeholder="Your Name"
                                 />
-                            ) : null}
+                            )}
                             <input
                                 name="email"
                                 value={formData.email}
@@ -94,29 +93,28 @@ const Login = () => {
                                 placeholder="Password"
                             />
                         </div>
-                        {state === "Sign Up" ? (
-                            <div className="loginsignup-agree">
+                        {state === "Sign Up" && (
+                            <div className="login__agree">
                                 <input type="checkbox" />
                                 <p>By Continuing, I agree to the Terms and Privacy.</p>
                             </div>
-                        ) : null}
+                        )}
                         <button onClick={() => {
                             state === "Login" ? login(formData, navigate) : signup(formData, navigate);
                         }}>
                             Continue
                         </button>
                         {state === "Sign Up" ? (
-                            <p className="login-signup">
+                            <p className="login__switch">
                                 Already have an Account? 
                                 <span onClick={() => setState("Login")}>Login</span>
                             </p>
-                        ) : null}
-                        {state === "Login" ? (
-                            <p className="login-signup">
+                        ) : (
+                            <p className="login__switch">
                                 Create an Account? 
                                 <span onClick={() => setState("Sign Up")}>Sign Up</span>
                             </p>
-                        ) : null}
+                        )}
                     </div>
                 </div>
             )}
