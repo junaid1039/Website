@@ -2,8 +2,6 @@ import React, { memo, useCallback} from 'react';
 import './pitem.css';
 import { Link } from 'react-router-dom';
 
-
-
 // Helper function to get currency symbol
 const getCurrencySymbol = (currency) => {
   switch (currency) {

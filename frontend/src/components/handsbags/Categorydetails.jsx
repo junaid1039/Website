@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import './handbags.css';
 import Pitem from '../p-items/Pitem';
 import { Link } from 'react-router-dom';
+import { Context } from '../../context API/Contextapi';
 
 const Categorydetails = React.memo(({ data, heading, oneliner, category, banner }) => {
+  const { countryCode } = useContext(Context);
+  
   return (
     <div className="handbags">
       <div className="sub-handbags">
@@ -20,13 +23,13 @@ const Categorydetails = React.memo(({ data, heading, oneliner, category, banner 
         <div className="products">
           {data.map((item) => (
             <Pitem 
-              key={item.id || item.name}  // Use a unique ID if available
+              key={item.id || item.name}
               id={item.id}
               image={item.images} 
               name={item.name} 
               oldprice={item.oldprice} 
               newprice={item.newprice}
-              countryCode={item.countryCode}
+              countryCode={countryCode}
             />
           ))}
         </div>
