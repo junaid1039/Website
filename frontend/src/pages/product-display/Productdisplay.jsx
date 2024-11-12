@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import './productdisplay.css';
 import { Context } from '../../context API/Contextapi';
@@ -12,41 +12,57 @@ const getCurrencySymbol = (currency) => {
         case 'GB': return '£';
         case 'AE': return 'د.إ';
         case 'PK': return '₨';
-        default: return '$'; // Default currency sign
+        default: return '$';
     }
 };
 
 const Productdisplay = ({ product }) => {
-    const [mainImage, setMainImage] = useState(product.images && product.images.length > 0 ? product.images[0] : product.image);
+    const [mainImage, setMainImage] = useState(product.images?.[0] || product.image);
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
-    const [quantity, setQuantity] = useState(1);
+    const [isProcessing, setIsProcessing] = useState(false);  // State to prevent double clicks
     const { addToCart } = useContext(Context);
     const navigate = useNavigate();
 
     useEffect(() => {
-        setMainImage(product.images && product.images.length > 0 ? product.images[0] : product.image);
+        setMainImage(product.images?.[0] || product.image);
     }, [product]);
 
-    const handleAddToCart = () => {
-        if (!selectedSize || !selectedColor) {
+    const handleAddToCart = useCallback(() => {
+        if (isProcessing) return;
+        setIsProcessing(true);
+
+        if ((product.sizes && !selectedSize) || (product.colors && !selectedColor)) {
             alert("Please select both a size and a color.");
+            setIsProcessing(false);
             return;
         }
-        addToCart(product.id, quantity, selectedColor, selectedSize);
-    };
+        addToCart(product.id, selectedColor, selectedSize);
+        setTimeout(() => {
+            setIsProcessing(false); // Reset after processing
+        }, 300); // Adjust timeout if necessary
+    }, [product.id, selectedColor, selectedSize, isProcessing, addToCart]);
+
+    const handleBuyNow = useCallback(() => {
+        if (isProcessing) return;
+        setIsProcessing(true);
+
+        if ((product.sizes && !selectedSize) || (product.colors && !selectedColor)) {
+            alert("Please select both a size and a color.");
+            setIsProcessing(false);
+            return;
+        }
+
+        addToCart(product.id, selectedColor, selectedSize);
+        navigate('/cart/checkout');
+
+        setTimeout(() => {
+            setIsProcessing(false); // Reset after processing
+        }, 300); // Adjust timeout if necessary
+    }, [product.id, selectedColor, selectedSize, isProcessing, addToCart, navigate]);
 
     const handleImageClick = (image) => {
         setMainImage(image);
-    };
-
-    const handleBuyNow = () => {
-        if (!selectedSize || !selectedColor) {
-            alert("Please select both a size and a color.");
-            return;
-        }
-        addToCart(product.id, quantity, selectedColor, selectedSize);
-        navigate('/cart/checkout');
     };
 
     const currencySymbol = getCurrencySymbol(product.countryCode);
@@ -59,7 +75,7 @@ const Productdisplay = ({ product }) => {
                         <img src={mainImage} alt={product.name} />
                     </div>
                     <div className="product-display__image-list">
-                        {product.images && product.images.map((img, index) => (
+                        {product.images?.map((img, index) => (
                             <img
                                 key={img}
                                 src={img}
@@ -80,7 +96,7 @@ const Productdisplay = ({ product }) => {
                     </div>
 
                     {/* Size Selection */}
-                    {product.sizes && product.sizes.length > 0 && (
+                    {product.sizes?.length > 0 && (
                         <div className="product-display__size-selection">
                             <h4>Select Size</h4>
                             <div className="sizes">
@@ -98,7 +114,7 @@ const Productdisplay = ({ product }) => {
                     )}
 
                     {/* Color Selection */}
-                    {product.colors && product.colors.length > 0 && (
+                    {product.colors?.length > 0 && (
                         <div className="product-display__color-selection">
                             <h4>Select Color</h4>
                             <div className="colors">
@@ -114,21 +130,9 @@ const Productdisplay = ({ product }) => {
                         </div>
                     )}
 
-                    {/* Quantity Selection */}
-                    <div className="product-display__quantity-selection">
-                        <h4>Quantity</h4>
-                        <input
-                            type="number"
-                            min="1"
-                            max="10"
-                            value={quantity}
-                            onChange={(e) => setQuantity(Math.max(1, e.target.value))}
-                        />
-                    </div>
-
                     <div className="product-display__buttons">
-                        <button onClick={handleAddToCart}>Add to Cart</button>
-                        <button onClick={handleBuyNow}>Buy Now</button>
+                        <button onClick={handleAddToCart} disabled={isProcessing}>Add to Cart</button>
+                        <button onClick={handleBuyNow} disabled={isProcessing}>Buy Now</button>
                     </div>
                     <p className="product-display__category"><span>Category :</span> {product.category}</p>
                     <p className="product-display__tags"><span>Tags :</span> Latest</p>
@@ -151,7 +155,7 @@ Productdisplay.propTypes = {
         colors: PropTypes.arrayOf(PropTypes.string),
         category: PropTypes.string.isRequired,
         description: PropTypes.string.isRequired,
-        countryCode: PropTypes.string.isRequired, // Assuming this field exists for country code
+        countryCode: PropTypes.string.isRequired,
     }).isRequired,
 };
 

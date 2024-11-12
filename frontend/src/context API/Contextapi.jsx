@@ -53,44 +53,51 @@ const ContextProvider = (props) => {
     //add To cart 
 
     
-    const addToCart = (productId, quantity, color, size) => {
+    const addToCart = (productId, color = null, size = null, quantity = 1) => {
         setCart((prevCart) => {
             const newCart = { ...prevCart };
-            
             // Find the product details from allproducts
-            const product = allproducts.find((p) => p.id === productId);
-            if (!product) {
-                console.error("Product not found:", productId);
-                return prevCart; // Return the previous cart if product is not found
-            }
-            // If the product already exists in the cart, increase its quantity
+           // const product = allproducts.find((p) => p.id === productId);
+           // if (!product) {
+           //     console.error("Product not found:", productId);
+           //     return prevCart; // Return the previous cart if product is not found
+           // }
+            // If the product already exists in the cart, increment its quantity
             if (newCart[productId]) {
                 newCart[productId].quantity += quantity;
             } else {
-                // Otherwise, add the product with full details
+                // Add the product with initial quantity and selected details
                 newCart[productId] = {
                     quantity,
                     color,
                     size,
-                    name: product.name,         // Updated from title to name
-                    image: product.images[0],    // Assuming the first image
-                    newprice: product.newprice   // Price as per your product structure
                 };
             }
             return newCart;
         });
     };
+    
+    
 
     
 //cart remove
 
-      const removeFromCart = (productId) => {
-        setCart((prevCart) => {
-          const newCart = { ...prevCart };
-          delete newCart[productId];
-          return newCart;
-        });
-      };
+const removeFromCart = (productId, removeAll = false) => {
+    setCart((prevCart) => {
+        const newCart = { ...prevCart };
+        
+        if (removeAll || newCart[productId].quantity <= 1) {
+            // Remove the entire item from the cart if removeAll is true or quantity is 1
+            delete newCart[productId];
+        } else {
+            // Otherwise, decrease the quantity by 1
+            newCart[productId].quantity -= 1;
+        }
+        
+        return newCart;
+    });
+};
+
 
       const getTotalCartItems = () => {
         return Object.values(cart).reduce((total, item) => total + item.quantity, 0);
