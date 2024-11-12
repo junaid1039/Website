@@ -107,7 +107,7 @@ const Cart = () => {
                               <AiOutlinePlus onClick={() => handleAddToCart(productId)} />
                             </div>
                             <span className="tprice">
-                              {currencySymbol}{(product.newprice * quantity).toFixed(2)}
+                              {currencySymbol}{(product.newprice * quantity).toFixed(0)}
                             </span>
                           </div>
                         </div>
