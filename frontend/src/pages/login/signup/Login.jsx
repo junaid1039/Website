@@ -43,6 +43,7 @@ const Login = () => {
 
     return (
         <div>
+            {isLoading && <Loader />} {/* Full-screen loader */}
             {sessionStorage.getItem('auth-token') ? (
                 <>
                     <div className="login__my-account">My Account</div>
@@ -107,7 +108,7 @@ const Login = () => {
                             </div>
                         )}
                         <button onClick={handleAuth} disabled={isLoading}>
-                            {isLoading ? <Loader/> : "Continue"}
+                            {isLoading ? "" : "Continue"}
                         </button>
                         {state === "Sign Up" ? (
                             <p className="login__switch">
