@@ -30,6 +30,7 @@ const Cart = () => {
   // Check if the cart is empty
   const isCartEmpty = !cart || Object.keys(cart).length === 0;
   const currencySymbol = getCurrencySymbol(countryCode);
+  const totalCartAmount = getTotalCartAmount();
 
   // Prevent multiple clicks by debouncing the addToCart/removeFromCart calls
   const handleAddToCart = useCallback((productId) => {
@@ -127,7 +128,7 @@ const Cart = () => {
                 <div>
                   <div className="ct-item">
                     <p>Subtotal</p>
-                    <p>{currencySymbol}{getTotalCartAmount()}</p>
+                    <p>{currencySymbol}{totalCartAmount}</p>
                   </div>
                   <hr />
                   <div className="ct-item">
@@ -137,11 +138,14 @@ const Cart = () => {
                   <hr />
                   <div className="ct-item">
                     <h3>Total</h3>
-                    <h3>{currencySymbol}{getTotalCartAmount()}</h3>
+                    <h3>{currencySymbol}{totalCartAmount}</h3>
                   </div>
                 </div>
+                {/* Disable checkout button if cart is empty or total amount is 0 */}
                 <Link to='/cart/checkout' className='cl'>
-                  <button><LuShoppingCart /> Checkout</button>
+                  <button disabled={isCartEmpty || totalCartAmount === 0}>
+                    <LuShoppingCart /> Checkout
+                  </button>
                 </Link>
               </div>
             </div>
