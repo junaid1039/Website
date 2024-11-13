@@ -227,14 +227,14 @@ const Adminpopup = () => {
         </div>
 
         <div>
-          <label>
+          <label style={{ display: 'flex' }}>
+            <span>Active</span>
             <input
               type="checkbox"
               name="isActive"
               checked={formData.isActive}
               onChange={handleInputChange}
             />
-            Active
           </label>
         </div>
 
