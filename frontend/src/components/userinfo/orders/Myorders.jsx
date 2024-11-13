@@ -4,13 +4,21 @@ import { Context } from '../../../context API/Contextapi';
 import Clientorderdetails from '../../clientorderdetails/Clientorderdetails';
 
 const MyOrders = () => {
-  const { myorders } = useContext(Context);
-
+  const { myorders, countryCode } = useContext(Context);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
+
+  const currencySymbols = {
+    US: '$',
+    EU: '€',
+    PK: '₨',
+    GB: '£',
+    AE: 'د.إ',
+  };
+  const currencySymbol = currencySymbols[countryCode] || '$';
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -38,9 +46,9 @@ const MyOrders = () => {
     setSelectedOrderId(null);
   };
 
-  if (loading) return <div>Loading orders...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (orders.length === 0) return <div>No orders found.</div>;
+  if (loading) return <div className="myOrders__loading">Loading orders...</div>;
+  if (error) return <div className="myOrders__error">Error: {error}</div>;
+  if (orders.length === 0) return <div className="myOrders__empty">No orders found.</div>;
 
   return (
     <div className="myOrders">
@@ -58,6 +66,7 @@ const MyOrders = () => {
               key={item._id}
               item={item}
               orderStatus={order.orderStatus}
+              currencySymbol={currencySymbol}  // Pass currencySymbol as prop
               onView={() => handleViewOrder(order._id)}
             />
           ))
@@ -73,12 +82,14 @@ const MyOrders = () => {
   );
 };
 
-const OrderItem = memo(({ item, orderStatus, onView }) => (
+const OrderItem = memo(({ item, orderStatus, currencySymbol, onView }) => (
   <div className="myOrders__item">
     <div className="myOrders__field">{item.name}</div>
     <div className="myOrders__field">{orderStatus}</div>
     <div className="myOrders__field">{item.quantity}</div>
-    <div className="myOrders__field">${(item.price * item.quantity).toFixed(0)}</div>
+    <div className="myOrders__field">
+      {currencySymbol}{(item.price * item.quantity).toFixed(2)}
+    </div>
     <div className="myOrders__field">
       <button className="myOrders__viewButton" onClick={onView}>View</button>
     </div>

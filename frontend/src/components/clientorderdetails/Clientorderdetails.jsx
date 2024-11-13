@@ -54,6 +54,7 @@ const Clientorderdetails = ({ onClose, orderId }) => {
         orderStatus
     } = orderDetails;
 
+
     // Get currency symbol based on country code
     const currencySymbols = {
         US: '$',
@@ -64,10 +65,6 @@ const Clientorderdetails = ({ onClose, orderId }) => {
     };
     const currencySymbol = currencySymbols[countryCode] || '$';
 
-    // Helper function to get the currency-adjusted price
-    const getPrice = (priceObj) => {
-        return priceObj?.[countryCode] || priceObj?.USD || 0;
-    };
 
     return (
         <div className="client-container">
@@ -77,7 +74,7 @@ const Clientorderdetails = ({ onClose, orderId }) => {
             <div className="client-order-info">
                 <p><strong>Order ID:</strong> {ID}</p>
                 <p><strong>Order Date:</strong> {formattedDate}</p>
-                <p><strong>Order Price:</strong> {currencySymbol}{getPrice(totalPrice).toFixed(2)}</p>
+                <p><strong>Order Price:</strong> {currencySymbol}{totalPrice.toFixed(0)}</p>
                 <p><strong>Payment Method:</strong> {paymentInfo?.method || 'N/A'}</p>
                 <p><strong>Payment Status:</strong> {paymentInfo?.status || 'N/A'}</p>
                 <p><strong>Order Status:</strong> <span className="client-status">{orderStatus}</span></p>
@@ -89,7 +86,7 @@ const Clientorderdetails = ({ onClose, orderId }) => {
                     <div key={item._id} className="client-o-details">
                         <p><strong>Title:</strong> {item.name}</p>
                         <p><strong>Quantity:</strong> {item.quantity}</p>
-                        <p><strong>Price:</strong> {currencySymbol}{getPrice(item.price).toFixed(2)}</p>
+                        <p><strong>Price:</strong> {currencySymbol}{item.price.toFixed(0)}</p>
                         <p><strong>Size:</strong> {item.size}</p>
                         <p><strong>Color:</strong> {item.color}</p>
                     </div>
