@@ -82,8 +82,8 @@ const Productlist = () => {
                   className="listproduct-product-img" 
                 />
                 <p>{product.name}</p>
-                <p>${product.oldprice}</p>
-                <p>${product.newprice}</p>
+                <p>Pkr{product.oldprice}</p>
+                <p>Pkr{product.newprice}</p>
                 <p>{product.category}</p>
                 <p>
                   <RiEdit2Fill onClick={() => navigate(`editproduct/${product.id}`)} className="edit-icon" />
