@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useContext, useRef, useMemo, useCallback } from "react";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { Context } from '../../context API/Contextapi';
 import "./carousel.css";
@@ -7,42 +7,47 @@ import { useNavigate } from "react-router-dom";
 const Bcarousel = () => {
   const { fetchCarousels } = useContext(Context);
   const [slides, setSlides] = useState([]);
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const currentSlideRef = useRef(0); // useRef to persist the slide index
+  const [_, forceRender] = useState(0); // State to force render
   const navigate = useNavigate();
 
-  // Load slides once when component mounts
-  useEffect(() => {
-    const loadSlides = async () => {
-      const fetchedSlides = await fetchCarousels();
-      const filteredSlides = fetchedSlides.filter(slide => slide.subcategory === null);
-      setSlides(filteredSlides);
-    };
-    loadSlides();
+  // Memoize fetchCarousels to avoid redundant data fetching
+  const memoizedSlides = useMemo(async () => {
+    const fetchedSlides = await fetchCarousels();
+    return fetchedSlides.filter(slide => slide.subcategory === null);
   }, [fetchCarousels]);
 
-  // Auto-slide feature
+  // Load slides only once and cache in the component
+  useEffect(() => {
+    memoizedSlides.then(setSlides);
+  }, [memoizedSlides]);
+
+  // Auto-slide feature using useRef
   useEffect(() => {
     if (slides.length > 0) {
       const interval = setInterval(() => {
-        setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
+        currentSlideRef.current = (currentSlideRef.current + 1) % slides.length;
+        forceRender(n => n + 1); // Trigger a render
       }, 4000);
       return () => clearInterval(interval); // Cleanup interval on unmount
     }
   }, [slides.length]);
 
   const nextSlide = useCallback(() => {
-    setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
+    currentSlideRef.current = (currentSlideRef.current + 1) % slides.length;
+    forceRender(n => n + 1); // Trigger a render
   }, [slides.length]);
 
   const prevSlide = useCallback(() => {
-    setCurrentSlide((prevSlide) => (prevSlide - 1 + slides.length) % slides.length);
+    currentSlideRef.current = (currentSlideRef.current - 1 + slides.length) % slides.length;
+    forceRender(n => n + 1); // Trigger a render
   }, [slides.length]);
 
   if (!slides.length) {
     return <div className="carousel-error">No slides available</div>;
   }
 
-  const current = slides[currentSlide];
+  const current = slides[currentSlideRef.current];
 
   return (
     <div className="carousel-container">
@@ -53,7 +58,7 @@ const Bcarousel = () => {
           {slides.map((item, idx) => (
             <div 
               key={idx} 
-              className={`slide ${currentSlide === idx ? "slide-active" : "slide-hidden"}`}
+              className={`slide ${currentSlideRef.current === idx ? "slide-active" : "slide-hidden"}`}
             >
               <img 
                 src={item.carousel} 
@@ -81,8 +86,8 @@ const Bcarousel = () => {
           {slides.map((_, idx) => (
             <button
               key={idx}
-              className={`indicator ${currentSlide === idx ? "indicator-active" : ""}`}
-              onClick={() => setCurrentSlide(idx)}
+              className={`indicator ${currentSlideRef.current === idx ? "indicator-active" : ""}`}
+              onClick={() => { currentSlideRef.current = idx; forceRender(n => n + 1); }}
               aria-label={`Go to slide ${idx + 1}`}
             ></button>
           ))}
