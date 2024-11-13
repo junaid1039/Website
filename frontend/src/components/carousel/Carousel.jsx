@@ -84,12 +84,12 @@ const Bcarousel = () => {
 
         <div className="indicators">
           {slides.map((_, idx) => (
-            <button
+            <label
               key={idx}
               className={`indicator ${currentSlideRef.current === idx ? "indicator-active" : ""}`}
               onClick={() => { currentSlideRef.current = idx; forceRender(n => n + 1); }}
               aria-label={`Go to slide ${idx + 1}`}
-            ></button>
+            ></label>
           ))}
         </div>
       </div>
