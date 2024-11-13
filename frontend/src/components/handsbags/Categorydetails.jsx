@@ -14,7 +14,7 @@ const Categorydetails = React.memo(({ data, heading, oneliner, category, banner 
           <h5>{heading}</h5>
           <p>{oneliner}</p>
           <Link to={`/${category}`} className="cl">
-            <button>Discover</button>
+            <label>Discover</label>
           </Link>
         </div>
         <div className="banner">
