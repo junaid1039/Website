@@ -3,45 +3,51 @@ import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { Context } from '../../context API/Contextapi';
 import "./carousel.css";
 import { useNavigate } from "react-router-dom";
+import Loader from "../loader/Loader";
 
 const Bcarousel = () => {
   const { fetchCarousels } = useContext(Context);
   const [slides, setSlides] = useState([]);
-  const currentSlideRef = useRef(0); // useRef to persist the slide index
-  const [_, forceRender] = useState(0); // State to force render
+  const [loading, setLoading] = useState(true); // Loading state
+  const currentSlideRef = useRef(0); 
+  const [_, forceRender] = useState(0); 
   const navigate = useNavigate();
 
-  // Memoize fetchCarousels to avoid redundant data fetching
   const memoizedSlides = useMemo(async () => {
     const fetchedSlides = await fetchCarousels();
     return fetchedSlides.filter(slide => slide.subcategory === null);
   }, [fetchCarousels]);
 
-  // Load slides only once and cache in the component
   useEffect(() => {
-    memoizedSlides.then(setSlides);
+    memoizedSlides.then((fetchedSlides) => {
+      setSlides(fetchedSlides);
+      setLoading(false); // Set loading to false once data is loaded
+    });
   }, [memoizedSlides]);
 
-  // Auto-slide feature using useRef
   useEffect(() => {
     if (slides.length > 0) {
       const interval = setInterval(() => {
         currentSlideRef.current = (currentSlideRef.current + 1) % slides.length;
-        forceRender(n => n + 1); // Trigger a render
+        forceRender(n => n + 1); 
       }, 4000);
-      return () => clearInterval(interval); // Cleanup interval on unmount
+      return () => clearInterval(interval); 
     }
   }, [slides.length]);
 
   const nextSlide = useCallback(() => {
     currentSlideRef.current = (currentSlideRef.current + 1) % slides.length;
-    forceRender(n => n + 1); // Trigger a render
+    forceRender(n => n + 1); 
   }, [slides.length]);
 
   const prevSlide = useCallback(() => {
     currentSlideRef.current = (currentSlideRef.current - 1 + slides.length) % slides.length;
-    forceRender(n => n + 1); // Trigger a render
+    forceRender(n => n + 1); 
   }, [slides.length]);
+
+  if (loading) {
+    return <Loader />;
+  }
 
   if (!slides.length) {
     return <div className="carousel-error">No slides available</div>;
@@ -63,7 +69,7 @@ const Bcarousel = () => {
               <img 
                 src={item.carousel} 
                 alt={`Slide ${idx}`} 
-                 // Lazy load images to enhance performance
+                loading="lazy" 
               />
             </div>
           ))}
