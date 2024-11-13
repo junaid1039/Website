@@ -5,7 +5,7 @@ import { Context } from '../../context API/Contextapi.jsx';
 import { useParams } from 'react-router-dom';
 
 const Relatedproducts = () => {
-    const { allproducts } = useContext(Context);
+    const { allproducts, countryCode } = useContext(Context);
     const { id } = useParams();
 
     // Find the current product based on the URL id
@@ -38,7 +38,8 @@ const Relatedproducts = () => {
                         name={product.name} 
                         image={product.images} 
                         newprice={product.newprice} 
-                        oldprice={product.oldprice} 
+                        oldprice={product.oldprice}
+                        countryCode={countryCode}
                     />
                 ))} 
             </div>
