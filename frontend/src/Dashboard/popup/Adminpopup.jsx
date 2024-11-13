@@ -227,7 +227,7 @@ const Adminpopup = () => {
         </div>
 
         <div>
-          <label style={{ display: 'flex' }}>
+          <label style={{ display: 'flex', width: '100px' }}>
             <span>Active</span>
             <input
               type="checkbox"
