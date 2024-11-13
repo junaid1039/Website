@@ -63,7 +63,7 @@ const Bcarousel = () => {
               <img 
                 src={item.carousel} 
                 alt={`Slide ${idx}`} 
-                loading="lazy"  // Lazy load images to enhance performance
+                 // Lazy load images to enhance performance
               />
             </div>
           ))}
