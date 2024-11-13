@@ -4,7 +4,7 @@ import { Context } from '../../context API/Contextapi';
 import './subcategory.css';
 
 const Subcategory = () => {
-  const { fetchCarousels, fetchUserIP } = useContext(Context);
+  const { fetchCarousels, fetchUserIP, countryCode } = useContext(Context);
   const [carousels, setCarousels] = useState([]);
   const [categoryProducts, setCategoryProducts] = useState({});
   const [loading, setLoading] = useState(true);
@@ -40,8 +40,7 @@ const Subcategory = () => {
     const sanitizedCategory = category.replace(/^\//, "");
 
     try {
-      const ip = await fetchUserIP();
-      const response = await fetch(`${baseurl}/subcategorys?category=${sanitizedCategory}&ip=${ip}`, {
+      const response = await fetch(`${baseurl}/subcategorys?category=${sanitizedCategory}&countryCode=${countryCode}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
