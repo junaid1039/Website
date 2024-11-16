@@ -80,7 +80,7 @@ const Navbar = () => {
             <AiOutlineClose className="close-icon" onClick={toggleMenu} aria-label="Close Menu" />
           </div>
           <ul className="menu-items">
-            {['Home', 'Women Shoes', 'Bags', 'Perfumes', 'Wallets', 'Men Shoes', 'Belts', 'Horse Saddle'].map((label, index) => (
+            {['Home', 'Women Shoes', 'Bags', 'Perfumes', 'Cosmetics', 'Wallets', 'Men Shoes', 'Belts', 'Horse Saddle', 'Accessories'].map((label, index) => (
               <li key={index}>
                 <Link className='cl' to={label === 'Home' ? '/' : `/${label.toLowerCase()}`} onClick={toggleMenu}>
                   {label}

@@ -147,6 +147,7 @@ const AdminCarousel = () => {
                     <option value="/bags">Bags</option>
                     <option value="/belts">Belts</option>
                     <option value="/women shoes">Women Shoes</option>
+                    <option value='/cosmetics'>Cosmetics</option>
                     <option value="/wallets">Wallets</option>
                     <option value="/men shoes">Men Shoes</option>
                     <option value="/horse saddle">Horse Saddle</option>
@@ -162,6 +163,7 @@ const AdminCarousel = () => {
                     <option value="/bags">Bags</option>
                     <option value="/belts">Belts</option>
                     <option value="/women shoes">Women Shoes</option>
+                    <option value='/cosmetics'>Cosmetics</option>
                     <option value="/wallets">Wallets</option>
                     <option value="/men shoes">Men Shoes</option>
                     <option value="/horse saddle">Horse Saddle</option>

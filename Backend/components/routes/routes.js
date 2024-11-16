@@ -10,19 +10,19 @@ const { auth, userauth } = require('../middleware/auth'); // Middleware for auth
 const carouselController  = require('../controllers/carouselController');
 const {createQuery, getQueries,updateQuery,deleteQuery} = require('../controllers/userquoryController')
 const PopupController = require('../controllers/popupControllers');
-const {createPromoCode,validatePromoCode,getAllPromoCodes,} = require('../controllers/promoController');
+const {createPromoCode,validatePromoCode,getAllPromoCodes,deletePromoCode} = require('../controllers/promoController');
 
 const upload = require('../middleware/multer')
 
 
 //promo Code Routes
 router.post('/createCode', createPromoCode);
-
 // Route to validate a promo code
 router.post('/validateCode', validatePromoCode);
-
 // Route to fetch all active promo codes (for admin use)
 router.get('/allCode', getAllPromoCodes);
+//delete code
+router.delete('/delcode', deletePromoCode);
 
 
 

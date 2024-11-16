@@ -29,6 +29,7 @@ const UserLayout = () => {
                 <Route path='/belts' element={<Productcategory category="belts" />} />
                 <Route path='/accessories' element={<Productcategory category="accessories" />} />
                 <Route path='/horse saddle' element={<Productcategory category="horse saddle" />} />
+                <Route path='/cosmetics' element={<Productcategory category="cosmetics" />} />
                 <Route path='/product/:id' element={<Fullproductdisplay />} />
                 <Route path='/cart' element={<Cart />} />
                 <Route path='/account/*' element={<Login />} />

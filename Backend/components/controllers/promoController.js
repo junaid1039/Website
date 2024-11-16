@@ -65,8 +65,30 @@ const getAllPromoCodes = async (req, res) => {
   }
 };
 
+// Delete a promo code by _id
+const deletePromoCode = async (req, res) => {
+  const { id } = req.body; // Expecting 'id' in the request body
+
+  try {
+    // Check if the promo code exists
+    const promoCode = await PromoCode.findById(id);
+    if (!promoCode) {
+      return res.status(404).json({ message: 'Promo code not found' });
+    }
+
+    // Delete the promo code
+    await PromoCode.findByIdAndDelete(id);
+    res.json({ message: 'Promo code deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting promo code', error: error.message });
+  }
+};
+
+
 module.exports = {
   createPromoCode,
   validatePromoCode,
   getAllPromoCodes,
+  deletePromoCode,
 };
+

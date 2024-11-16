@@ -11,6 +11,7 @@ const AdminPromoCode = () => {
 
   const baseurl = import.meta.env.VITE_REACT_APP_BACKEND_BASEURL;
 
+  // Fetch promo codes on component mount
   useEffect(() => {
     const fetchPromoCodes = async () => {
       try {
@@ -29,6 +30,7 @@ const AdminPromoCode = () => {
     fetchPromoCodes();
   }, []);
 
+  // Create a new promo code
   const handleCreatePromoCode = async (e) => {
     e.preventDefault();
     try {
@@ -47,7 +49,7 @@ const AdminPromoCode = () => {
       const data = await response.json();
       if (response.ok) {
         alert(data.message);
-        setPromoCodes([...promoCodes, data.promoCode]);
+        setPromoCodes([...promoCodes, data.promoCode]); // Add new promo to state
         setNewCode('');
         setDiscount('');
         setExpirationDate('');
@@ -60,6 +62,7 @@ const AdminPromoCode = () => {
     }
   };
 
+  // Validate a promo code
   const handleValidatePromoCode = async () => {
     try {
       const response = await fetch(`${baseurl}/validateCode`, {
@@ -82,8 +85,33 @@ const AdminPromoCode = () => {
     }
   };
 
+  // Delete a promo code
+  const handleDeletePromoCode = async (id) => {
+    try {
+      const response = await fetch(`${baseurl}/delcode`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id }), // Send the _id of the promo code
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert(data.message);
+        setPromoCodes(promoCodes.filter((promo) => promo._id !== id)); // Remove deleted promo from state
+      } else {
+        alert(data.message || 'Error deleting promo code');
+      }
+    } catch (error) {
+      alert('Error deleting promo code');
+      console.error(error);
+    }
+  };
+
   return (
     <div className="admin-promo-code">
+      {/* Create Promo Code Form */}
       <form onSubmit={handleCreatePromoCode} className="create-form">
         <h3 className="create-form-title">Create Promo Code</h3>
         <div className="form-group create-code-group">
@@ -122,6 +150,7 @@ const AdminPromoCode = () => {
         <button type="submit" className="create-submit-button">Create Promo Code</button>
       </form>
 
+      {/* Validate Promo Code Section */}
       <div className="validate-section">
         <h3 className="validate-title">Validate Promo Code</h3>
         <input
@@ -135,6 +164,7 @@ const AdminPromoCode = () => {
         {validationMessage && <p className="validation-message">{validationMessage}</p>}
       </div>
 
+      {/* Promo Codes List */}
       <div className="promo-codes-list">
         <h3 className="promo-codes-title">Active Promo Codes</h3>
         {promoCodes.length === 0 ? (
@@ -145,6 +175,12 @@ const AdminPromoCode = () => {
               <li key={promo._id} className="promo-code-item">
                 <strong className="promo-code-text">{promo.code}</strong> - {promo.discount}% off
                 <span className="promo-expiration"> (Expires on {new Date(promo.expirationDate).toLocaleDateString()})</span>
+                <button
+                  className="delete-button"
+                  onClick={() => handleDeletePromoCode(promo._id)} // Call delete with _id
+                >
+                  Delete
+                </button>
               </li>
             ))}
           </ul>

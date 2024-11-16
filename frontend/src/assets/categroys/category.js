@@ -6,6 +6,7 @@ import accessories from './accessories.jpg';
 import Hsaddle from './Hsaddle.webp';
 import Mwallets from './Mwallets.jpg';
 import WomenBags from './WomenBags.webp';
+import cosmetics from './cosmetics.jpg';
 
 let CtgryProducts = [
     {
@@ -47,9 +48,9 @@ let CtgryProducts = [
 
     {
         "i":7,
-        "name": "Accessories",
-        "image": accessories,
-        "category": "accessories"
+        "name": "Cosmetics",
+        "image": cosmetics,
+        "category": "cosmetics"
     },
     {
         "i":8,
