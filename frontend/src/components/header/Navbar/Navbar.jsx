@@ -91,9 +91,9 @@ const Navbar = () => {
 
         </div>
         <div className="menubottom">
-        <Link className='cl' to="/aboutus" ><div className='b-d'><span><BsPeople /></span><span>About us</span></div></Link>
-          <Link className='cl' to="/account" ><div className='b-d'><span><GoPerson /></span><span>Account</span></div></Link>
-          <Link className='cl' to="/contactus" ><div className='b-d'><span><TbMessageForward /></span><span>Contact us</span></div></Link>
+        <Link className='cl' to="/aboutus" onClick={toggleMenu} ><div className='b-d'><span><BsPeople /></span><span>About us</span></div></Link>
+          <Link className='cl' to="/account" onClick={toggleMenu} ><div className='b-d'><span><GoPerson /></span><span>Account</span></div></Link>
+          <Link className='cl' to="/contactus" onClick={toggleMenu} ><div className='b-d'><span><TbMessageForward /></span><span>Contact us</span></div></Link>
         </div>
       </div>
 
