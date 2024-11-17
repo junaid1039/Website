@@ -17,7 +17,10 @@ app.use(express.json());
 
 
 // Using routes
-app.use('/', Routes);
+//app.use('/', Routes);
+app.get('/', (req, res) => {
+    res.send('Backend is running');
+});
 
 app.listen(port, (err) => {
     if (!err) {
