@@ -27,29 +27,17 @@ const AboutUs = () => {
             <h2>Meet the Team</h2>
             <div className="team">
                 <div className="team-member">
-<<<<<<< HEAD
-                    <h3>Jane Doe</h3>
-=======
                     <h3>Israr Shakir</h3>
->>>>>>> c81b0f4bb17d89204d5f876f82b21e3215da3e33
                     <p>CEO & Founder</p>
                     <p>Jane has over 20 years of experience in the industry and is passionate about delivering quality and value to our customers.</p>
                 </div>
                 <div className="team-member">
-<<<<<<< HEAD
-                    <h3>John Smith</h3>
-=======
                     <h3>Mansha Shakir</h3>
->>>>>>> c81b0f4bb17d89204d5f876f82b21e3215da3e33
                     <p>Chief Technology Officer</p>
                     <p>John leads our tech team with a vision for innovation and excellence in product development.</p>
                 </div>
                 <div className="team-member">
-<<<<<<< HEAD
-                    <h3>Emily Johnson</h3>
-=======
                     <h3>Ali Shakir</h3>
->>>>>>> c81b0f4bb17d89204d5f876f82b21e3215da3e33
                     <p>Marketing Director</p>
                     <p>Emily is responsible for our brand strategy and marketing efforts to ensure our message reaches the right audience.</p>
                 </div>
